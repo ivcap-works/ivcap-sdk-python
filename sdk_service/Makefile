@@ -22,7 +22,10 @@ test:
 
 docker-build:
 	@echo "\nStarting build of docker image ${DOCKER_NAME}"
-	docker build -t ${DOCKER_NAME} -f ${ROOT_DIR}/Dockerfile ${ROOT_DIR} ${DOCKER_BILD_ARGS}
+	docker build -t ${DOCKER_NAME} \
+		--build-arg GIT_COMMIT=${GIT_COMMIT} \
+		--build-arg GIT_TAG=${GIT_TAG} \
+		-f ${ROOT_DIR}/Dockerfile ${ROOT_DIR} ${DOCKER_BILD_ARGS}
 	# docker image tag ${DOCKER_NAME} ${DOCKER_NAME}:latest
 	# docker image tag ${DOCKER_NAME} ${DOCKER_TAG}
 	@echo "\nFinished building docker image ${DOCKER_NAME}"
@@ -33,6 +36,14 @@ docker-publish:
 	docker image push ${DOCKER_DEPLOY}
 	@echo "\nFinished publishing docker image ${DOCKER_DEPLOY}"
 
+docker-run: #docker-build
+	docker run -it \
+		-e IVCAP_ORDER_ID=ivcap:order:0000 \
+		-e IVCAP_NODE_ID=n0 \
+		${DOCKER_NAME} \
+			--msg World
+
 clean:
-	rm -r *.egg-info
-	rm -r dist 
+	rm -rf *.egg-info
+	rm -rf dist
+	find ${ROOT_DIR} -name __pycache__ | xargs rm -r 

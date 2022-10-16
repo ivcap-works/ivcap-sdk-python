@@ -21,7 +21,11 @@ RUN mkdir -p /data/in /data/out
 
 WORKDIR /sdk
 RUN pip install poetry
-ADD . .
+
+ADD LICENSE README.md CHANGELOG.md ./
+ADD poetry.lock pyproject.toml ./
+ADD src .
+
 RUN poetry build
 #RUN pip uninstall poetry
 RUN pip install dist/*.gz
@@ -29,7 +33,9 @@ RUN pip install dist/*.gz
 ENV IVCAP_INSIDE_CONTAINER Yes
 
 # VERSION INFORMATION
+ARG GIT_TAG ???
 ENV IVCAP_SDK_VERSION $GIT_TAG
+ARG GIT_COMMIT ???
 ENV IVCAP_SDK_COMMIT $GIT_COMMIT
 
 WORKDIR /app

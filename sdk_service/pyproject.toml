@@ -12,6 +12,7 @@ importlib-metadata = "^5.0.0"
 prettyprinter = "^0.18.0"
 PyYAML = "^6.0"
 dataclass-wizard = "^0.22.1"
+validators = "^0.20.0"
 
 [tool.poetry.dev-dependencies]
 
