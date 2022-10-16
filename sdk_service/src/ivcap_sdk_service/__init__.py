@@ -4,10 +4,11 @@ try:  # Python < 3.10 (backport)
 except ImportError: 
     from importlib.metadata import version 
      
-__version__ = version("ivcap_service")
+__version__ = version("ivcap_sdk_service")
 
-from .ivcap import get_config
+from .ivcap import get_config, deliver
 from .run import run, register_service
 from .service import Service, Parameter, Option, Type
+from .service import Workflow, BasicWorkflow, PythonWorkflow
 
 #from cayp.cayp import *

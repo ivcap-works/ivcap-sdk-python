@@ -8,15 +8,16 @@ import prettyprinter as pp
 
 from enum import Enum, auto
 
-from .cio import IOAdapter, FileAdapter, PostAdapter, Cache
+from .cio import IOAdapter, FileAdapter, HttpAdapter, Cache
 
 INSIDE_CONTAINER = not not os.getenv('IVCAP_INSIDE_CONTAINER', None) # make it a bool
+INSIDE_ARGO = not not os.getenv('ARGO_NODE_ID', None) # make it a bool
 
 DEF_OUT_DIR = '/data/out'
 DEF_IN_DIR = '/data/in'
 
 DEF_CACHE_DIR = '/cache'
-DEF_SCHEMA_PREFIX = 'ivcap'
+DEF_SCHEMA_PREFIX = 'urn:ivcap:'
 
 SUPPORTED_PROTOCOLS = ['httpserver', 'opendap']
 
@@ -77,7 +78,7 @@ class Config:
 
   def _set(self, args):
     order_id_def = os.getenv('IVCAP_ORDER_ID')
-    node_id_def = os.getenv('IVCAP_NODE_ID')
+    node_id_def = os.getenv('ARGO_NODE_ID')
 
     # self.SERVICE_FILE = args.pop('ivcap:service_file', None)
 
@@ -91,16 +92,6 @@ class Config:
     self.ORDER_ID = args.pop('ivcap:order_id', order_id_def)
     self.NODE_ID = args.pop('ivcap:node_id', node_id_def)
 
-    storage_url = args.pop('ivcap:storage_url', None)
-    in_dir = args.pop('ivcap:in_dir', None)
-    out_dir = args.pop('ivcap:out_dir', None)
-    if storage_url:
-      self.IO_ADAPTER = PostAdapter(
-        storage_url = storage_url,
-        order_id=self.ORDER_ID
-      )
-    else:
-      self.IO_ADAPTER = FileAdapter(in_dir=in_dir, out_dir=out_dir)
 
     self.CACHE_PROXY_URL = args.pop('ivcap:cache_proxy', None)
     cacheDir = args.pop('ivcap:cache_dir', None)
@@ -109,6 +100,18 @@ class Config:
     else:
         self.CACHE = None
 
+    storage_url = args.pop('ivcap:storage_url', None)
+    in_dir = args.pop('ivcap:in_dir', None)
+    out_dir = args.pop('ivcap:out_dir', None)
+    if storage_url:
+      self.IO_ADAPTER = HttpAdapter(
+        storage_url = storage_url,
+        cache = self.CACHE,
+        order_id=self.ORDER_ID
+      )
+    else:
+      self.IO_ADAPTER = FileAdapter(in_dir=in_dir, out_dir=out_dir)
+
     self.SCHEMA_PREFIX = args.pop('ivcap:schema_prefix', None)
 
   def add_arguments(self, ap):
@@ -116,7 +119,7 @@ class Config:
     #   with_report_def =  os.getenv('IVCAP_WITH_REPORT', None)
 
     order_id_def = os.getenv('IVCAP_ORDER_ID')
-    node_id_def = os.getenv('IVCAP_NODE_ID')
+    node_id_def = os.getenv('ARGO_NODE_ID')
 
     out_dir_def=os.getenv('IVCAP_OUT_DIR', DEF_OUT_DIR if INSIDE_CONTAINER else '.')
     in_dir_def=os.getenv('IVCAP_IN_DIR', DEF_IN_DIR if INSIDE_CONTAINER else '.')
@@ -160,9 +163,10 @@ class Config:
         default=order_id_def,
         required=INSIDE_CONTAINER and not order_id_def)
     ap.add_argument("--ivcap:node-id", metavar="ID", 
-        help=f"Execution node ID [IVCAP_NODE_ID={node_id_def}]",
+        help=f"Execution node ID [ARGO_NODE_ID={node_id_def}]",
         default=node_id_def,
-        required=INSIDE_CONTAINER and not node_id_def)
+        #required=INSIDE_CONTAINER and not node_id_def
+        )
 
     ap.add_argument("--ivcap:out-dir", metavar="DIR", 
         help=f"Directory to place results into [IVCAP_OUT_DIR={out_dir_def}]",
@@ -248,8 +252,3 @@ def storeConfigInEnv():
   for v in getProgramArgs():
     os.environ[f'IVCAP_ENV{i}'] = v
     i += 1
-
-
-
-
-# print(f"CONFIG: {CONFIG}")

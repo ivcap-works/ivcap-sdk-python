@@ -3,41 +3,49 @@
 #
 import json
 from argparse import ArgumentParser
-from typing import Callable, Dict
+from typing import Callable, Dict, Any
 
-from .logger import logging
+from .logger import sys_logger as logger
 from .config import Config, Resource
 
 DELIVERED = []
 _CONFIG = None # only use internally and only after calling init()
 
-def deliver(name, data, **meta):
+def xa_dataset(d, name, meta):
+    fhdl, url = _CONFIG.IO_ADAPTER.get_fd(f"{name}.nc", d, meta)
+    d.to_netcdf(fhdl, compute=True)
+    return url
+
+_SAVER = {
+    "<class 'xarray.core.dataset.Dataset'>": xa_dataset,
+    "<class 'xarray.core.dataarray.DataArray'>": xa_dataset,
+}
+
+def deliver(name, data_or_lambda, **meta):
     global DELIVERED
 
-    def xa_dataset(d, name):
-        # dm = d.to_dict(data=False)
-        # meta = {
-        #     "X-": dm
-        # }
-        fn, url = _CONFIG.IO_ADAPTER.get_fd(f"{name}.nc", d, meta)
-        d.to_netcdf(fn, compute=True)
-        return url
+    if callable(data_or_lambda):
+        l = data_or_lambda
+        fhdl, url = _CONFIG.IO_ADAPTER.get_fd(name, None, meta)
+        type_s = meta.get('type', 'unknown')
+        l(fhdl)
+        fhdl.close()
+    else: 
+        data = data_or_lambda
+        sf = _SAVER.get(str(type(data)))
+        if sf:
+            url = sf(data, name, meta)
+        else:
+            raise NotImplementedError(f"Unsupported data type {type(data)}")
+        type_s=str(type(data))
 
-    switcher = {
-        "<class 'xarray.core.dataset.Dataset'>": xa_dataset,
-        "<class 'xarray.core.dataarray.DataArray'>": xa_dataset,
-    }
-    sf = switcher.get(str(type(data)))
-    if sf:
-        url = sf(data, name)
-    else:
-        raise NotImplementedError(f"Unsupported data type {type(data)}")
-
-    m = dict(name=name, url=url, type=str(type(data)), meta=meta)
+    m = dict(name=name, url=url, type=type_s, meta=meta)
     DELIVERED.append(m)
-    notify(m, _CONFIG.SCHEMA_PREFIX + 'deliver')
-    return (url, data)
+    notify(m, _CONFIG.SCHEMA_PREFIX + ':deliver')
+    return url
 
+def register_saver(type: str, f: Callable[[Any, str, Any], str]):
+    _SAVER[str(type)] = f
 
 def cache_file(url):
     if _CONFIG.CACHE != None:
@@ -79,29 +87,19 @@ def notify(msg, schema=None):
                 extra['@schema'] = schema
             jx = json.dumps(extra)
             js = f"{js[0]}{jx[1:-1]},{js[1:]}"
-        #print(f"... send '{js}'")
-        # p.send(CONFIG.KAFKA_CHANNEL, js.encode('utf-8'), headers=h)
-        # p.flush()
     else:
-        logging.info(f"{schema}: {msg}")
+        logger.info(f"{schema}: {msg}")
 
 def get_config() -> Config:
     return _CONFIG
 
 def is_valid_resource_urn(urn: str, resource: Resource) -> bool:
     prefix = f"{get_config().SCHEMA_PREFIX}:{resource.value}:"
-    #print(f" {prefix} | {urn} |  {urn.startswith(prefix)}")
     return urn.startswith(prefix)
 
 def init(argv:Dict[str, str] = None, modify_ap: Callable[[ArgumentParser], ArgumentParser] = None):
     global _CONFIG
     _CONFIG = Config(argv, modify_ap)
     return _CONFIG
-
-# def init(order_id = None, kafka_server = None, kafka_channel = None):
-#   global KAFKA_SERVER, KAFKA_CHANNEL, ORDER_ID
-#   if order_id: ORDER_ID = order_id
-#   if kafka_server: KAFKA_SERVER = kafka_server
-#   if kafka_channel: KAFKA_CHANNEL = kafka_channel
 
 # SUPORT FUNCTIONS

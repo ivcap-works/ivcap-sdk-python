@@ -8,24 +8,36 @@ from collections import namedtuple
 
 from .ivcap import init, get_config
 from .logger import logger, sys_logger 
-# from .utils import read_yaml_no_dates
 from .service import Service
-from .config import Command, INSIDE_CONTAINER
+from .config import Command, INSIDE_ARGO
 
 def run(args: Dict, handler: Callable[[Dict], int]) -> int:
     sys_logger.info(f"Calling '{handler}' with '{args}'")
     code = handler(args, logger)
     return code
 
+def print_banner(service: Service):
+    sdk_v = os.getenv('IVCAP_SDK_VERSION', '?')
+    sdk_c = os.getenv('IVCAP_SDK_COMMIT', '?')
+    svc_v = os.getenv('IVCAP_SERVICE_VERSION', '?')
+    svc_c = os.getenv('IVCAP_SERVICE_COMMIT', '?')
+    svc_d = os.getenv('IVCAP_SERVICE_BUILD', '?')
+
+    sys_logger.info(f"IVCAP Service '{service.name}' {svc_v}/{svc_c} (sdk {sdk_v}/{sdk_c}) built on {svc_d}.")
+
 def register_service(service: Service, handler: Callable[[Dict], int]):
+    if INSIDE_ARGO:
+        # print banner immediately when inside the cluster
+        print_banner(service)
+
     init(None, service.append_arguments)
     cmd = get_config().SERVICE_COMMAND
 
     if cmd == Command.SERVICE_RUN:
-        sys_logger.info(f"IVCAP SDK Service '{os.getenv('GIT_TAG', '?')}/{os.getenv('GIT_COMMIT')}' built on {os.getenv('IVCAP_BUILD')}.")
+        if not INSIDE_ARGO:
+            print_banner(service)
         cfg = get_config()
-        if INSIDE_CONTAINER:
-            sys_logger.info(f"Starting order '{cfg.ORDER_ID}' for service '{service.name}' on node '{cfg.NODE_ID}'")
+        sys_logger.info(f"Starting order '{cfg.ORDER_ID}' for service '{service.name}' on node '{cfg.NODE_ID}'")
         try:
             code = run_service(service, cfg.SERVICE_ARGS, handler)
             sys.exit(code)
