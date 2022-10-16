@@ -7,23 +7,30 @@ from typing import Tuple, BinaryIO, Dict
 import io
 
 from ..logger import sys_logger as logger
-from .io_adapter import IOAdapter, WritableProxyFile, ReadProxy
+from .io_adapter import IOAdapter, WritableProxyFile, IOProxy
 
-class LocalReadProxy(ReadProxy):
+class FileProxy(IOProxy):
     def __init__(self, name: str):
         self._fname = name
+        self._fhdl = None
 
-    def open(self, asBinary=True, seekable=False, encoding=None) -> io.IOBase:
-        """Return an IO object from which the content this object represents can be read from"""
-        mode='r'
-        if asBinary: mode = 'rb'
-        return io.open(self._fname, mode, encoding=encoding)
+    def open(self, mode: str, **kwargs) -> io.IOBase:
+        """Return an IO object to read or write to depending on 'mode'"""
+        if self._fhdl != None:
+            raise IOError("file '{self._fname}' already opened")
+        self._fhdl = io.open(self._fname, mode=mode, **kwargs)
+        return self._fhdl
+
+    def close(self):
+        if self._fhdl != None:
+            self._fhdl.close()
+        self._fhdl = None
 
     def name(self) -> str:
         return self._fname
 
     def __repr__(self):
-        return f"LocalReadProxy(fname={self._fname})"
+        return f"FileProxy(fname={self._fname}, open={self._fhdl != None})"
 
 class FileAdapter(IOAdapter):
     """
@@ -83,7 +90,7 @@ class FileAdapter(IOAdapter):
 
         """
         file_name = f"{self.out_dir}/{name}"
-        logger.debug(f"Returning file handle for '{name} - '{file_name}'")
+        logger.debug(f"Returning file handle for '{name}' - '{file_name}'")
         file_obj = WritableProxyFile(file_name)
         return (file_obj, f"{file_name}")
 
@@ -103,21 +110,27 @@ class FileAdapter(IOAdapter):
             file_name: str
                 Full path to filename {name}
         """
-        file_name = f"{self.out_dir}/{name}"
+        file_name = self._to_path(name)
         file_exists = False
         if os.path.exists(file_name):
             file_exists = True
         return (file_exists,file_name)
 
     def readable(self, name: str) -> bool:
-        file_name = f"{self.in_dir}/{name}"
+        file_name = self._to_path(name)
         return os.path.exists(file_name)
 
-    def read(self, name: str, cache=True) -> ReadProxy:
-        file_name = f"{self.in_dir}/{name}"
+    def _to_path(self, name: str) -> str:
+        if name.startswith('/'):
+            return name
+        else:
+            return f"{self.in_dir}/{name}"
+
+    def read(self, name: str, seekable=False, use_cache_proxy=True) -> IOProxy:
+        file_name = self._to_path(name)
         if not os.path.exists(file_name):
             raise ValueError(f"Cannot find local file '{file_name}")
-        return LocalReadProxy(file_name)
+        return FileProxy(file_name)
 
     def __repr__(self):
         return f"FileAdapter(in_dir={self.in_dir}, out_dir={self.out_dir})"

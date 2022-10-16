@@ -3,11 +3,14 @@
 PostAdapter a wrapper around io.IOBase that sets a http storage backend
 """
 import sys
+import io
 from urllib.parse import urlparse
 from typing import Tuple, BinaryIO, Dict
 import requests
-from ..logger import logger
-from .io_adapter import IOAdapter, WritableProxyFile
+from ..logger import sys_logger as logger
+from .io_adapter import IOAdapter, WritableProxyFile, IOProxy
+from .file_adapter import FileProxy
+from .cache import Cache
 import base64
 
 
@@ -86,7 +89,7 @@ class PostableProxyFile(WritableProxyFile):
             except:
                 logger.error(f"while posting metadata {self.url} - {sys.exc_info()[0]}")
 
-class PostAdapter(IOAdapter):
+class HttpAdapter(IOAdapter):
     """
     An adapter for a remote http backend.
 
@@ -102,9 +105,10 @@ class PostAdapter(IOAdapter):
     get_fd(name='filename.txt')
         Return an open file handle and path to file
     """
-    def __init__(self, storage_url: str, order_id: str) -> None:
+    def __init__(self, storage_url: str, cache: Cache, order_id: str) -> None:
         super().__init__()
         self.storageURL = storage_url
+        self.cache = cache
         self.orderID = order_id
 
     def get_fd(self, name: str, dataPeek: any = None, meta: Dict[str, any] = {}) -> Tuple[BinaryIO, str]:
@@ -114,6 +118,14 @@ class PostAdapter(IOAdapter):
 
     def exists(self, name: str) -> Tuple[bool, str]:
         return (False, name)
+
+    def readable(self, name: str) -> bool:
+        return True # Note: FIX ME
+
+    def read(self, name: str, seekable=False, use_cache_proxy=True) -> IOProxy:
+        logger.debug(f"HttpAdapter: read '{name}'")
+        fname = self.cache.download_file(name, None, use_cache_proxy=use_cache_proxy)
+        return FileProxy(fname)
 
 
 def encode64(s: str) -> str:

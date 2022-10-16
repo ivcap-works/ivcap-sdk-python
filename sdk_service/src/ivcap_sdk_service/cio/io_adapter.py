@@ -5,12 +5,16 @@ import io
 import shutil
 from ..logger import logger
 
-class ReadProxy(ABC):
-    """Represents a file-like object to read from"""
+class IOProxy(ABC):
+    """Represents a file-like object to read and write to"""
 
     @abstractmethod
-    def open(self, asBinary=True, seekable=False, encoding=None) -> io.IOBase:
-        """Return an IO object from which the content this object represents can be read from"""
+    def open(self, mode: str, **kwargs) -> io.IOBase:
+        """Return an IO object to read or write to depending on 'mode'"""
+
+    @abstractmethod
+    def close(self) -> None:
+        pass
 
     @abstractmethod
     def name(self) -> str:
@@ -49,7 +53,7 @@ class IOAdapter(ABC):
         pass
     
     @abstractmethod
-    def read(self, name: str, cache=True) -> ReadProxy:
+    def read(self, name: str, seekable=False, use_cache_proxy=True) -> IOProxy:
         pass
 
 
