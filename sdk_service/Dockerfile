@@ -41,4 +41,7 @@ ENV IVCAP_SDK_COMMIT $GIT_COMMIT
 WORKDIR /app
 COPY examples/hello_world/hello_world.py service.py
 
+# Directory to store cached artifacts
+RUN mkdir /cache
+
 ENTRYPOINT ["python", "/app/service.py"]
