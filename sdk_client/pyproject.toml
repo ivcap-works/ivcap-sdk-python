@@ -39,3 +39,4 @@ profile = "black"
 
 [tool.setuptools]
 py-modules = []
+packages = ["ivcap_client"]
