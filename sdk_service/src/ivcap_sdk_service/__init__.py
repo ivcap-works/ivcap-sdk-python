@@ -6,7 +6,7 @@ except ImportError:
      
 __version__ = version("ivcap_sdk_service")
 
-from .ivcap import get_config, deliver
+from .ivcap import get_config, deliver, register_saver, cache_file, get_order_id, get_node_id
 from .run import run, register_service
 from .service import Service, Parameter, Option, Type
 from .service import Workflow, BasicWorkflow, PythonWorkflow
