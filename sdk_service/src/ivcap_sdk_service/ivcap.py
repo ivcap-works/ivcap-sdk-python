@@ -3,7 +3,10 @@
 #
 import json
 from argparse import ArgumentParser
-from typing import Callable, Dict, Any
+from typing import BinaryIO, Callable, Dict, Any, Optional, Union
+from numbers import Number
+
+from .cio.io_adapter import IOReadable
 
 from .logger import sys_logger as logger
 from .config import Config, Resource
@@ -21,31 +24,68 @@ _SAVER = {
     "<class 'xarray.core.dataarray.DataArray'>": xa_dataset,
 }
 
-def deliver(name, data_or_lambda, **meta):
+Url = str
+MetaDict = Dict[str, Union[str, Number, bool]]
+FilePath = str
+
+def deliver_data(name: str, 
+            data_or_lambda: Union[Any, Callable[[BinaryIO], None]],
+            data_type: Optional[str] = None,
+            meta: Optional[MetaDict] = {}
+    ) -> Url:
+    """Deliver the result of a service
+
+    Args:
+        name (str): _description_
+        data_or_lambda (Union[Any, Callable[[BinaryIO], None]]): The data to deliver. Either directly or a callback 
+            providing a file-like handle to provide the data then.
+        data_type (Optional[str], optional): Data type to save. If not provided `str(type(data)` is used. Defaults to None.
+        meta (Optional[MetaDict], optional): Optional metadata to be attached to 'data' . Defaults to {}.
+
+    Raises:
+        NotImplementedError: Raised when no saver function is defined for 'type'
+
+    Returns:
+        Url: Url under which data was delivered to
+    """
+
     global DELIVERED
 
     if callable(data_or_lambda):
         l = data_or_lambda
         fhdl, url = _CONFIG.IO_ADAPTER.get_fd(name, None, meta)
-        type_s = meta.get('type', 'unknown')
+        type_s = data_type if data_type else 'unknown'
         l(fhdl)
         fhdl.close()
     else: 
         data = data_or_lambda
-        sf = _SAVER.get(str(type(data)))
+        type_s = data_type if data_type else str(type(data))
+        sf = _SAVER.get(type_s)
         if sf:
             url = sf(data, name, meta)
         else:
             raise NotImplementedError(f"Unsupported data type {type(data)}")
-        type_s=str(type(data))
 
     m = dict(name=name, url=url, type=type_s, meta=meta)
     DELIVERED.append(m)
     notify(m, _CONFIG.SCHEMA_PREFIX + ':deliver')
     return url
 
-def register_saver(type: str, f: Callable[[Any, str, Any], str]):
+def register_saver(type: Any, f: Callable[[Any, str, MetaDict], Url]):
+    """Register a 'saver' function used in 'deliver' for a specific data type.
+
+    Args:
+        type (Any): Type identifier
+        f (Callable[[data:Any, name:str, meta:MetaDict], Url]): Function to save data and metadata and return URL used
+    """
     _SAVER[str(type)] = f
+
+def fetch_data(url: Url, cache: bool = True) -> IOReadable:
+    return _CONFIG.IO_ADAPTER.read(url, cache)
+    # if cache and _CONFIG.CACHE != None:
+    #     return _CONFIG.CACHE.get_file_path(url)
+    # else 
+    #     return _CONFIG.IO_ADAPTER.get_fd(url)
 
 def cache_file(url):
     if _CONFIG.CACHE != None:

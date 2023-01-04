@@ -1,15 +1,91 @@
 from abc import ABC, abstractmethod
-from typing import Tuple, Union, BinaryIO, Dict
+from typing import AnyStr, List, Tuple, Union, BinaryIO, Dict
 import tempfile
 import io
 import shutil
 from ..logger import logger
 
+class _IOBase(ABC):
+    @property
+    @abstractmethod
+    def mode(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        pass
+
+    @abstractmethod
+    def close(self) -> None:
+        pass
+
+    @property
+    @abstractmethod
+    def closed(self) -> bool:
+        pass
+
+    @abstractmethod
+    def readable(self) -> bool:
+        pass
+
+
+    @abstractmethod
+    def seek(self, offset: int, whence: int = 0) -> int:
+        pass
+
+    @abstractmethod
+    def seekable(self) -> bool:
+        pass
+
+    @abstractmethod
+    def tell(self) -> int:
+        pass
+
+    @abstractmethod
+    def truncate(self, size: int = None) -> int:
+        pass
+
+    @abstractmethod
+    def writable(self) -> bool:
+        pass
+
+class IOReadable(_IOBase):
+    @abstractmethod
+    def read(self, n: int = -1) -> AnyStr:
+        pass
+
+    @abstractmethod
+    def readline(self, limit: int = -1) -> AnyStr:
+        pass
+
+    @abstractmethod
+    def readlines(self, hint: int = -1) -> List[AnyStr]:
+        pass
+
+class IOWritable(_IOBase):
+    @abstractmethod
+    def write(self, s: AnyStr) -> int:
+        pass
+
+    @abstractmethod
+    def writelines(self, lines: List[AnyStr]) -> None:
+        pass
+
+    @abstractmethod
+    def flush(self) -> None:
+        pass
+
+
+class IO_ReadWritable(IOReadable, IOWritable):
+    pass
+
+
 class IOProxy(ABC):
     """Represents a file-like object to read and write to"""
 
     @abstractmethod
-    def open(self, mode: str, **kwargs) -> io.IOBase:
+    def open(self, mode: str, **kwargs) -> IO_ReadWritable:
         """Return an IO object to read or write to depending on 'mode'"""
 
     @abstractmethod
@@ -23,6 +99,10 @@ class IOProxy(ABC):
 
         
 class IOAdapter(ABC):
+
+    def create_cache(cls, cacheDir: str, cache_proxy_url: str):
+        #return Cache(cache_dir=cacheDir, url_mapper=urlMapper)
+        return None
 
     @abstractmethod
     def get_fd(self, name: str, metadata: Dict[str, any] = {}) -> Tuple[Union[str, BinaryIO], str]:
