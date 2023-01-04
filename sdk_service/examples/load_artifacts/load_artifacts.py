@@ -1,6 +1,6 @@
 from typing import Dict
 #TypedDict
-from ivcap_service import Service, Parameter, Type, register_service
+from ivcap_sdk_service import Service, Parameter, Type, register_service
 import logging
 
 SERVICE = Service(
