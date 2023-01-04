@@ -4,7 +4,6 @@ from argparse import ArgumentParser, ArgumentTypeError
 from pathlib import Path
 from typing import MutableSequence, Callable, Dict
 import sys
-import prettyprinter as pp
 
 from enum import Enum, auto
 
@@ -67,11 +66,6 @@ class Config:
 
     self._set(args)
     #self.SERVICE_ARGS = args # whtever is left
-
-    if args.pop('print_config', False):
-      pp.install_extras(['dataclasses'])
-      pp.pprint(self)
-      sys.exit()
 
   def _def_prog_name(self):
     return "ivcap-service"
