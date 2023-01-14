@@ -1,4 +1,4 @@
 from .io_adapter import IOAdapter
-from .file_adapter import FileAdapter
+from .local_io_adapter import LocalIOAdapter
 from .http_adapter import HttpAdapter
 from .cache import Cache
