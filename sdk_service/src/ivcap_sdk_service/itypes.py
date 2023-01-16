@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, Any, Optional, Union, Callable
+from typing import Dict, Any, NamedTuple, Optional, Union, Callable
 from numbers import Number
 #from .cio import IOAdapter
 
@@ -13,6 +13,7 @@ class SupportedMimeTypes(Enum):
 Url = str
 MetaDict = Dict[str, Union[str, Number, bool]]
 FilePath = str
+ServiceArgs = NamedTuple
 
 class MissingParameterValue(Exception): 
     name: str
