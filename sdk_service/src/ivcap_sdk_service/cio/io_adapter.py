@@ -50,11 +50,6 @@ class _IOBase(ABC):
     def close(self) -> None:
         pass
 
-    @abstractmethod
-    def name(self) -> str:
-        """Returns name of underlying object"""
-        pass
-
 class IOReadable(_IOBase):
     @abstractmethod
     def read(self, n: int = -1) -> AnyStr:
@@ -66,6 +61,11 @@ class IOReadable(_IOBase):
 
     @abstractmethod
     def readlines(self, hint: int = -1) -> List[AnyStr]:
+        pass
+
+    @property
+    @abstractmethod
+    def path(self) -> str:
         pass
 
 class IOWritable(_IOBase):
