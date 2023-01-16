@@ -12,13 +12,14 @@ from .service import Service
 from .config import Command, INSIDE_ARGO
 
 def run(args: Dict, handler: Callable[[Dict], int]) -> int:
-    sys_logger.info(f"Calling '{handler}' with '{args}'")
+    sys_logger.info(f"Starting service with '{args}'")
     code = handler(args, logger)
     return code
 
 def print_banner(service: Service):
-    sdk_v = os.getenv('IVCAP_SDK_VERSION', '?')
-    sdk_c = os.getenv('IVCAP_SDK_COMMIT', '?')
+    from .__init__ import __version__
+    sdk_v = os.getenv('IVCAP_SDK_VERSION', __version__)
+    sdk_c = os.getenv('IVCAP_SDK_COMMIT', '#?')
     svc_v = os.getenv('IVCAP_SERVICE_VERSION', '?')
     svc_c = os.getenv('IVCAP_SERVICE_COMMIT', '?')
     svc_d = os.getenv('IVCAP_SERVICE_BUILD', '?')

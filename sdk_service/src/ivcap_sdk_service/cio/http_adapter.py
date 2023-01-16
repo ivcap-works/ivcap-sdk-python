@@ -8,8 +8,9 @@ from urllib.parse import urlparse
 from typing import Tuple, BinaryIO, Dict
 import requests
 from ..logger import sys_logger as logger
-from .io_adapter import IOAdapter, WritableProxyFile, IOProxy
-from .file_adapter import FileProxy
+from .io_adapter import IOAdapter, IOReadable
+from .writable_proxy_file import WritableProxyFile
+#from .file_adapter import FileProxy
 from .cache import Cache
 import base64
 
@@ -28,66 +29,66 @@ type2meta = {
     "<class 'xarray.core.dataarray.DataArray'>": meta_xarray,
 }
 
-class PostableProxyFile(WritableProxyFile):
-    """
-    A class which implements the io.IOBase interface for writing data. It additionally
-    persists the data locally for files which require a seekable file object
+# class PostableProxyFile(WritableProxyFile):
+#     """
+#     A class which implements the io.IOBase interface for writing data. It additionally
+#     persists the data locally for files which require a seekable file object
 
-    Attributes
-    ----------
-    name : str
-        Name of the data object
-    url : str
-        URL to post content to.
+#     Attributes
+#     ----------
+#     name : str
+#         Name of the data object
+#     url : str
+#         URL to post content to.
 
-    """
+#     """
 
-    def __init__(self, name: str, url: str, dataPeek: any, meta: Dict[str, any] = {}):
-        super().__init__(name)
-        self.url = url
-        self.dataPeek = dataPeek
-        self.meta = meta
+#     def __init__(self, name: str, url: str, dataPeek: any, meta: Dict[str, any] = {}):
+#         super().__init__(name)
+#         self.url = url
+#         self.dataPeek = dataPeek
+#         self.meta = meta
 
-    def _upload(self):
-        self.file_obj.flush()
-        self.file_obj.seek(0)
+#     def _upload(self):
+#         self.file_obj.flush()
+#         self.file_obj.seek(0)
 
-        dataType = str(type(self.dataPeek))
-        ct = type2mime.get(dataType, "unknown")
-        headers = {
-            "X-Name": self.name,
-            "Content-Type": ct,
-        }
-        if len(self.meta):
-            headers['Upload-Metadata'] = ','. join(map(lambda e: f"{e[0]} {encode64(str(e[1]))}", self.meta.items()))
-        try:
-            r = requests.post(self.url, data=self.file_obj, headers=headers)
-            logger.debug(f"WritableProxyFile: wrote file {self.url} response: {r}")
-        except:
-            logger.fatal(f"while posting result data {self.url} - {sys.exc_info()[0]}")
-            sys.exit(-1)
-        if r.status_code >= 300:
-            logger.fatal(f"error response {r.status_code} while posting result data {self.url}")
-            sys.exit(-1)
+#         dataType = str(type(self.dataPeek))
+#         ct = type2mime.get(dataType, "unknown")
+#         headers = {
+#             "X-Name": self.name,
+#             "Content-Type": ct,
+#         }
+#         if len(self.meta):
+#             headers['Upload-Metadata'] = ','. join(map(lambda e: f"{e[0]} {encode64(str(e[1]))}", self.meta.items()))
+#         try:
+#             r = requests.post(self.url, data=self.file_obj, headers=headers)
+#             logger.debug(f"WritableProxyFile: wrote file {self.url} response: {r}")
+#         except:
+#             logger.fatal(f"while posting result data {self.url} - {sys.exc_info()[0]}")
+#             sys.exit(-1)
+#         if r.status_code >= 300:
+#             logger.fatal(f"error response {r.status_code} while posting result data {self.url}")
+#             sys.exit(-1)
 
-        mf = type2meta.get(dataType)
-        if mf:
-            (schema, md) = mf(self.dataPeek)
-            headers = {
-                "X-Meta-Data-For-Url": self.url,
-                "X-Meta-Data-For-Id": r.headers.get("X-Artifact-Id", "???"),
-                "X-Meta-Data-Schema": schema,
-            }
-            u = urlparse(self.url)
-            p = f"{u.path.replace('.', '-')}-meta.json"
-            murl = u._replace(path=p).geturl()
-            try: 
-                r = requests.post(murl, json=md, headers=headers)
-                logger.debug(f"WritableProxyFile: write metadata file {murl} response: {r}")
-                if r.status_code >= 300:
-                    logger.fatal(f"error response {r.status_code} while posting metadata data {murl}")
-            except:
-                logger.error(f"while posting metadata {self.url} - {sys.exc_info()[0]}")
+#         mf = type2meta.get(dataType)
+#         if mf:
+#             (schema, md) = mf(self.dataPeek)
+#             headers = {
+#                 "X-Meta-Data-For-Url": self.url,
+#                 "X-Meta-Data-For-Id": r.headers.get("X-Artifact-Id", "???"),
+#                 "X-Meta-Data-Schema": schema,
+#             }
+#             u = urlparse(self.url)
+#             p = f"{u.path.replace('.', '-')}-meta.json"
+#             murl = u._replace(path=p).geturl()
+#             try: 
+#                 r = requests.post(murl, json=md, headers=headers)
+#                 logger.debug(f"WritableProxyFile: write metadata file {murl} response: {r}")
+#                 if r.status_code >= 300:
+#                     logger.fatal(f"error response {r.status_code} while posting metadata data {murl}")
+#             except:
+#                 logger.error(f"while posting metadata {self.url} - {sys.exc_info()[0]}")
 
 class HttpAdapter(IOAdapter):
     """
@@ -111,10 +112,10 @@ class HttpAdapter(IOAdapter):
         self.cache = cache
         self.orderID = order_id
 
-    def get_fd(self, name: str, dataPeek: any = None, meta: Dict[str, any] = {}) -> Tuple[BinaryIO, str]:
-        url = f"{self.storageURL}/{name}"
-        f = PostableProxyFile(name, url, dataPeek, meta)
-        return (f, url)
+    # def get_fd(self, name: str, dataPeek: any = None, meta: Dict[str, any] = {}) -> Tuple[BinaryIO, str]:
+    #     url = f"{self.storageURL}/{name}"
+    #     f = PostableProxyFile(name, url, dataPeek, meta)
+    #     return (f, url)
 
     def exists(self, name: str) -> Tuple[bool, str]:
         return (False, name)
@@ -122,7 +123,7 @@ class HttpAdapter(IOAdapter):
     def readable(self, name: str) -> bool:
         return True # Note: FIX ME
 
-    def read(self, name: str, seekable=False, use_cache_proxy=True) -> IOProxy:
+    def read(self, name: str, seekable=False, use_cache_proxy=True) -> IOReadable:
         logger.debug(f"HttpAdapter: read '{name}'")
         fname = self.cache.download_file(name, None, use_cache_proxy=use_cache_proxy)
         return FileProxy(fname)

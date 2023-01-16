@@ -7,7 +7,7 @@ import sys
 
 from enum import Enum, auto
 
-from .cio import IOAdapter, FileAdapter, HttpAdapter, Cache
+from .cio import IOAdapter, LocalIOAdapter, HttpAdapter, Cache
 
 INSIDE_CONTAINER = not not os.getenv('IVCAP_INSIDE_CONTAINER', None) # make it a bool
 INSIDE_ARGO = not not os.getenv('ARGO_NODE_ID', None) # make it a bool
@@ -42,7 +42,6 @@ class Config:
 
   SCHEMA_PREFIX: str
 
-#   SERVICE_FILE: str
   SERVICE_ARGS: MutableSequence[str]
   SERVICE_COMMAND: Command = Command.SERVICE_RUN
 
@@ -104,7 +103,7 @@ class Config:
         order_id=self.ORDER_ID
       )
     else:
-      self.IO_ADAPTER = FileAdapter(in_dir=in_dir, out_dir=out_dir)
+      self.IO_ADAPTER = LocalIOAdapter(in_dir=in_dir, out_dir=out_dir, cache=self.CACHE)
 
     self.SCHEMA_PREFIX = args.pop('ivcap:schema_prefix', None)
 
@@ -125,9 +124,6 @@ class Config:
         else:
             cache_dir_def = os.path.join(os.getcwd(), 'cache')
     cache_proxy_def=os.getenv('IVCAP_CACHE_URL')
-
-    # kafka_server_def = os.getenv('IVCAP_KAFKA_SERVER', None)
-    # kafka_channel_def = os.getenv('IVCAP_KAFKA_CHANNEL', 'cse')
 
     schema_prefix_def = os.getenv('IVCAP_SCHEMA_PREFIX', DEF_SCHEMA_PREFIX)
 
@@ -177,14 +173,6 @@ class Config:
     ap.add_argument("--ivcap:cache-proxy", metavar="URL", 
         help=f"Cache proxy url [IVCAP_CACHE_PROXY={cache_proxy_def}]",
         default=cache_proxy_def)
-
-
-    # ap.add_argument("--ivcap:kafka-server", metavar="URL", 
-    #     help=f"URL of kafka server [IVCAP_KAFKA_SERVER={kafka_server_def}]",
-    #     default=kafka_server_def)
-    # ap.add_argument("--ivcap:kafka-channel", metavar="INT", 
-    #     help=f"Kafka channel to use [IVCAP_KAFKA_CHANNEL={kafka_channel_def}]",
-    #     default=kafka_channel_def)
 
     ap.add_argument("--ivcap:storage-url", metavar="URL", 
         help=f"URL to simple storage provider [IVCAP_STORAGE_URL={storage_url_def}]",

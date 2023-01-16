@@ -6,6 +6,7 @@ from typing import List, Any
 import yaml
 from enum import Enum
 import validators
+import os
 
 from typing import Dict
 
@@ -68,7 +69,7 @@ class Workflow(JSONWizard):
 @dataclass
 class BasicWorkflow(Workflow):
     type: str = "basic"
-    image: str = "@CONTAINER@"
+    image: str = os.getenv('IVCAP_CONTAINER', '@CONTAINER@')
     command: List[str] = field(default_factory=list)
     min_memory: str = None
 
@@ -104,9 +105,9 @@ class Service(JSONWizard):
     #     skip_defaults = True
 
     name: str
-    id: str = "@SERVICE_ID@"
-    providerID: str = json_field('provider-id', all=True, default="@PROVIDER_ID@")
-    accountID: str = json_field('account-id', all=True, default="@ACCOUNT_ID@")
+    id: str = os.getenv('IVCAP_SERVICE_ID', '@SERVICE_ID@')
+    providerID: str = json_field('provider-id', all=True, default=os.getenv('IVCAP_PROVIDER_ID', '@PROVIDER_ID@'))
+    accountID: str = json_field('account-id', all=True, default=os.getenv('IVCAP_ACCOUNT_ID', '@ACCOUNT_ID@'))
     parameters: List[Parameter] = field(default_factory=list)
     description: str = None
     workflow: Workflow = field(default_factory=PythonWorkflow.def_workflow)
@@ -186,15 +187,17 @@ def verify_artifact(urn):
             raise ArgumentTypeError(f"Illegal artifact reference '{urn}' - expected url")
         return urn
     else:
+        if validators.url(urn):
+            return urn
         # outside container we allow resource to be local file
-        if not get_config().IO_ADAPTER.readable(urn):
+        if not get_config().IO_ADAPTER.artifact_readable(urn):
             raise ArgumentTypeError(f"Cannot find local file '{urn}' - {get_config().IO_ADAPTER}")
         return urn
 
 class ArtifactAction(Action):
     def __call__(self, _1, namespace, value, _2=None):
         try:
-            v = get_config().IO_ADAPTER.read(value, use_cache_proxy=False)
+            v = get_config().IO_ADAPTER.read_artifact(value)
             setattr(namespace, self.dest, v)
         except Exception as err:
             raise ArgumentTypeError(err)
