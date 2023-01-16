@@ -6,6 +6,8 @@ from argparse import ArgumentParser
 from typing import Callable, Dict, Any, Optional, Union, cast
 from urllib.parse import urlparse
 
+from .utils import json_dump
+
 from .cio.io_adapter import IOAdapter, IOReadable, IOWritable, OnCloseF
 
 from .logger import sys_logger as logger
@@ -139,16 +141,16 @@ def notify(msg, schema=None):
         if schema:
             h.append(('Content-Schema', schema.encode('utf-8')))
 
-        js = json.dumps(msg)
+        js = json_dump(msg)
         # this is a bit of a hack, but ...
         if (js.startswith('{')):
             extra = {'@order_id': get_order_id(), '@node_id': get_node_id()}
             if schema:
                 extra['@schema'] = schema
-            jx = json.dumps(extra)
+            jx = json_dump(extra)
             js = f"{js[0]}{jx[1:-1]},{js[1:]}"
     else:
-        logger.debug(f"Notify {schema}: {msg}")
+        logger.debug(f"Notify {json_dump(msg)}")
 
 def get_config() -> Config:
     return _CONFIG
