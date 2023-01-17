@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 
 from .readable_proxy_file import ReadableProxyFile
 from .utils import download
-
+from ..utils import json_dump
 from ..itypes import MetaDict, Url, SupportedMimeTypes
 
 from ..logger import sys_logger as logger
@@ -96,7 +96,11 @@ class LocalIOAdapter(IOAdapter):
         Returns:
             IOReadable: The content of the artifact as a file-like object
         """
-        pass
+        u = urlparse(artifact_id)
+        if u.scheme == '' or u.scheme == 'file':
+            return self.read_local(u.path, binary_content=binary_content)
+        else:
+            return self.read_external(artifact_id, binary_content=binary_content, no_caching=no_caching, seekable=seekable)
 
     def read_external(self, 
         url: Url, 
@@ -129,7 +133,7 @@ class LocalIOAdapter(IOAdapter):
             name = p.replace('/', '__')
             use_temp_file = True
         path = self._to_path(self.in_dir, name)
-        ior = ReadableProxyFile(path, is_binary=binary_content, writable_also=True, use_temp_file=use_temp_file)
+        ior = ReadableProxyFile(url, path, is_binary=binary_content, writable_also=True, use_temp_file=use_temp_file)
         download(url, ior._file_obj, close_fhdl=False)
         logger.debug("LocalIOAdapter#read_external: Read external content '%s' into '%s'", url, ior.name)
         return ior
@@ -143,7 +147,11 @@ class LocalIOAdapter(IOAdapter):
         Returns:
             bool: True if artifact can be read
         """
-        pass
+        u = urlparse(artifact_id)
+        if u.scheme == '' or u.scheme == 'file':
+            return self.readable_local(u.path)
+        else:
+            return True # assume that all external urls are at least conceptually readable
     
     def write_artifact(
         self,
@@ -177,9 +185,7 @@ class LocalIOAdapter(IOAdapter):
         def _on_close(fd: IO[bytes]):
             logger.info("Written artifact '%s' to '%s'", name, fname)
             if metadata != {}:
-                metafn = f"{fname}-meta.json"
-                with open(metafn, "w") as fp:
-                    json.dump(metadata , fp, indent=2)
+                json_dump(metadata, f"{fname}-meta.json")
             if on_close:
                 on_close(f"file://{fname}")
 
@@ -238,7 +244,7 @@ class LocalIOAdapter(IOAdapter):
             IOReadable: The content of the local file as a file-like object
         """
         path = self._to_path(self.in_dir, name, collection_name)
-        return ReadableProxyFile(path, is_binary=binary_content, use_temp_file=False)
+        return ReadableProxyFile(name, path, is_binary=binary_content, use_temp_file=False)
 
     # def readable(self, name: str, collection_name: str = None) -> bool:
     #     file_name = self._to_path(self.in_dir, name, collection_name)
@@ -262,6 +268,6 @@ class LocalIOAdapter(IOAdapter):
     #     return FileProxy(file_name)
 
     def __repr__(self):
-        return f"FileAdapter(in_dir={self.in_dir}, out_dir={self.out_dir})"
+        return f"<LocalIOAdapter in_dir={self.in_dir} out_dir={self.out_dir}>"
 
 

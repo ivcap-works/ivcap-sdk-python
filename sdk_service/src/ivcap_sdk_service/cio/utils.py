@@ -1,7 +1,8 @@
 from hashlib import sha256
 import io
+import json
 import re
-from typing import BinaryIO
+from typing import Any, BinaryIO
 import uuid
 import requests
 from pathlib import Path
@@ -28,4 +29,4 @@ def download(url: Url, fhdl: BinaryIO, chunk_size=None, close_fhdl=True):
             fhdl.write(chunk)
     fhdl.flush()
     if close_fhdl:         
-        fhdl.close()    
+        fhdl.close()

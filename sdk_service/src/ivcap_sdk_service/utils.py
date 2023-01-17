@@ -1,5 +1,7 @@
+from typing import Any
 import yaml
 import json
+from .logger import sys_logger as logger
 
 try:
     from yaml import CSafeLoader as SafeLoader, CDumper as Dumper
@@ -47,3 +49,26 @@ def read_yaml_no_dates(file_name):
     with open(file_name, 'r') as f:
         params = yaml.load(f,Loader=NoDatesSafeLoader)
         return params
+
+class _CustomEncoder(json.JSONEncoder):
+    def default(self, o):
+        if "tojson" in dir(o):
+            return o.tojson()
+        if "to_json" in dir(o):
+            return o.to_json()
+        return json.JSONEncoder.default(self, o)
+
+def json_dump(obj: Any, fileName: str = None, failQuietly=True) -> str:
+    try:
+        js = json.dumps(obj, indent=2, cls=_CustomEncoder)
+        if fileName:
+            with open(fileName, "w") as fp:
+                fp.write(js)
+        return js
+    except BaseException as err:
+        logger.warn(f"json_dump: serialising '{obj}' failed with '{err}'")
+        if failQuietly:
+            return "{}"
+        else:
+            raise err
+    

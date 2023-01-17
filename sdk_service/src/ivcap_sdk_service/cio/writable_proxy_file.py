@@ -96,7 +96,7 @@ class WritableProxyFile(IOWritable):
             if self._on_close:
                 self._on_close(self._file_obj)
         except BaseException as err:
-            logger.warn("WritableProxyFile#close: on_close '%s' failed with '%s'", self._on_close, err)
+            logger.warning("WritableProxyFile#close: on_close '%s' failed with '%s'", self._on_close, err)
         finally:
             self._file_obj.close()
 

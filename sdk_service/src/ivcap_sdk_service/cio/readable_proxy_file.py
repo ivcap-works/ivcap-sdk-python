@@ -1,4 +1,5 @@
 from builtins import BaseException
+import pathlib
 from typing import IO, AnyStr, Callable, List, Tuple, Union, BinaryIO, Dict
 import tempfile
 import io
@@ -10,7 +11,8 @@ from .io_adapter import IOReadable
 class ReadableProxyFile(IOReadable):
 
     def __init__(self, 
-        name: str, 
+        name: str,
+        path: str,
         on_close: Callable[[IO[bytes]], None]=None, 
         is_binary=True, 
         use_temp_file=True, 
@@ -24,10 +26,11 @@ class ReadableProxyFile(IOReadable):
             self._mode = "rb" if is_binary else "r"
         if use_temp_file:
             self._file_obj = tempfile.NamedTemporaryFile(self._mode, encoding=encoding) # delete after uploaded
-            self._name = self._file_obj.name
+            self._path = self._file_obj.name
         else:
-            self._name = name
+            self._path = path
             self._file_obj = io.open(name, mode=self._mode, encoding=encoding)
+        self._name = name
         self._on_close = on_close
         self._closed = False
 
@@ -42,6 +45,10 @@ class ReadableProxyFile(IOReadable):
     @property
     def name(self) -> str:
         return self._name
+
+    @property
+    def path(self) -> str:
+        return self._path
 
     def writable(self) -> bool:
         return False
@@ -86,3 +93,6 @@ class ReadableProxyFile(IOReadable):
 
     def __repr__(self):
         return f"<ReadableProxyFile name={self._name} closed={self._closed} mode={self._mode} fp={self._file_obj}>"
+
+    def to_json(self):
+        return self._name

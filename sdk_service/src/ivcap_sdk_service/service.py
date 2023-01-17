@@ -197,7 +197,7 @@ def verify_artifact(urn):
 class ArtifactAction(Action):
     def __call__(self, _1, namespace, value, _2=None):
         try:
-            v = get_config().IO_ADAPTER.read(value, use_cache_proxy=False)
+            v = get_config().IO_ADAPTER.read_artifact(value)
             setattr(namespace, self.dest, v)
         except Exception as err:
             raise ArgumentTypeError(err)
