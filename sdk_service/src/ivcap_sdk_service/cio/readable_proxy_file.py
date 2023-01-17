@@ -29,7 +29,7 @@ class ReadableProxyFile(IOReadable):
             self._path = self._file_obj.name
         else:
             self._path = path
-            self._file_obj = io.open(name, mode=self._mode, encoding=encoding)
+            self._file_obj = io.open(path, mode=self._mode, encoding=encoding)
         self._name = name
         self._on_close = on_close
         self._closed = False
