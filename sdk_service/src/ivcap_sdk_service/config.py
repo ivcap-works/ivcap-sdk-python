@@ -7,7 +7,7 @@ import sys
 
 from enum import Enum, auto
 
-from .cio import IOAdapter, LocalIOAdapter, HttpAdapter, Cache
+from .cio import IOAdapter, LocalIOAdapter, IvcapIOAdapter, Cache
 
 INSIDE_CONTAINER = not not os.getenv('IVCAP_INSIDE_CONTAINER', None) # make it a bool
 INSIDE_ARGO = not not os.getenv('ARGO_NODE_ID', None) # make it a bool
@@ -97,11 +97,11 @@ class Config:
     in_dir = args.pop('ivcap:in_dir', None)
     out_dir = args.pop('ivcap:out_dir', None)
     if storage_url:
-      self.IO_ADAPTER = HttpAdapter(
+      self.IO_ADAPTER = IvcapIOAdapter(
         storage_url = storage_url,
+        order_id=self.ORDER_ID,
         cache = self.CACHE,
-        order_id=self.ORDER_ID
-      )
+       )
     else:
       self.IO_ADAPTER = LocalIOAdapter(in_dir=in_dir, out_dir=out_dir, cache=self.CACHE)
 

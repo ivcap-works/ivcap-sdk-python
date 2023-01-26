@@ -22,9 +22,17 @@ class WritableProxyFile(IOWritable):
         encoding (_type_, optional): _description_. Defaults to None.
     """
 
-    def __init__(self, name: str, on_close: Callable[[IO[bytes]], None]=None, is_binary=True, use_temp_file=True, encoding=None):
-        
-        self._mode = "wb" if is_binary else "w"
+    def __init__(self, 
+        name: str, 
+        on_close: Callable[[IO[bytes], str], None]=None, 
+        is_binary=True, use_temp_file=True, 
+        encoding=None,
+        readable_also=False,
+    ):
+        if readable_also:
+            self._mode = "w+b" if is_binary else "w+"
+        else:
+            self._mode = "wb" if is_binary else "w"
         if use_temp_file:
             self._file_obj = tempfile.NamedTemporaryFile(self._mode, encoding=encoding) # delete after uploaded
             self._name = self._file_obj.name
@@ -94,7 +102,7 @@ class WritableProxyFile(IOWritable):
         #self.file_obj.seek(0)
         try:
             if self._on_close:
-                self._on_close(self._file_obj)
+                self._on_close(self._file_obj, self._name)
         except BaseException as err:
             logger.warning("WritableProxyFile#close: on_close '%s' failed with '%s'", self._on_close, err)
         finally:
