@@ -3,7 +3,7 @@
 #
 import json
 from argparse import ArgumentParser
-from typing import Callable, Dict, Any, Optional, Union, cast
+from typing import Callable, Dict, Any, Optional, Sequence, Union, cast
 from urllib.parse import urlparse
 
 from .utils import json_dump
@@ -14,6 +14,7 @@ from .logger import sys_logger as logger
 from .config import Config, Resource
 from .itypes import MetaDict, SupportedMimeTypes, Url, MissingParameterValue, UnsupportedMimeType
 
+SCHEMA_KEY = '$schema'
 
 DELIVERED = []
 _CONFIG: Config = None # only use internally and only after calling init()
@@ -42,7 +43,7 @@ def deliver_data(
     data_or_lambda: Union[Any, Callable[[IOWritable], None]],
     mime_type: Union[str, SupportedMimeTypes], 
     collection_name: Optional[str] = None,
-    metadata: Optional[MetaDict] = {}, 
+    metadata: Optional[Union[MetaDict, Sequence[MetaDict]]] = None, 
     seekable=False,
     on_close: Optional[OnCloseF] = None
 ):
@@ -54,7 +55,7 @@ def deliver_data(
              providing a file-like handle to provide the data then.
         mime_type (Union[str, SupportedMimeTypes]): The mime type of the data. Anything not starting with 'text' is assumed to be a binary content
         collection_name (Optional[str], optional): Optional collection name. Defaults to None.
-        metadata (Optional[MetaDict], optional): Key/value pairs to add as metadata. Defaults to {}.
+        metadata (Optional[Union[MetaDict, Sequence[MetaDict]]], optional): Key/value pairs (or list of k/v pairs) to add as metadata. Defaults to None.
         seekable (bool, optional): If true, writable should be seekable (needed for NetCDF). Defaults to False.
         on_close (Optional[Callable[[Url]]], optional): Called with assigned artifact ID. Defaults to None.
 
@@ -107,6 +108,20 @@ def register_saver(mime_type: str, obj_type: Any, saverF: SaverF):
     """
     _CLASS2MIME_TYPE[str(obj_type)] = mime_type
     _MIME_TYPE2SAVER[mime_type] = saverF
+
+def create_metadata(schema: str, **args) -> Dict:
+    """Return a dict which has a 'proper' schema declaration added.
+
+    Args:
+        schema (str): Schema URN
+
+    Returns:
+        Dict: A copy of 'args' plus a 'SCHEMA_KEY' entry
+    """
+    return {
+        '$schema': schema,
+        **args,
+    }
 
 def fetch_data(url: Url, binary_content=True, no_caching=False, seekable=False) -> IOReadable:
     up = urlparse(url)
