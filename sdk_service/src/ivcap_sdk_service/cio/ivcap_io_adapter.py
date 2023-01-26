@@ -1,14 +1,17 @@
 """
-FileAdapter a thin wrapper around io.IOBase that sets a storage path with
-standard filesystem backend
+Implementation of the IOAdapter class for use inside the IVCAP platform
 """
+import base64
 import os
-from typing import IO, Optional, Tuple, BinaryIO, Dict
+import sys
+from typing import IO, Optional, Sequence, Tuple, BinaryIO, Dict, Union
 import io
 import json
 from os import access, R_OK
 from os.path import isfile
+import requests
 from urllib.parse import urlparse
+import collections.abc
 
 from .readable_proxy_file import ReadableProxyFile
 from .utils import download
@@ -20,30 +23,7 @@ from .io_adapter import IOAdapter, IOReadable, IOWritable, OnCloseF
 from .writable_proxy_file import WritableProxyFile
 from .cache import Cache
 
-# class FileProxy(IOProxy):
-#     def __init__(self, name: str):
-#         self._fname = name
-#         self._fhdl = None
-
-#     def open(self, mode: str, **kwargs) -> io.IOBase:
-#         """Return an IO object to read or write to depending on 'mode'"""
-#         if self._fhdl != None:
-#             raise IOError("file '{self._fname}' already opened")
-#         self._fhdl = io.open(self._fname, mode=mode, **kwargs)
-#         return self._fhdl
-
-#     def close(self):
-#         if self._fhdl != None:
-#             self._fhdl.close()
-#         self._fhdl = None
-
-#     def name(self) -> str:
-#         return self._fname
-
-#     def __repr__(self):
-#         return f"FileProxy(fname={self._fname}, open={self._fhdl != None})"
-
-class LocalIOAdapter(IOAdapter):
+class IvcapIOAdapter(IOAdapter):
     """
     An adapter for a standard file system backend.
 
@@ -61,27 +41,12 @@ class LocalIOAdapter(IOAdapter):
     exists(name='filename.txt')
         Check if filename exists
     """
-    def __init__(self, in_dir: str, out_dir: str, cache: Cache=None) -> None:
-        """
-        Initialise FileAdapter data paths
+    def __init__(self, storage_url: Url, order_id:str, cache: Cache=None) -> None:
 
-        Parameters
-        ----------
-        order_id: str
-            Id of order from API
-        in_dir: str
-            Path of input data
-        out_dir: str
-            Path of output data
-
-        Returns
-        -------
-        None
-
-        """
         super().__init__()
-        self.in_dir = os.path.abspath(in_dir)
-        self.out_dir = os.path.abspath(out_dir)
+        # self.in_dir = os.path.abspath(in_dir)
+        # self.out_dir = os.path.abspath(out_dir)
+        self.storage_url = storage_url
         self.cache = cache
 
     def read_artifact(self, artifact_id: str, binary_content=True, no_caching=False, seekable=False) -> IOReadable:
@@ -97,10 +62,11 @@ class LocalIOAdapter(IOAdapter):
             IOReadable: The content of the artifact as a file-like object
         """
         u = urlparse(artifact_id)
-        if u.scheme == '' or u.scheme == 'file':
-            return self.read_local(u.path, binary_content=binary_content)
-        else:
-            return self.read_external(artifact_id, binary_content=binary_content, no_caching=no_caching, seekable=seekable)
+        # if u.scheme == '' or u.scheme == 'file':
+        #     return self.read_local(u.path, binary_content=binary_content)
+        # else:
+        #     
+        return self.read_external(artifact_id, binary_content=binary_content, no_caching=no_caching, seekable=seekable)
 
     def read_external(self, 
         url: Url, 
@@ -158,7 +124,7 @@ class LocalIOAdapter(IOAdapter):
         mime_type: str, 
         name: Optional[str] = None,
         collection_name: Optional[str] = None,
-        metadata: Optional[MetaDict] = {}, 
+        metadata: Optional[Union[MetaDict, Sequence[MetaDict]]] = None, 
         seekable=False,
         on_close: Optional[OnCloseF] = None
     ) -> IOWritable:
@@ -177,41 +143,94 @@ class LocalIOAdapter(IOAdapter):
         Returns:
             IOWritable: A file-like object to write deliver artifact content - needs to be closed
         """
-        fname = self._to_path(self.out_dir, name, collection_name)
         if isinstance(mime_type, SupportedMimeTypes):
             mime_type = mime_type.value
         is_binary = not mime_type.startswith('text')
 
-        def _on_close(fd: IO[bytes], _):
-            logger.info("Written artifact '%s' to '%s'", name, fname)
-            if metadata != {}:
-                json_dump(metadata, f"{fname}-meta.json")
+        def _on_close(fd: IO[bytes], fname):
+            url = self._upload_artifact(fd, mime_type, name, collection_name, metadata)
             if on_close:
-                on_close(f"file://{fname}")
+                on_close(url)
 
-        return WritableProxyFile(fname, _on_close, is_binary, use_temp_file=False)
+        return WritableProxyFile("", _on_close, is_binary, use_temp_file=True, readable_also=True)
 
-    # def get_fd(self, name: str, dataPeek: any = None, metadata: Dict[str, any] = {}) -> Tuple[BinaryIO, str]:
-    #     """
-    #     Create and return a file handle and path
+    def _upload_artifact(
+        self, 
+        fd: IO[bytes], 
+        mime_type: str, 
+        name: Optional[str],
+        collection_name: Optional[str],
+        metadata: Optional[Union[MetaDict, Sequence[MetaDict]]],
+    ) -> Url:
+        logger.info("Upload artifact '%s'", name)
+        fd.flush()
+        fd.seek(0)
 
-    #     Parameters
-    #     ----------
-    #     name: str
-    #         Filename used to save data, file path is set by adapter
-    #     metadata: None
-    #         Unused in this Adapter
+        if metadata:
+            if not isinstance(metadata, collections.Sequence):
+                metadata = [metadata]
+        else:
+            metadata = []
+        metadataUploaded = False
 
-    #     Returns
-    #     -------
-    #         file_obj: capy.io.io_adapter.WritableProxyFile
-    #             A thin wrapper of io.IOBase and used in same manner
+        # dataType = str(type(self.dataPeek))
+        # ct = type2mime.get(dataType, "unknown")
+        headers = {
+            "Content-Type": mime_type,
+        }
+        if name:
+            headers["X-Name"] = name
 
-    #     """
-    #     file_name = f"{self.out_dir}/{name}"
-    #     logger.debug(f"Returning file handle for '{name}' - '{file_name}'")
-    #     file_obj = WritableProxyFile(file_name)
-    #     return (file_obj, f"{file_name}")
+        if len(metadata) == 1 and len(metadata[0].keys()) <= 3:
+            # Immediately upload simple metadata
+            metadataUploaded = True
+            headers['Upload-Metadata'] = ','. join(map(lambda e: f"{e[0]} {encode64(str(e[1]))}", metadata[0].items()))
+        try:
+            logger.debug("Post artifact data='%s', headers:'%s'", fd, headers)
+            r = requests.post(self.storage_url, data=fd, headers=headers)
+        except:
+            print(">>>>", sys.exc_info())
+            logger.fatal(f"while posting result data {self.storage_url} - {sys.exc_info()[0]}")
+            sys.exit(-1)
+        if r.status_code >= 300:
+            logger.fatal(f"error response {r.status_code} while posting result data {self.storage_url}")
+            sys.exit(-1)
+
+        url = r.headers.get('Location')
+        artifactID = r.headers.get('X-Artifact-Id')
+        size = int(r.headers.get('Content-Length', -1))
+        logger.info(f"IvcapIOAdapter: created artifact '{artifactID}' of size '{size}' via '{self.storage_url}'")
+
+        if not metadataUploaded and len(metadata) > 0:
+            self._upload_metadata(metadata, artifactID, url)
+        return url
+
+    def _upload_metadata(
+        self, 
+        metadata: Sequence[MetaDict],
+        artifactID: str,
+        url: str,
+    ) -> None:
+        for md in metadata:
+            headers = {
+                "X-Meta-Data-For-Url": url,
+                "X-Meta-Data-For-Artifact": artifactID,
+                "X-Meta-Data-Schema": md.get('@type', '???'),
+            }
+            # u = urlparse(self.url)
+            # p = f"{u.path.replace('.', '-')}-meta.json"
+            # murl = u._replace(path=p).geturl()
+            try:
+                logger.debug("Post artifact metadata data='%s', headers:'%s'", md, headers)
+                r = requests.post(self.storage_url, json=md, headers=headers)
+            except:
+                print(">>>>", sys.exc_info())
+                logger.fatal(f"while posting metadata {self.storage_url} - {sys.exc_info()[0]}")
+                sys.exit(-1)
+            if r.status_code >= 300:
+                logger.fatal(f"error response {r.status_code} while posting metadata {self.storage_url}")
+                sys.exit(-1)
+
 
     def readable_local(self, name: str, collection_name: str = None) -> bool:
         """Return true if file exists and is readable. If 'name' starts with a '/'
@@ -271,3 +290,7 @@ class LocalIOAdapter(IOAdapter):
         return f"<LocalIOAdapter in_dir={self.in_dir} out_dir={self.out_dir}>"
 
 
+def encode64(s: str) -> str:
+    sb = s.encode('ascii')
+    ba = base64.b64encode(sb)
+    return ba.decode('ascii')

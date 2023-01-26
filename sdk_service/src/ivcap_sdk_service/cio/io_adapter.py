@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import AnyStr, List, Callable, Optional, Union
+from typing import AnyStr, List, Callable, Optional, Sequence, Union
 import io
 
 #from ..logger import logger
@@ -162,7 +162,7 @@ class IOAdapter(ABC):
         mime_type: str, 
         name: Optional[str] = None,
         collection_name: Optional[str] = None,
-        metadata: Optional[Union[MetaDict, List[MetaDict]]] = {}, 
+        metadata: Optional[Union[MetaDict, Sequence[MetaDict]]] = None, 
         seekable=False,
         on_close: Optional[OnCloseF] = None
     ) -> IOWritable:
