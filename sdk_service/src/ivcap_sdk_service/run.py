@@ -12,7 +12,7 @@ from collections import namedtuple
 from .ivcap import init, get_config
 from .logger import logger, sys_logger 
 from .service import Service
-from .config import Command, INSIDE_ARGO
+from .config import Command, INSIDE_ARGO, INSIDE_CONTAINER
 
 def run(args: Dict, handler: Callable[[Dict], int]) -> int:
     sys_logger.info(f"Starting service with '{args}'")
@@ -65,6 +65,9 @@ def register_service(service: Service, handler: Callable[[Dict], int]):
 
 
 def wait_for_data_proxy():
+    if not INSIDE_ARGO:
+        return
+
     url = get_config().STORAGE_URL
     retries = int(os.getenv('IVCAP_DATA_PROXY_RETRIES', 5))
     delay = int(os.getenv('IVCAP_DATA_PROXY_DELAY', 3))
