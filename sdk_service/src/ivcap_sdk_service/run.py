@@ -1,6 +1,9 @@
 
 import os
 import sys
+import time
+import requests
+
 from typing import Dict, Callable, Sequence, Dict
 from argparse import ArgumentParser, ArgumentError
 from collections import namedtuple
@@ -33,10 +36,12 @@ def register_service(service: Service, handler: Callable[[Dict], int]):
 
     init(None, service.append_arguments)
     cmd = get_config().SERVICE_COMMAND
+    
 
     if cmd == Command.SERVICE_RUN:
         if not INSIDE_ARGO:
             print_banner(service)
+        wait_for_data_proxy()
         cfg = get_config()
         sys_logger.info(f"Starting order '{cfg.ORDER_ID}' for service '{service.name}' on node '{cfg.NODE_ID}'")
         try:
@@ -57,6 +62,22 @@ def register_service(service: Service, handler: Callable[[Dict], int]):
         ap.print_help()
     else:
         sys_logger.error(f"Unexpected command '{cmd}'")
+
+
+def wait_for_data_proxy():
+    url = get_config().STORAGE_URL
+    retries = int(os.getenv('IVCAP_DATA_PROXY_RETRIES', 5))
+    delay = int(os.getenv('IVCAP_DATA_PROXY_DELAY', 3))
+
+    for _ in range(retries):
+        sys_logger.info(f"Checking for data-proxy at '{url}'.")
+        try:
+            requests.head(url)
+            return
+        except Exception:
+            sys_logger.info(f"Data-proxy doesn't seem to be ready yet, will wait {delay}sec and try again.")
+            time.sleep(delay)
+    raise Exception(f"Can't contact data-proxy after {retries} retries on '{url}'")
 
 def run_service(service: Service, args: Sequence[str], handler: Callable[[Dict], int]) -> int:
     ap = ArgumentParser(description=service.description)
