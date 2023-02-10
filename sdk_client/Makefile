@@ -17,3 +17,11 @@ gen:
 		&& mkdir -p ${ROOT_DIR}/src \
 		&& mv ${ROOT_DIR}/build/sdk_client/ivcap_client ${ROOT_DIR}/src
 	rm -r ${ROOT_DIR}/build
+
+add-license:
+	licenseheaders -t .license.tmpl -y 2023 -d src
+
+clean:
+	rm -rf *.egg-info
+	rm -rf dist
+	find ${ROOT_DIR} -name __pycache__ | xargs rm -r 
