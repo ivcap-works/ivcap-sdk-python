@@ -23,6 +23,7 @@ myst-nb = "^0.17.1"
 autoapi = "^2.0.1"
 sphinx-autoapi = "^2.0.0"
 sphinx-rtd-theme = "^1.0.0"
+licenseheaders = "^0.8.8"
 
 [tool.poetry.scripts]
 ivcap-service = 'ivcap_service:run'
