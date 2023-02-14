@@ -43,6 +43,9 @@ docker-run: #docker-build
 		${DOCKER_NAME} \
 			--msg World
 
+add-license:
+	licenseheaders -t .license.tmpl -y 2023 -d src
+
 clean:
 	rm -rf *.egg-info
 	rm -rf dist

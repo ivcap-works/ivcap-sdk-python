@@ -1,3 +1,8 @@
+#
+# Copyright (c) 2023 Commonwealth Scientific and Industrial Research Organisation (CSIRO). All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file. See the AUTHORS file for names of contributors.
+#
 
 import os
 import sys
@@ -68,7 +73,7 @@ def wait_for_data_proxy():
     if not INSIDE_ARGO:
         return
 
-    url = get_config().STORAGE_URL
+    url = f"{get_config().STORAGE_URL}/readyz"
     retries = int(os.getenv('IVCAP_DATA_PROXY_RETRIES', 5))
     delay = int(os.getenv('IVCAP_DATA_PROXY_DELAY', 3))
 
