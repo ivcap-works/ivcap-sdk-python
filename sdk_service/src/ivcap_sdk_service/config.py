@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file. See the AUTHORS file for names of contributors.
 #
+import base64
 from dataclasses import dataclass
 import os
 from argparse import ArgumentParser, ArgumentTypeError
@@ -105,8 +106,11 @@ class Config:
     if self.STORAGE_URL:
       self.IO_ADAPTER = IvcapIOAdapter(
         storage_url = self.STORAGE_URL,
+        in_dir = in_dir,
+        out_dir = out_dir,
         order_id=self.ORDER_ID,
         cache = self.CACHE,
+        cachable_url = self.cachable_url,
        )
     else:
       self.IO_ADAPTER = LocalIOAdapter(in_dir=in_dir, out_dir=out_dir, cache=self.CACHE)
@@ -192,17 +196,26 @@ class Config:
         action='store_true',
         help="Print config settings and exit")      
 
-  def cachable_url(self, url):
+  def cachable_url(self, url: str) -> str:
     """Modify url if there is a cache proxy available"""
+
+    def combine(u1, u2): 
+        if u1.endswith("/"):
+            curl = u1 + u2
+        else:
+            curl = f"{u1}/{u2}"
+        return curl    
+
+    if url.startswith(self.SCHEMA_PREFIX):
+        return combine(self.STORAGE_URL, url)
+
     if self.CACHE_PROXY_URL == None:
         return url
-
-    purl = self.CACHE_PROXY_URL
-    if purl.endswith("/"):
-        curl = purl + url
-    else:
-        curl = f"{purl}/{url}"
-    return curl    
+    # Call CACHE_PROXY_URL with base64 encoded url as path
+    p = base64.urlsafe_b64encode(url.encode('utf-8')).decode('ascii')
+    # data-proxy doesn't like trailing '='
+    while p.endswith("="): p = p[:-1]
+    return combine(self.CACHE_PROXY_URL, p)
 
 def verify_file(fname):
   if Path(fname).is_file():
