@@ -9,7 +9,7 @@ Implementation of the IOAdapter class for use inside the IVCAP platform
 import base64
 import os
 import sys
-from typing import IO, Optional, Sequence, Tuple, BinaryIO, Dict, Union
+from typing import IO, Callable, Optional, Sequence, Tuple, BinaryIO, Dict, Union
 import io
 import json
 from os import access, R_OK
@@ -46,12 +46,19 @@ class IvcapIOAdapter(IOAdapter):
     exists(name='filename.txt')
         Check if filename exists
     """
-    def __init__(self, storage_url: Url, order_id:str, cache: Cache=None) -> None:
-
+    def __init__(self, 
+        storage_url: Url, 
+        in_dir: str, 
+        out_dir: str, 
+        order_id:str, 
+        cachable_url: Callable[[str], str],
+        cache: Cache=None,
+        ) -> None:
         super().__init__()
-        # self.in_dir = os.path.abspath(in_dir)
-        # self.out_dir = os.path.abspath(out_dir)
+        self.in_dir = os.path.abspath(in_dir)
+        self.out_dir = os.path.abspath(out_dir)
         self.storage_url = storage_url
+        self.cachable_url = cachable_url
         self.cache = cache
 
     def read_artifact(self, artifact_id: str, binary_content=True, no_caching=False, seekable=False) -> IOReadable:
@@ -66,12 +73,14 @@ class IvcapIOAdapter(IOAdapter):
         Returns:
             IOReadable: The content of the artifact as a file-like object
         """
-        u = urlparse(artifact_id)
+
+        # u = urlparse(artifact_id)
+        # curl = self.cachable_url(artifact_id)
         # if u.scheme == '' or u.scheme == 'file':
         #     return self.read_local(u.path, binary_content=binary_content)
         # else:
         #     
-        return self.read_external(artifact_id, binary_content=binary_content, no_caching=no_caching, seekable=seekable)
+        return self.read_external(artifact_id, binary_content=binary_content, no_caching=True, seekable=seekable)
 
     def read_external(self, 
         url: Url, 
@@ -94,6 +103,7 @@ class IvcapIOAdapter(IOAdapter):
         if bool(self.cache) and not no_caching:
             return self.cache.get_and_cache_file(url)
 
+        
         if bool(local_file_name):
             name = local_file_name
             use_temp_file = False
@@ -104,9 +114,13 @@ class IvcapIOAdapter(IOAdapter):
             name = p.replace('/', '__')
             use_temp_file = True
         path = self._to_path(self.in_dir, name)
-        ior = ReadableProxyFile(url, path, is_binary=binary_content, writable_also=True, use_temp_file=use_temp_file)
-        download(url, ior._file_obj, close_fhdl=False)
-        logger.debug("LocalIOAdapter#read_external: Read external content '%s' into '%s'", url, ior.name)
+        if url.startswith(self.storage_url):
+            curl = url
+        else:
+            curl = self.cachable_url(url)
+        ior = ReadableProxyFile(name, path, is_binary=binary_content, writable_also=True, use_temp_file=use_temp_file)
+        download(curl, ior._file_obj, close_fhdl=False)
+        logger.debug("LocalIOAdapter#read_external: Read external content '%s' into '%s'", curl, ior.path)
         return ior
 
     def artifact_readable(self, artifact_id: str) -> bool:
@@ -220,17 +234,18 @@ class IvcapIOAdapter(IOAdapter):
             headers = {
                 "X-Meta-Data-For-Url": url,
                 "X-Meta-Data-For-Artifact": artifactID,
-                "X-Meta-Data-Schema": md.get('@type', '???'),
+                "X-Meta-Data-Schema": md.get('$schema', '???'),
+                "Content-Type": "application/json",
             }
             # u = urlparse(self.url)
             # p = f"{u.path.replace('.', '-')}-meta.json"
             # murl = u._replace(path=p).geturl()
             try:
                 logger.debug("Post artifact metadata data='%s', headers:'%s'", md, headers)
-                r = requests.post(self.storage_url, json=md, headers=headers)
+                payload = json_dump(md)
+                r = requests.post(self.storage_url, data=payload, headers=headers)
             except:
-                print(">>>>", sys.exc_info())
-                logger.fatal(f"while posting metadata {self.storage_url} - {sys.exc_info()[0]}")
+                logger.fatal(f"while posting metadata {self.storage_url} - {sys.exc_info()}")
                 sys.exit(-1)
             if r.status_code >= 300:
                 logger.fatal(f"error response {r.status_code} while posting metadata {self.storage_url}")
