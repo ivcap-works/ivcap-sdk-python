@@ -115,7 +115,7 @@ def register_saver(mime_type: str, obj_type: Any, saverF: SaverF):
     _CLASS2MIME_TYPE[str(obj_type)] = mime_type
     _MIME_TYPE2SAVER[mime_type] = saverF
 
-def create_metadata(schema: str, **args) -> Dict:
+def create_metadata(schema: str, mdict:Optional[MetaDict] = {}, **args) -> Dict:
     """Return a dict which has a 'proper' schema declaration added.
 
     Args:
@@ -124,10 +124,9 @@ def create_metadata(schema: str, **args) -> Dict:
     Returns:
         Dict: A copy of 'args' plus a 'SCHEMA_KEY' entry
     """
-    return {
-        '$schema': schema,
-        **args,
-    }
+    d = dict(mdict, **args)
+    d['$schema'] = schema
+    return d
 
 def fetch_data(url: Url, binary_content=True, no_caching=False, seekable=False) -> IOReadable:
     up = urlparse(url)
