@@ -46,6 +46,7 @@ class Config:
   CACHE: Cache
   CACHE_PROXY_URL: str
   STORAGE_URL: str
+  OUT_DIR: str
 
   SCHEMA_PREFIX: str
 
@@ -102,18 +103,18 @@ class Config:
 
     self.STORAGE_URL = args.pop('ivcap:storage_url', None)
     in_dir = args.pop('ivcap:in_dir', None)
-    out_dir = args.pop('ivcap:out_dir', None)
+    self.OUT_DIR = args.pop('ivcap:out_dir', DEF_OUT_DIR)
     if self.STORAGE_URL:
       self.IO_ADAPTER = IvcapIOAdapter(
         storage_url = self.STORAGE_URL,
         in_dir = in_dir,
-        out_dir = out_dir,
+        out_dir = self.OUT_DIR,
         order_id=self.ORDER_ID,
         cache = self.CACHE,
         cachable_url = self.cachable_url,
        )
     else:
-      self.IO_ADAPTER = LocalIOAdapter(in_dir=in_dir, out_dir=out_dir, cache=self.CACHE)
+      self.IO_ADAPTER = LocalIOAdapter(in_dir=in_dir, out_dir=self.OUT_DIR, cache=self.CACHE)
 
     self.SCHEMA_PREFIX = args.pop('ivcap:schema_prefix', None)
 
