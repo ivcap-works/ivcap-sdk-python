@@ -12,7 +12,7 @@ class AddMetaRT:
         {'record-id': 'urn:ivcap:record.123e4567-e89b-12d3-a456-426614174000'}
 
     Attributes:
-        record_id (str): Reference to service requested Example: urn:ivcap:record.123e4567-e89b-12d3-a456-426614174000.
+        record_id (str): Reference to record created Example: urn:ivcap:record.123e4567-e89b-12d3-a456-426614174000.
     """
 
     record_id: str

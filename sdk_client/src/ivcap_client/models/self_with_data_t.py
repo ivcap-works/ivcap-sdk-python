@@ -1,9 +1,12 @@
-from typing import Any, Dict, List, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
 
 import attr
 
-from ..models.described_by_t import DescribedByT
 from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.described_by_t import DescribedByT
+
 
 T = TypeVar("T", bound="SelfWithDataT")
 
@@ -12,18 +15,19 @@ T = TypeVar("T", bound="SelfWithDataT")
 class SelfWithDataT:
     """
     Example:
-        {'data': 'Est qui est reprehenderit est accusantium ipsa.', 'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Quis fuga.'}
+        {'data': 'Repellendus atque ad doloremque adipisci atque.', 'describedBy': {'href':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Iure assumenda dolore animi
+            assumenda dolorem eveniet.'}
 
     Attributes:
-        data (Union[Unset, str]):  Example: Dolorum quod ducimus vero..
+        data (Union[Unset, str]):  Example: Est soluta est iure accusamus tenetur..
         described_by (Union[Unset, DescribedByT]):  Example: {'href': 'https://api.com/swagger/...', 'type':
             'application/openapi3+json'}.
-        self_ (Union[Unset, str]):  Example: Architecto similique nostrum laudantium provident..
+        self_ (Union[Unset, str]):  Example: A aut temporibus omnis dolores quod..
     """
 
     data: Union[Unset, str] = UNSET
-    described_by: Union[Unset, DescribedByT] = UNSET
+    described_by: Union[Unset, "DescribedByT"] = UNSET
     self_: Union[Unset, str] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
@@ -49,6 +53,8 @@ class SelfWithDataT:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.described_by_t import DescribedByT
+
         d = src_dict.copy()
         data = d.pop("data", UNSET)
 

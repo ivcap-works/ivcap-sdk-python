@@ -1,9 +1,12 @@
-from typing import Any, Dict, List, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
 
 import attr
 
-from ..models.self_with_data_t import SelfWithDataT
 from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.self_with_data_t import SelfWithDataT
+
 
 T = TypeVar("T", bound="ProductT")
 
@@ -12,24 +15,25 @@ T = TypeVar("T", bound="ProductT")
 class ProductT:
     """
     Example:
-        {'id': 'Voluptatem assumenda natus reiciendis voluptatem.', 'links': {'data': 'Necessitatibus velit quia odit
-            earum adipisci.', 'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'},
-            'self': 'Inventore sint.'}, 'mime-type': 'Tempora illum vel.', 'name': 'Ea officiis.', 'size':
-            7149585304102376231, 'status': 'Vitae aspernatur aliquid sed rerum.'}
+        {'id': 'Aut nostrum maiores deleniti placeat tenetur qui.', 'links': {'data': 'Officiis dolore quo ea.',
+            'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self':
+            'Perspiciatis cumque quo praesentium.'}, 'mime-type': 'Repellendus vel nulla repellendus eum neque autem.',
+            'name': 'Et iusto et magni vitae ut.', 'size': 2047404228262726111, 'status': 'Minus et ad eius commodi non
+            pariatur.'}
 
     Attributes:
-        id (Union[Unset, str]):  Example: Autem est..
-        links (Union[Unset, SelfWithDataT]):  Example: {'data': 'Est qui est reprehenderit est accusantium ipsa.',
-            'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Quis
-            fuga.'}.
-        mime_type (Union[Unset, str]):  Example: Et ab facere deserunt sapiente..
-        name (Union[Unset, str]):  Example: Dolor nostrum eveniet..
-        size (Union[Unset, int]):  Example: 210834397676315722.
-        status (Union[Unset, str]):  Example: Eius similique..
+        id (Union[Unset, str]):  Example: Fugiat facere quas..
+        links (Union[Unset, SelfWithDataT]):  Example: {'data': 'Repellendus atque ad doloremque adipisci atque.',
+            'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Iure
+            assumenda dolore animi assumenda dolorem eveniet.'}.
+        mime_type (Union[Unset, str]):  Example: Animi minus sapiente incidunt quas..
+        name (Union[Unset, str]):  Example: Laborum autem delectus..
+        size (Union[Unset, int]):  Example: 7775421525677750405.
+        status (Union[Unset, str]):  Example: Quo et aut quas..
     """
 
     id: Union[Unset, str] = UNSET
-    links: Union[Unset, SelfWithDataT] = UNSET
+    links: Union[Unset, "SelfWithDataT"] = UNSET
     mime_type: Union[Unset, str] = UNSET
     name: Union[Unset, str] = UNSET
     size: Union[Unset, int] = UNSET
@@ -67,6 +71,8 @@ class ProductT:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.self_with_data_t import SelfWithDataT
+
         d = src_dict.copy()
         id = d.pop("id", UNSET)
 

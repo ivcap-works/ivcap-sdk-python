@@ -1,9 +1,13 @@
-from typing import Any, Dict, List, Type, TypeVar
+import datetime
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar
 
 import attr
+from dateutil.parser import isoparse
 
-from ..models.nav_t import NavT
-from ..models.service_list_item import ServiceListItem
+if TYPE_CHECKING:
+    from ..models.nav_t import NavT
+    from ..models.service_list_item import ServiceListItem
+
 
 T = TypeVar("T", bound="ServiceListRT")
 
@@ -12,49 +16,51 @@ T = TypeVar("T", bound="ServiceListRT")
 class ServiceListRT:
     """
     Example:
-        {'links': {'first': 'https://api.com/foo/...', 'next': 'https://api.com/foo/...', 'self':
-            'https://api.com/foo/...'}, 'services': [{'description': 'Some lengthy description of fire risk', 'id':
-            'service:acme:oracle', 'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}, 'name': 'Fire risk for region', 'provider':
-            {'id': 'http://sporer.name/buddy', 'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}}}, {'description': 'Some lengthy description
-            of fire risk', 'id': 'service:acme:oracle', 'links': {'describedBy': {'href': 'https://api.com/swagger/...',
-            'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}, 'name': 'Fire risk for region',
-            'provider': {'id': 'http://sporer.name/buddy', 'links': {'describedBy': {'href': 'https://api.com/swagger/...',
-            'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}}}, {'description': 'Some lengthy
+        {'at-time': '1996-12-19T16:39:57-08:00', 'links': {'first': 'https://api.com/foo/...', 'next':
+            'https://api.com/foo/...', 'self': 'https://api.com/foo/...'}, 'services': [{'description': 'Some lengthy
             description of fire risk', 'id': 'service:acme:oracle', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'},
-            'name': 'Fire risk for region', 'provider': {'id': 'http://sporer.name/buddy', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}}}]}
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
+            'name': 'Fire risk for region', 'provider': {'id': 'http://erdman.info/maia_botsford', 'links': {'describedBy':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
+            dolores.'}}}, {'description': 'Some lengthy description of fire risk', 'id': 'service:acme:oracle', 'links':
+            {'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident
+            sapiente dolores.'}, 'name': 'Fire risk for region', 'provider': {'id': 'http://erdman.info/maia_botsford',
+            'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self':
+            'Provident sapiente dolores.'}}}]}
 
     Attributes:
+        at_time (datetime.datetime): Time at which this list was valid Example: 1996-12-19T16:39:57-08:00.
         links (NavT):  Example: {'first': 'https://api.com/foo/...', 'next': 'https://api.com/foo/...', 'self':
             'https://api.com/foo/...'}.
-        services (List[ServiceListItem]): Services Example: [{'description': 'Some lengthy description of fire risk',
+        services (List['ServiceListItem']): Services Example: [{'description': 'Some lengthy description of fire risk',
             'id': 'service:acme:oracle', 'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}, 'name': 'Fire risk for region', 'provider':
-            {'id': 'http://sporer.name/buddy', 'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}}}, {'description': 'Some lengthy description
-            of fire risk', 'id': 'service:acme:oracle', 'links': {'describedBy': {'href': 'https://api.com/swagger/...',
-            'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}, 'name': 'Fire risk for region',
-            'provider': {'id': 'http://sporer.name/buddy', 'links': {'describedBy': {'href': 'https://api.com/swagger/...',
-            'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}}}, {'description': 'Some lengthy
-            description of fire risk', 'id': 'service:acme:oracle', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'},
-            'name': 'Fire risk for region', 'provider': {'id': 'http://sporer.name/buddy', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}}},
+            'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'}, 'name': 'Fire risk for region',
+            'provider': {'id': 'http://erdman.info/maia_botsford', 'links': {'describedBy': {'href':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'}}},
             {'description': 'Some lengthy description of fire risk', 'id': 'service:acme:oracle', 'links': {'describedBy':
-            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis
-            reiciendis.'}, 'name': 'Fire risk for region', 'provider': {'id': 'http://sporer.name/buddy', 'links':
-            {'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio
-            officiis reiciendis.'}}}].
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
+            dolores.'}, 'name': 'Fire risk for region', 'provider': {'id': 'http://erdman.info/maia_botsford', 'links':
+            {'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident
+            sapiente dolores.'}}}, {'description': 'Some lengthy description of fire risk', 'id': 'service:acme:oracle',
+            'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self':
+            'Provident sapiente dolores.'}, 'name': 'Fire risk for region', 'provider': {'id':
+            'http://erdman.info/maia_botsford', 'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
+            'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'}}}, {'description': 'Some lengthy
+            description of fire risk', 'id': 'service:acme:oracle', 'links': {'describedBy': {'href':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
+            'name': 'Fire risk for region', 'provider': {'id': 'http://erdman.info/maia_botsford', 'links': {'describedBy':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
+            dolores.'}}}].
     """
 
-    links: NavT
-    services: List[ServiceListItem]
+    at_time: datetime.datetime
+    links: "NavT"
+    services: List["ServiceListItem"]
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
+        at_time = self.at_time.isoformat()
+
         links = self.links.to_dict()
 
         services = []
@@ -67,6 +73,7 @@ class ServiceListRT:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
+                "at-time": at_time,
                 "links": links,
                 "services": services,
             }
@@ -76,7 +83,12 @@ class ServiceListRT:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.nav_t import NavT
+        from ..models.service_list_item import ServiceListItem
+
         d = src_dict.copy()
+        at_time = isoparse(d.pop("at-time"))
+
         links = NavT.from_dict(d.pop("links"))
 
         services = []
@@ -87,6 +99,7 @@ class ServiceListRT:
             services.append(services_item)
 
         service_list_rt = cls(
+            at_time=at_time,
             links=links,
             services=services,
         )

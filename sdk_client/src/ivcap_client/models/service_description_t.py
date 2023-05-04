@@ -1,12 +1,15 @@
-from typing import Any, Dict, List, Type, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union, cast
 
 import attr
 
-from ..models.parameter_def_t import ParameterDefT
-from ..models.parameter_t import ParameterT
-from ..models.reference_t import ReferenceT
-from ..models.workflow_t import WorkflowT
 from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.parameter_def_t import ParameterDefT
+    from ..models.parameter_t import ParameterT
+    from ..models.reference_t import ReferenceT
+    from ..models.workflow_t import WorkflowT
+
 
 T = TypeVar("T", bound="ServiceDescriptionT")
 
@@ -15,67 +18,66 @@ T = TypeVar("T", bound="ServiceDescriptionT")
 class ServiceDescriptionT:
     """
     Example:
-        {'account-id': 'cayp:account:acme', 'banner': 'http://stark.info/tess.gaylord', 'description': 'This service
-            ...', 'metadata': [{'name': 'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'},
-            {'name': 'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}, {'name': 'Odit aut
-            quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}, {'name': 'Odit aut quod nihil aperiam.',
-            'value': 'Ut enim ut fugit possimus pariatur.'}], 'name': 'Fire risk for Lot2', 'parameters': [{'description':
-            'The name of the region as according to ...', 'label': 'Region Name', 'name': 'region', 'type': 'string'},
-            {'label': 'Rainfall/month threshold', 'name': 'threshold', 'type': 'float', 'unit': 'm'}], 'provider-id':
-            'cayp:provider:acme', 'provider-ref': 'service_foo_patch_1', 'references': [{'title': 'Commodi aut voluptatem
-            magni.', 'uri': 'http://mclaughlintremblay.name/adam'}, {'title': 'Commodi aut voluptatem magni.', 'uri':
-            'http://mclaughlintremblay.name/adam'}, {'title': 'Commodi aut voluptatem magni.', 'uri':
-            'http://mclaughlintremblay.name/adam'}], 'tags': ['tag1', 'tag2'], 'workflow': {'argo': 'Sed ut in distinctio
-            consequatur aut voluptas.', 'basic': {'command': ['Unde fuga sed veniam.', 'Et aut autem deserunt sit
-            architecto.', 'Quidem nulla quae provident dolor amet nulla.'], 'cpu': {'limit': 'Deserunt fugiat hic eos
-            quaerat voluptas distinctio.', 'request': 'Reprehenderit molestiae cupiditate voluptas et voluptatibus illum.'},
-            'image': 'Officiis consequatur corporis autem.', 'memory': {'limit': 'Deserunt fugiat hic eos quaerat voluptas
-            distinctio.', 'request': 'Reprehenderit molestiae cupiditate voluptas et voluptatibus illum.'}}, 'opts': 'Et
-            vel.', 'type': 'Alias aut voluptas molestiae.'}}
+        {'account-id': 'cayp:account:acme', 'banner': 'http://renner.info/bethany', 'description': 'This service ...',
+            'metadata': [{'name': 'Quis rerum dignissimos.', 'value': 'Expedita quia deserunt veritatis sequi voluptas.'},
+            {'name': 'Quis rerum dignissimos.', 'value': 'Expedita quia deserunt veritatis sequi voluptas.'}, {'name': 'Quis
+            rerum dignissimos.', 'value': 'Expedita quia deserunt veritatis sequi voluptas.'}, {'name': 'Quis rerum
+            dignissimos.', 'value': 'Expedita quia deserunt veritatis sequi voluptas.'}], 'name': 'Fire risk for Lot2',
+            'parameters': [{'description': 'The name of the region as according to ...', 'label': 'Region Name', 'name':
+            'region', 'type': 'string'}, {'label': 'Rainfall/month threshold', 'name': 'threshold', 'type': 'float', 'unit':
+            'm'}], 'provider-id': 'cayp:provider:acme', 'provider-ref': 'service_foo_patch_1', 'references': [{'title':
+            'Quod nihil aperiam eligendi ut.', 'uri': 'http://schowaltercrist.net/reynold'}, {'title': 'Quod nihil aperiam
+            eligendi ut.', 'uri': 'http://schowaltercrist.net/reynold'}], 'tags': ['tag1', 'tag2'], 'workflow': {'argo':
+            'Reprehenderit molestiae cupiditate voluptas et voluptatibus illum.', 'basic': {'command': ['Aut voluptas.', 'Ut
+            officiis consequatur corporis autem odit.', 'Unde fuga sed veniam.'], 'cpu': {'limit': 'Quidem nulla quae
+            provident dolor amet nulla.', 'request': 'Et aut autem deserunt sit architecto.'}, 'image': 'Voluptatem
+            explicabo aut adipisci.', 'memory': {'limit': 'Quidem nulla quae provident dolor amet nulla.', 'request': 'Et
+            aut autem deserunt sit architecto.'}}, 'opts': 'Deserunt fugiat hic eos quaerat voluptas distinctio.', 'type':
+            'Pariatur aut.'}}
 
     Attributes:
         account_id (str): Reference to account revenues for this service should be credited to Example:
             cayp:account:acme.
         description (str): More detailed description of the service Example: This service ....
-        parameters (List[ParameterDefT]): Service parameter definitions Example: [{'description': 'The name of the
+        parameters (List['ParameterDefT']): Service parameter definitions Example: [{'description': 'The name of the
             region as according to ...', 'label': 'Region Name', 'name': 'region', 'type': 'string'}, {'label':
             'Rainfall/month threshold', 'name': 'threshold', 'type': 'float', 'unit': 'm'}].
         provider_id (str): Reference to service provider Example: cayp:provider:acme.
         workflow (WorkflowT): Defines the workflow to use to execute this service. Currently supported 'types' are
             'basic'
-                and 'argo'. In case of 'basic', use the 'basic' element for further parameters. In the current implementation
-                'opts' is expected to contain the same schema as 'basic' Example: {'argo': 'Nostrum reprehenderit quia.',
-            'basic': {'command': ['Unde fuga sed veniam.', 'Et aut autem deserunt sit architecto.', 'Quidem nulla quae
-            provident dolor amet nulla.'], 'cpu': {'limit': 'Deserunt fugiat hic eos quaerat voluptas distinctio.',
-            'request': 'Reprehenderit molestiae cupiditate voluptas et voluptatibus illum.'}, 'image': 'Officiis consequatur
-            corporis autem.', 'memory': {'limit': 'Deserunt fugiat hic eos quaerat voluptas distinctio.', 'request':
-            'Reprehenderit molestiae cupiditate voluptas et voluptatibus illum.'}}, 'opts': 'Quae hic dignissimos.', 'type':
-            'Commodi dolorem provident ab et.'}.
+                    and 'argo'. In case of 'basic', use the 'basic' element for further parameters. In the current implementation
+                    'opts' is expected to contain the same schema as 'basic' Example: {'argo': 'Possimus distinctio.', 'basic':
+            {'command': ['Aut voluptas.', 'Ut officiis consequatur corporis autem odit.', 'Unde fuga sed veniam.'], 'cpu':
+            {'limit': 'Quidem nulla quae provident dolor amet nulla.', 'request': 'Et aut autem deserunt sit architecto.'},
+            'image': 'Voluptatem explicabo aut adipisci.', 'memory': {'limit': 'Quidem nulla quae provident dolor amet
+            nulla.', 'request': 'Et aut autem deserunt sit architecto.'}}, 'opts': 'Blanditiis quos officia.', 'type':
+            'Rerum qui amet.'}.
         banner (Union[Unset, str]): Link to banner image oprionally used for this service Example:
-            http://harvey.org/tabitha.
-        metadata (Union[Unset, List[ParameterT]]): Optional provider provided meta tags Example: [{'name': 'Odit aut
-            quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}, {'name': 'Odit aut quod nihil aperiam.',
-            'value': 'Ut enim ut fugit possimus pariatur.'}, {'name': 'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut
-            fugit possimus pariatur.'}].
+            http://cummerata.info/nicolette.
+        metadata (Union[Unset, List['ParameterT']]): Optional provider provided meta tags Example: [{'name': 'Quis rerum
+            dignissimos.', 'value': 'Expedita quia deserunt veritatis sequi voluptas.'}, {'name': 'Quis rerum dignissimos.',
+            'value': 'Expedita quia deserunt veritatis sequi voluptas.'}].
         name (Union[Unset, str]): Optional provider provided name Example: Fire risk for Lot2.
         provider_ref (Union[Unset, str]): Provider provided reference. Should to be a single string with punctuations
             allowed. Might be changed, so please check result Example: service_foo_patch_1.
-        references (Union[Unset, List[ReferenceT]]): Reference to account revenues for this service should be credited
-            to Example: [{'title': 'Commodi aut voluptatem magni.', 'uri': 'http://mclaughlintremblay.name/adam'}, {'title':
-            'Commodi aut voluptatem magni.', 'uri': 'http://mclaughlintremblay.name/adam'}].
+        references (Union[Unset, List['ReferenceT']]): Reference to account revenues for this service should be credited
+            to Example: [{'title': 'Quod nihil aperiam eligendi ut.', 'uri': 'http://schowaltercrist.net/reynold'},
+            {'title': 'Quod nihil aperiam eligendi ut.', 'uri': 'http://schowaltercrist.net/reynold'}, {'title': 'Quod nihil
+            aperiam eligendi ut.', 'uri': 'http://schowaltercrist.net/reynold'}, {'title': 'Quod nihil aperiam eligendi
+            ut.', 'uri': 'http://schowaltercrist.net/reynold'}].
         tags (Union[Unset, List[str]]): Optional provider provided tags Example: ['tag1', 'tag2'].
     """
 
     account_id: str
     description: str
-    parameters: List[ParameterDefT]
+    parameters: List["ParameterDefT"]
     provider_id: str
-    workflow: WorkflowT
+    workflow: "WorkflowT"
     banner: Union[Unset, str] = UNSET
-    metadata: Union[Unset, List[ParameterT]] = UNSET
+    metadata: Union[Unset, List["ParameterT"]] = UNSET
     name: Union[Unset, str] = UNSET
     provider_ref: Union[Unset, str] = UNSET
-    references: Union[Unset, List[ReferenceT]] = UNSET
+    references: Union[Unset, List["ReferenceT"]] = UNSET
     tags: Union[Unset, List[str]] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
@@ -142,6 +144,11 @@ class ServiceDescriptionT:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.parameter_def_t import ParameterDefT
+        from ..models.parameter_t import ParameterT
+        from ..models.reference_t import ReferenceT
+        from ..models.workflow_t import WorkflowT
+
         d = src_dict.copy()
         account_id = d.pop("account-id")
 

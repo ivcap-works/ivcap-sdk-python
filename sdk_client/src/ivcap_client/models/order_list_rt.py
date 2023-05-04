@@ -1,9 +1,13 @@
-from typing import Any, Dict, List, Type, TypeVar
+import datetime
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar
 
 import attr
+from dateutil.parser import isoparse
 
-from ..models.nav_t import NavT
-from ..models.order_list_item import OrderListItem
+if TYPE_CHECKING:
+    from ..models.nav_t import NavT
+    from ..models.order_list_item import OrderListItem
+
 
 T = TypeVar("T", bound="OrderListRT")
 
@@ -12,46 +16,48 @@ T = TypeVar("T", bound="OrderListRT")
 class OrderListRT:
     """
     Example:
-        {'links': {'first': 'https://api.com/foo/...', 'next': 'https://api.com/foo/...', 'self':
-            'https://api.com/foo/...'}, 'orders': [{'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
+        {'at-time': '1996-12-19T16:39:57-08:00', 'links': {'first': 'https://api.com/foo/...', 'next':
+            'https://api.com/foo/...', 'self': 'https://api.com/foo/...'}, 'orders': [{'account_id': '2022-01-01',
+            'finished_at': '2022-01-01', 'id': 'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
+            dolores.'}, 'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'started_at':
+            '2022-01-01', 'status': 'error'}, {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
             'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'},
-            'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'status': 'executing'},
-            {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
+            'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'started_at':
+            '2022-01-01', 'status': 'error'}, {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
             'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'},
-            'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'status': 'executing'},
-            {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
-            'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'},
-            'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'status': 'executing'}]}
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
+            'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'started_at':
+            '2022-01-01', 'status': 'error'}]}
 
     Attributes:
+        at_time (datetime.datetime): Time at which this list was valid Example: 1996-12-19T16:39:57-08:00.
         links (NavT):  Example: {'first': 'https://api.com/foo/...', 'next': 'https://api.com/foo/...', 'self':
             'https://api.com/foo/...'}.
-        orders (List[OrderListItem]): Orders Example: [{'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
+        orders (List['OrderListItem']): Orders Example: [{'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
             'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'},
-            'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'status': 'executing'},
-            {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
+            'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'started_at':
+            '2022-01-01', 'status': 'error'}, {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
             'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'},
-            'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'status': 'executing'},
-            {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
+            'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'started_at':
+            '2022-01-01', 'status': 'error'}, {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
             'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'},
-            'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'status': 'executing'},
-            {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
-            'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'},
-            'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'status': 'executing'}].
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
+            'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'started_at':
+            '2022-01-01', 'status': 'error'}].
     """
 
-    links: NavT
-    orders: List[OrderListItem]
+    at_time: datetime.datetime
+    links: "NavT"
+    orders: List["OrderListItem"]
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
+        at_time = self.at_time.isoformat()
+
         links = self.links.to_dict()
 
         orders = []
@@ -64,6 +70,7 @@ class OrderListRT:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
+                "at-time": at_time,
                 "links": links,
                 "orders": orders,
             }
@@ -73,7 +80,12 @@ class OrderListRT:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.nav_t import NavT
+        from ..models.order_list_item import OrderListItem
+
         d = src_dict.copy()
+        at_time = isoparse(d.pop("at-time"))
+
         links = NavT.from_dict(d.pop("links"))
 
         orders = []
@@ -84,6 +96,7 @@ class OrderListRT:
             orders.append(orders_item)
 
         order_list_rt = cls(
+            at_time=at_time,
             links=links,
             orders=orders,
         )

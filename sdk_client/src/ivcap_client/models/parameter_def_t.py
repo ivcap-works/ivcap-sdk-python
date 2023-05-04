@@ -1,9 +1,12 @@
-from typing import Any, Dict, List, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
 
 import attr
 
-from ..models.parameter_opt_t import ParameterOptT
 from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.parameter_opt_t import ParameterOptT
+
 
 T = TypeVar("T", bound="ParameterDefT")
 
@@ -12,26 +15,24 @@ T = TypeVar("T", bound="ParameterDefT")
 class ParameterDefT:
     """
     Example:
-        {'constant': True, 'default': 'Provident est esse.', 'description': 'Voluptatem provident ducimus voluptas odit
-            aut.', 'label': 'Aut neque sapiente commodi dolorem aut.', 'name': 'Voluptate nostrum quibusdam.', 'optional':
-            False, 'options': [{'description': 'Eius voluptatibus tempore assumenda et qui accusantium.', 'value': 'Ullam
-            ipsum et perferendis deleniti.'}, {'description': 'Eius voluptatibus tempore assumenda et qui accusantium.',
-            'value': 'Ullam ipsum et perferendis deleniti.'}, {'description': 'Eius voluptatibus tempore assumenda et qui
-            accusantium.', 'value': 'Ullam ipsum et perferendis deleniti.'}], 'type': 'Nihil optio sit ipsum iure facere.',
-            'unit': 'Et ex hic.'}
+        {'constant': False, 'default': 'Corporis consequatur quo ex mollitia eum consequatur.', 'description': 'Iusto
+            nihil dolor recusandae.', 'label': 'Unde perferendis recusandae quisquam nostrum et.', 'name': 'Magni nulla
+            debitis reiciendis libero.', 'optional': False, 'options': [{'description': 'Fugiat autem corporis omnis.',
+            'value': 'Est exercitationem.'}, {'description': 'Fugiat autem corporis omnis.', 'value': 'Est
+            exercitationem.'}], 'type': 'Eius fuga beatae blanditiis.', 'unit': 'Aliquam iure vero rerum incidunt commodi.'}
 
     Attributes:
-        constant (Union[Unset, bool]):
-        default (Union[Unset, str]):  Example: Commodi beatae commodi..
-        description (Union[Unset, str]):  Example: Earum aliquid quia repellat ipsum..
-        label (Union[Unset, str]):  Example: In nulla..
-        name (Union[Unset, str]):  Example: Similique qui..
-        optional (Union[Unset, bool]):
-        options (Union[Unset, List[ParameterOptT]]):  Example: [{'description': 'Eius voluptatibus tempore assumenda et
-            qui accusantium.', 'value': 'Ullam ipsum et perferendis deleniti.'}, {'description': 'Eius voluptatibus tempore
-            assumenda et qui accusantium.', 'value': 'Ullam ipsum et perferendis deleniti.'}].
-        type (Union[Unset, str]):  Example: Consequatur qui voluptatem..
-        unit (Union[Unset, str]):  Example: Adipisci optio aut officia..
+        constant (Union[Unset, bool]):  Example: True.
+        default (Union[Unset, str]):  Example: Qui fugit pariatur numquam omnis similique quisquam..
+        description (Union[Unset, str]):  Example: Et beatae laboriosam et accusamus maxime..
+        label (Union[Unset, str]):  Example: Qui eum..
+        name (Union[Unset, str]):  Example: Eos est vitae quos consequatur..
+        optional (Union[Unset, bool]):  Example: True.
+        options (Union[Unset, List['ParameterOptT']]):  Example: [{'description': 'Fugiat autem corporis omnis.',
+            'value': 'Est exercitationem.'}, {'description': 'Fugiat autem corporis omnis.', 'value': 'Est
+            exercitationem.'}].
+        type (Union[Unset, str]):  Example: Fuga ipsam quo..
+        unit (Union[Unset, str]):  Example: Ea libero..
     """
 
     constant: Union[Unset, bool] = UNSET
@@ -40,7 +41,7 @@ class ParameterDefT:
     label: Union[Unset, str] = UNSET
     name: Union[Unset, str] = UNSET
     optional: Union[Unset, bool] = UNSET
-    options: Union[Unset, List[ParameterOptT]] = UNSET
+    options: Union[Unset, List["ParameterOptT"]] = UNSET
     type: Union[Unset, str] = UNSET
     unit: Union[Unset, str] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
@@ -89,6 +90,8 @@ class ParameterDefT:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.parameter_opt_t import ParameterOptT
+
         d = src_dict.copy()
         constant = d.pop("constant", UNSET)
 

@@ -1,10 +1,12 @@
-from typing import Any, Dict, List, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
 
 import attr
 
-from ..models.order_request_t_metadata import OrderRequestTMetadata
-from ..models.parameter_t import ParameterT
 from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.parameter_t import ParameterT
+
 
 T = TypeVar("T", bound="OrderRequestT")
 
@@ -13,24 +15,21 @@ T = TypeVar("T", bound="OrderRequestT")
 class OrderRequestT:
     """
     Example:
-        {'accountID': '123e4567-e89b-12d3-a456-426614174000', 'metadata': {'refID': '33-444'}, 'name': 'Fire risk for
-            Lot2', 'parameters': [{'name': 'region', 'value': 'Upper Valley'}, {'name': 'threshold', 'value': 10}],
-            'serviceID': '123e4567-e89b-12d3-a456-426614174000'}
+        {'accountID': '123e4567-e89b-12d3-a456-426614174000', 'name': 'Fire risk for Lot2', 'parameters': [{'name':
+            'region', 'value': 'Upper Valley'}, {'name': 'threshold', 'value': 10}], 'serviceID':
+            '123e4567-e89b-12d3-a456-426614174000'}
 
     Attributes:
         account_id (str): Reference to billable account Example: 123e4567-e89b-12d3-a456-426614174000.
-        parameters (List[ParameterT]): Service parameters Example: [{'name': 'region', 'value': 'Upper Valley'},
+        parameters (List['ParameterT']): Service parameters Example: [{'name': 'region', 'value': 'Upper Valley'},
             {'name': 'threshold', 'value': 10}].
         service_id (str): Reference to service requested Example: 123e4567-e89b-12d3-a456-426614174000.
-        metadata (Union[Unset, OrderRequestTMetadata]): Optional key/value metadata for reference Example: {'refID':
-            '33-444'}.
         name (Union[Unset, str]): Optional customer provided name Example: Fire risk for Lot2.
     """
 
     account_id: str
-    parameters: List[ParameterT]
+    parameters: List["ParameterT"]
     service_id: str
-    metadata: Union[Unset, OrderRequestTMetadata] = UNSET
     name: Union[Unset, str] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
@@ -43,10 +42,6 @@ class OrderRequestT:
             parameters.append(parameters_item)
 
         service_id = self.service_id
-        metadata: Union[Unset, Dict[str, Any]] = UNSET
-        if not isinstance(self.metadata, Unset):
-            metadata = self.metadata.to_dict()
-
         name = self.name
 
         field_dict: Dict[str, Any] = {}
@@ -58,8 +53,6 @@ class OrderRequestT:
                 "serviceID": service_id,
             }
         )
-        if metadata is not UNSET:
-            field_dict["metadata"] = metadata
         if name is not UNSET:
             field_dict["name"] = name
 
@@ -67,6 +60,8 @@ class OrderRequestT:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.parameter_t import ParameterT
+
         d = src_dict.copy()
         account_id = d.pop("accountID")
 
@@ -79,20 +74,12 @@ class OrderRequestT:
 
         service_id = d.pop("serviceID")
 
-        _metadata = d.pop("metadata", UNSET)
-        metadata: Union[Unset, OrderRequestTMetadata]
-        if isinstance(_metadata, Unset):
-            metadata = UNSET
-        else:
-            metadata = OrderRequestTMetadata.from_dict(_metadata)
-
         name = d.pop("name", UNSET)
 
         order_request_t = cls(
             account_id=account_id,
             parameters=parameters,
             service_id=service_id,
-            metadata=metadata,
             name=name,
         )
 

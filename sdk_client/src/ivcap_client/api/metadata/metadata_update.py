@@ -35,7 +35,7 @@ def _get_kwargs(
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
     return {
-        "method": "post",
+        "method": "put",
         "url": url,
         "headers": headers,
         "cookies": cookies,
@@ -94,13 +94,14 @@ def sync_detailed(
     schema: str,
     content_type: Union[Unset, str] = UNSET,
 ) -> Response[Union[AddMetaRT, Any, InvalidParameterValue, InvalidScopesT, NotImplementedT]]:
-    """add metadata
+    """update metadata
 
-     Attach new metadata to an entity.
+     Revoke a previous record for the same entity and same schema with
+                        this new aspect. ONLY works if there is only one active record for the entity/schema pair.
 
     Args:
-        entity_id (str): Entity to which attach metadata Example: http://moen.biz/christian.
-        schema (str): Schema of metadata Example: http://klein.net/bonnie.
+        entity_id (str): Entity to which attach metadata Example: urn:url:.....
+        schema (str): Schema of metadata Example: urn:url:.....
         content_type (Union[Unset, str]): Content-Type header, MUST be of application/json.
             Example: application/json.
 
@@ -134,13 +135,14 @@ def sync(
     schema: str,
     content_type: Union[Unset, str] = UNSET,
 ) -> Optional[Union[AddMetaRT, Any, InvalidParameterValue, InvalidScopesT, NotImplementedT]]:
-    """add metadata
+    """update metadata
 
-     Attach new metadata to an entity.
+     Revoke a previous record for the same entity and same schema with
+                        this new aspect. ONLY works if there is only one active record for the entity/schema pair.
 
     Args:
-        entity_id (str): Entity to which attach metadata Example: http://moen.biz/christian.
-        schema (str): Schema of metadata Example: http://klein.net/bonnie.
+        entity_id (str): Entity to which attach metadata Example: urn:url:.....
+        schema (str): Schema of metadata Example: urn:url:.....
         content_type (Union[Unset, str]): Content-Type header, MUST be of application/json.
             Example: application/json.
 
@@ -167,13 +169,14 @@ async def asyncio_detailed(
     schema: str,
     content_type: Union[Unset, str] = UNSET,
 ) -> Response[Union[AddMetaRT, Any, InvalidParameterValue, InvalidScopesT, NotImplementedT]]:
-    """add metadata
+    """update metadata
 
-     Attach new metadata to an entity.
+     Revoke a previous record for the same entity and same schema with
+                        this new aspect. ONLY works if there is only one active record for the entity/schema pair.
 
     Args:
-        entity_id (str): Entity to which attach metadata Example: http://moen.biz/christian.
-        schema (str): Schema of metadata Example: http://klein.net/bonnie.
+        entity_id (str): Entity to which attach metadata Example: urn:url:.....
+        schema (str): Schema of metadata Example: urn:url:.....
         content_type (Union[Unset, str]): Content-Type header, MUST be of application/json.
             Example: application/json.
 
@@ -205,13 +208,14 @@ async def asyncio(
     schema: str,
     content_type: Union[Unset, str] = UNSET,
 ) -> Optional[Union[AddMetaRT, Any, InvalidParameterValue, InvalidScopesT, NotImplementedT]]:
-    """add metadata
+    """update metadata
 
-     Attach new metadata to an entity.
+     Revoke a previous record for the same entity and same schema with
+                        this new aspect. ONLY works if there is only one active record for the entity/schema pair.
 
     Args:
-        entity_id (str): Entity to which attach metadata Example: http://moen.biz/christian.
-        schema (str): Schema of metadata Example: http://klein.net/bonnie.
+        entity_id (str): Entity to which attach metadata Example: urn:url:.....
+        schema (str): Schema of metadata Example: urn:url:.....
         content_type (Union[Unset, str]): Content-Type header, MUST be of application/json.
             Example: application/json.
 

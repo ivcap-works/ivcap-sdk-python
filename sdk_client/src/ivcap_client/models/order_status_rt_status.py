@@ -2,10 +2,13 @@ from enum import Enum
 
 
 class OrderStatusRTStatus(str, Enum):
-    PENDING = "pending"
-    EXECUTING = "executing"
-    FINISHED = "finished"
     ERROR = "error"
+    EXECUTING = "executing"
+    FAILED = "failed"
+    PENDING = "pending"
+    SCHEDULED = "scheduled"
+    SUCCEEDED = "succeeded"
+    UNKNOWN = "unknown"
 
     def __str__(self) -> str:
         return str(self.value)
