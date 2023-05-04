@@ -1,10 +1,13 @@
-from typing import Any, Dict, List, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
 
 import attr
 
-from ..models.ref_t import RefT
-from ..models.self_t import SelfT
 from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.ref_t import RefT
+    from ..models.self_t import SelfT
+
 
 T = TypeVar("T", bound="ServiceListItem")
 
@@ -14,27 +17,28 @@ class ServiceListItem:
     """
     Example:
         {'description': 'Some lengthy description of fire risk', 'id': 'service:acme:oracle', 'links': {'describedBy':
-            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis
-            reiciendis.'}, 'name': 'Fire risk for region', 'provider': {'id': 'http://sporer.name/buddy', 'links':
-            {'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio
-            officiis reiciendis.'}}}
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
+            dolores.'}, 'name': 'Fire risk for region', 'provider': {'id': 'http://erdman.info/maia_botsford', 'links':
+            {'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident
+            sapiente dolores.'}}}
 
     Attributes:
         links (SelfT):  Example: {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Blanditiis necessitatibus animi maiores sed odit.'}.
+            'application/openapi3+json'}, 'self': 'Quibusdam dolores officiis.'}.
         description (Union[Unset, str]): Optional description of the service Example: Some lengthy description of fire
             risk.
         id (Union[Unset, str]): Service ID Example: service:acme:oracle.
         name (Union[Unset, str]): Optional customer provided name Example: Fire risk for region.
-        provider (Union[Unset, RefT]):  Example: {'id': 'http://gaylord.biz/jacey', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}}.
+        provider (Union[Unset, RefT]):  Example: {'id': 'http://oreillyprosacco.net/lonzo', 'links': {'describedBy':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
+            dolores.'}}.
     """
 
-    links: SelfT
+    links: "SelfT"
     description: Union[Unset, str] = UNSET
     id: Union[Unset, str] = UNSET
     name: Union[Unset, str] = UNSET
-    provider: Union[Unset, RefT] = UNSET
+    provider: Union[Unset, "RefT"] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -67,6 +71,9 @@ class ServiceListItem:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.ref_t import RefT
+        from ..models.self_t import SelfT
+
         d = src_dict.copy()
         links = SelfT.from_dict(d.pop("links"))
 

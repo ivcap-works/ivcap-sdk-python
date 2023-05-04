@@ -1,8 +1,10 @@
+from http import HTTPStatus
 from typing import Any, Dict, Optional, Union, cast
 
 import httpx
 
-from ...client import AuthenticatedClient
+from ... import errors
+from ...client import AuthenticatedClient, Client
 from ...models.artifact_status_rt import ArtifactStatusRT
 from ...models.invalid_scopes_t import InvalidScopesT
 from ...models.not_implemented_t import NotImplementedT
@@ -17,8 +19,8 @@ def _get_kwargs(
     content_length: Union[Unset, int] = UNSET,
     x_name: Union[Unset, str] = UNSET,
     x_collection: Union[Unset, str] = UNSET,
-    upload_metadata: Union[Unset, str] = UNSET,
     x_content_type: Union[Unset, str] = UNSET,
+    x_content_length: Union[Unset, int] = UNSET,
     upload_length: Union[Unset, int] = UNSET,
     tus_resumable: Union[Unset, str] = UNSET,
 ) -> Dict[str, Any]:
@@ -42,11 +44,11 @@ def _get_kwargs(
     if not isinstance(x_collection, Unset):
         headers["X-Collection"] = x_collection
 
-    if not isinstance(upload_metadata, Unset):
-        headers["Upload-Metadata"] = upload_metadata
-
     if not isinstance(x_content_type, Unset):
         headers["X-Content-Type"] = x_content_type
+
+    if not isinstance(x_content_length, Unset):
+        headers["X-Content-Length"] = str(x_content_length)
 
     if not isinstance(upload_length, Unset):
         headers["Upload-Length"] = str(upload_length)
@@ -60,41 +62,45 @@ def _get_kwargs(
         "headers": headers,
         "cookies": cookies,
         "timeout": client.get_timeout(),
+        "follow_redirects": client.follow_redirects,
     }
 
 
 def _parse_response(
-    *, response: httpx.Response
+    *, client: Client, response: httpx.Response
 ) -> Optional[Union[Any, ArtifactStatusRT, InvalidScopesT, NotImplementedT]]:
-    if response.status_code == 201:
+    if response.status_code == HTTPStatus.CREATED:
         response_201 = ArtifactStatusRT.from_dict(response.json())
 
         return response_201
-    if response.status_code == 400:
+    if response.status_code == HTTPStatus.BAD_REQUEST:
         response_400 = cast(Any, None)
         return response_400
-    if response.status_code == 401:
+    if response.status_code == HTTPStatus.UNAUTHORIZED:
         response_401 = cast(Any, None)
         return response_401
-    if response.status_code == 403:
+    if response.status_code == HTTPStatus.FORBIDDEN:
         response_403 = InvalidScopesT.from_dict(response.json())
 
         return response_403
-    if response.status_code == 501:
+    if response.status_code == HTTPStatus.NOT_IMPLEMENTED:
         response_501 = NotImplementedT.from_dict(response.json())
 
         return response_501
-    return None
+    if client.raise_on_unexpected_status:
+        raise errors.UnexpectedStatus(response.status_code, response.content)
+    else:
+        return None
 
 
 def _build_response(
-    *, response: httpx.Response
+    *, client: Client, response: httpx.Response
 ) -> Response[Union[Any, ArtifactStatusRT, InvalidScopesT, NotImplementedT]]:
     return Response(
-        status_code=response.status_code,
+        status_code=HTTPStatus(response.status_code),
         content=response.content,
         headers=response.headers,
-        parsed=_parse_response(response=response),
+        parsed=_parse_response(client=client, response=response),
     )
 
 
@@ -106,8 +112,8 @@ def sync_detailed(
     content_length: Union[Unset, int] = UNSET,
     x_name: Union[Unset, str] = UNSET,
     x_collection: Union[Unset, str] = UNSET,
-    upload_metadata: Union[Unset, str] = UNSET,
     x_content_type: Union[Unset, str] = UNSET,
+    x_content_length: Union[Unset, int] = UNSET,
     upload_length: Union[Unset, int] = UNSET,
     tus_resumable: Union[Unset, str] = UNSET,
 ) -> Response[Union[Any, ArtifactStatusRT, InvalidScopesT, NotImplementedT]]:
@@ -127,23 +133,18 @@ def sync_detailed(
             jun-22.
         x_collection (Union[Unset, str]): X-Collection header, MAY define an collection name as a
             simple way of grouping artifacts Example: field-trip-jun-22.
-        upload_metadata (Union[Unset, str]): The Upload-Metadata request and response header MUST
-            consist of one or more
-                                        comma-separated key-value pairs. The key and value MUST be separated by a space.
-                                        The key MUST NOT contain spaces and commas and MUST NOT be empty. The key SHOULD be
-            ASCII
-                                        encoded and the value MUST be Base64 encoded. All keys MUST be unique. The value MAY
-            be empty.
-                                        In these cases, the space, which would normally separate the key and the value, MAY be
-            left out.
-                                        See https://tus.io/protocols/resumable-upload.html#upload-metadata Example: filename
-            d29ybGRfZG9taW5hdGlvbl9wbGFuLnBkZg==,is_confidential.
         x_content_type (Union[Unset, str]): X-Content-Type header, used for initial, empty content
             creation requests. Example: application/x-netcdf4.
+        x_content_length (Union[Unset, int]): X-Content-Length header, used for initial, empty
+            content creation requests. Example: 2376.
         upload_length (Union[Unset, int]): Upload-Length header, sets the expected content size
             part of the TUS protocol. Example: 2376.
         tus_resumable (Union[Unset, str]): Tus-Resumable header, specifies TUS protocol version.
             Example: 1.0.0.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Response[Union[Any, ArtifactStatusRT, InvalidScopesT, NotImplementedT]]
@@ -156,8 +157,8 @@ def sync_detailed(
         content_length=content_length,
         x_name=x_name,
         x_collection=x_collection,
-        upload_metadata=upload_metadata,
         x_content_type=x_content_type,
+        x_content_length=x_content_length,
         upload_length=upload_length,
         tus_resumable=tus_resumable,
     )
@@ -167,7 +168,7 @@ def sync_detailed(
         **kwargs,
     )
 
-    return _build_response(response=response)
+    return _build_response(client=client, response=response)
 
 
 def sync(
@@ -178,8 +179,8 @@ def sync(
     content_length: Union[Unset, int] = UNSET,
     x_name: Union[Unset, str] = UNSET,
     x_collection: Union[Unset, str] = UNSET,
-    upload_metadata: Union[Unset, str] = UNSET,
     x_content_type: Union[Unset, str] = UNSET,
+    x_content_length: Union[Unset, int] = UNSET,
     upload_length: Union[Unset, int] = UNSET,
     tus_resumable: Union[Unset, str] = UNSET,
 ) -> Optional[Union[Any, ArtifactStatusRT, InvalidScopesT, NotImplementedT]]:
@@ -199,26 +200,21 @@ def sync(
             jun-22.
         x_collection (Union[Unset, str]): X-Collection header, MAY define an collection name as a
             simple way of grouping artifacts Example: field-trip-jun-22.
-        upload_metadata (Union[Unset, str]): The Upload-Metadata request and response header MUST
-            consist of one or more
-                                        comma-separated key-value pairs. The key and value MUST be separated by a space.
-                                        The key MUST NOT contain spaces and commas and MUST NOT be empty. The key SHOULD be
-            ASCII
-                                        encoded and the value MUST be Base64 encoded. All keys MUST be unique. The value MAY
-            be empty.
-                                        In these cases, the space, which would normally separate the key and the value, MAY be
-            left out.
-                                        See https://tus.io/protocols/resumable-upload.html#upload-metadata Example: filename
-            d29ybGRfZG9taW5hdGlvbl9wbGFuLnBkZg==,is_confidential.
         x_content_type (Union[Unset, str]): X-Content-Type header, used for initial, empty content
             creation requests. Example: application/x-netcdf4.
+        x_content_length (Union[Unset, int]): X-Content-Length header, used for initial, empty
+            content creation requests. Example: 2376.
         upload_length (Union[Unset, int]): Upload-Length header, sets the expected content size
             part of the TUS protocol. Example: 2376.
         tus_resumable (Union[Unset, str]): Tus-Resumable header, specifies TUS protocol version.
             Example: 1.0.0.
 
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
     Returns:
-        Response[Union[Any, ArtifactStatusRT, InvalidScopesT, NotImplementedT]]
+        Union[Any, ArtifactStatusRT, InvalidScopesT, NotImplementedT]
     """
 
     return sync_detailed(
@@ -228,8 +224,8 @@ def sync(
         content_length=content_length,
         x_name=x_name,
         x_collection=x_collection,
-        upload_metadata=upload_metadata,
         x_content_type=x_content_type,
+        x_content_length=x_content_length,
         upload_length=upload_length,
         tus_resumable=tus_resumable,
     ).parsed
@@ -243,8 +239,8 @@ async def asyncio_detailed(
     content_length: Union[Unset, int] = UNSET,
     x_name: Union[Unset, str] = UNSET,
     x_collection: Union[Unset, str] = UNSET,
-    upload_metadata: Union[Unset, str] = UNSET,
     x_content_type: Union[Unset, str] = UNSET,
+    x_content_length: Union[Unset, int] = UNSET,
     upload_length: Union[Unset, int] = UNSET,
     tus_resumable: Union[Unset, str] = UNSET,
 ) -> Response[Union[Any, ArtifactStatusRT, InvalidScopesT, NotImplementedT]]:
@@ -264,23 +260,18 @@ async def asyncio_detailed(
             jun-22.
         x_collection (Union[Unset, str]): X-Collection header, MAY define an collection name as a
             simple way of grouping artifacts Example: field-trip-jun-22.
-        upload_metadata (Union[Unset, str]): The Upload-Metadata request and response header MUST
-            consist of one or more
-                                        comma-separated key-value pairs. The key and value MUST be separated by a space.
-                                        The key MUST NOT contain spaces and commas and MUST NOT be empty. The key SHOULD be
-            ASCII
-                                        encoded and the value MUST be Base64 encoded. All keys MUST be unique. The value MAY
-            be empty.
-                                        In these cases, the space, which would normally separate the key and the value, MAY be
-            left out.
-                                        See https://tus.io/protocols/resumable-upload.html#upload-metadata Example: filename
-            d29ybGRfZG9taW5hdGlvbl9wbGFuLnBkZg==,is_confidential.
         x_content_type (Union[Unset, str]): X-Content-Type header, used for initial, empty content
             creation requests. Example: application/x-netcdf4.
+        x_content_length (Union[Unset, int]): X-Content-Length header, used for initial, empty
+            content creation requests. Example: 2376.
         upload_length (Union[Unset, int]): Upload-Length header, sets the expected content size
             part of the TUS protocol. Example: 2376.
         tus_resumable (Union[Unset, str]): Tus-Resumable header, specifies TUS protocol version.
             Example: 1.0.0.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Response[Union[Any, ArtifactStatusRT, InvalidScopesT, NotImplementedT]]
@@ -293,8 +284,8 @@ async def asyncio_detailed(
         content_length=content_length,
         x_name=x_name,
         x_collection=x_collection,
-        upload_metadata=upload_metadata,
         x_content_type=x_content_type,
+        x_content_length=x_content_length,
         upload_length=upload_length,
         tus_resumable=tus_resumable,
     )
@@ -302,7 +293,7 @@ async def asyncio_detailed(
     async with httpx.AsyncClient(verify=client.verify_ssl) as _client:
         response = await _client.request(**kwargs)
 
-    return _build_response(response=response)
+    return _build_response(client=client, response=response)
 
 
 async def asyncio(
@@ -313,8 +304,8 @@ async def asyncio(
     content_length: Union[Unset, int] = UNSET,
     x_name: Union[Unset, str] = UNSET,
     x_collection: Union[Unset, str] = UNSET,
-    upload_metadata: Union[Unset, str] = UNSET,
     x_content_type: Union[Unset, str] = UNSET,
+    x_content_length: Union[Unset, int] = UNSET,
     upload_length: Union[Unset, int] = UNSET,
     tus_resumable: Union[Unset, str] = UNSET,
 ) -> Optional[Union[Any, ArtifactStatusRT, InvalidScopesT, NotImplementedT]]:
@@ -334,26 +325,21 @@ async def asyncio(
             jun-22.
         x_collection (Union[Unset, str]): X-Collection header, MAY define an collection name as a
             simple way of grouping artifacts Example: field-trip-jun-22.
-        upload_metadata (Union[Unset, str]): The Upload-Metadata request and response header MUST
-            consist of one or more
-                                        comma-separated key-value pairs. The key and value MUST be separated by a space.
-                                        The key MUST NOT contain spaces and commas and MUST NOT be empty. The key SHOULD be
-            ASCII
-                                        encoded and the value MUST be Base64 encoded. All keys MUST be unique. The value MAY
-            be empty.
-                                        In these cases, the space, which would normally separate the key and the value, MAY be
-            left out.
-                                        See https://tus.io/protocols/resumable-upload.html#upload-metadata Example: filename
-            d29ybGRfZG9taW5hdGlvbl9wbGFuLnBkZg==,is_confidential.
         x_content_type (Union[Unset, str]): X-Content-Type header, used for initial, empty content
             creation requests. Example: application/x-netcdf4.
+        x_content_length (Union[Unset, int]): X-Content-Length header, used for initial, empty
+            content creation requests. Example: 2376.
         upload_length (Union[Unset, int]): Upload-Length header, sets the expected content size
             part of the TUS protocol. Example: 2376.
         tus_resumable (Union[Unset, str]): Tus-Resumable header, specifies TUS protocol version.
             Example: 1.0.0.
 
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
     Returns:
-        Response[Union[Any, ArtifactStatusRT, InvalidScopesT, NotImplementedT]]
+        Union[Any, ArtifactStatusRT, InvalidScopesT, NotImplementedT]
     """
 
     return (
@@ -364,8 +350,8 @@ async def asyncio(
             content_length=content_length,
             x_name=x_name,
             x_collection=x_collection,
-            upload_metadata=upload_metadata,
             x_content_type=x_content_type,
+            x_content_length=x_content_length,
             upload_length=upload_length,
             tus_resumable=tus_resumable,
         )

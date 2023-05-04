@@ -1,9 +1,12 @@
-from typing import Any, Dict, List, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
 
 import attr
 
-from ..models.self_t import SelfT
 from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.self_t import SelfT
+
 
 T = TypeVar("T", bound="CreateResponseBodyTiny2")
 
@@ -14,15 +17,15 @@ class CreateResponseBodyTiny2:
 
     Example:
         {'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self':
-            'Odio officiis reiciendis.'}, 'name': 'Fire risk for Lot2'}
+            'Provident sapiente dolores.'}, 'name': 'Fire risk for Lot2'}
 
     Attributes:
         links (SelfT):  Example: {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Blanditiis necessitatibus animi maiores sed odit.'}.
+            'application/openapi3+json'}, 'self': 'Quibusdam dolores officiis.'}.
         name (Union[Unset, str]): Optional provider provided name Example: Fire risk for Lot2.
     """
 
-    links: SelfT
+    links: "SelfT"
     name: Union[Unset, str] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
@@ -45,6 +48,8 @@ class CreateResponseBodyTiny2:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.self_t import SelfT
+
         d = src_dict.copy()
         links = SelfT.from_dict(d.pop("links"))
 

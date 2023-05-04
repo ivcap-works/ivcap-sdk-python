@@ -1,13 +1,16 @@
-from typing import Any, Dict, List, Type, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union, cast
 
 import attr
 
-from ..models.parameter_def_t import ParameterDefT
-from ..models.parameter_t import ParameterT
-from ..models.ref_t import RefT
-from ..models.self_t import SelfT
 from ..models.service_status_rt_status import ServiceStatusRTStatus
 from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.parameter_def_t import ParameterDefT
+    from ..models.parameter_t import ParameterT
+    from ..models.ref_t import RefT
+    from ..models.self_t import SelfT
+
 
 T = TypeVar("T", bound="ServiceStatusRT")
 
@@ -16,52 +19,56 @@ T = TypeVar("T", bound="ServiceStatusRT")
 class ServiceStatusRT:
     """
     Example:
-        {'account': {'id': 'http://sporer.name/buddy', 'links': {'describedBy': {'href': 'https://api.com/swagger/...',
-            'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}}, 'description': 'This service ...',
-            'id': 'service:acme:oracle', 'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}, 'metadata': [{'name': 'Beatae numquam
-            maiores rem in laudantium ipsa.', 'value': 'Delectus quod odio nobis.'}, {'name': 'Beatae numquam maiores rem in
-            laudantium ipsa.', 'value': 'Delectus quod odio nobis.'}, {'name': 'Beatae numquam maiores rem in laudantium
-            ipsa.', 'value': 'Delectus quod odio nobis.'}, {'name': 'Beatae numquam maiores rem in laudantium ipsa.',
-            'value': 'Delectus quod odio nobis.'}], 'name': 'Fire risk for Lot2', 'parameters': [{'description': 'The name
-            of the region as according to ...', 'label': 'Region Name', 'name': 'region', 'type': 'string'}, {'label':
+        {'account': {'id': 'http://erdman.info/maia_botsford', 'links': {'describedBy': {'href':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'}},
+            'description': 'This service ...', 'id': 'service:acme:oracle', 'links': {'describedBy': {'href':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
+            'metadata': [{'name': 'Voluptatem et vitae cupiditate nesciunt necessitatibus ipsa.', 'value': 'Ut optio ullam
+            alias reiciendis.'}, {'name': 'Voluptatem et vitae cupiditate nesciunt necessitatibus ipsa.', 'value': 'Ut optio
+            ullam alias reiciendis.'}, {'name': 'Voluptatem et vitae cupiditate nesciunt necessitatibus ipsa.', 'value': 'Ut
+            optio ullam alias reiciendis.'}, {'name': 'Voluptatem et vitae cupiditate nesciunt necessitatibus ipsa.',
+            'value': 'Ut optio ullam alias reiciendis.'}], 'name': 'Fire risk for Lot2', 'parameters': [{'description': 'The
+            name of the region as according to ...', 'label': 'Region Name', 'name': 'region', 'type': 'string'}, {'label':
             'Rainfall/month threshold', 'name': 'threshold', 'type': 'float', 'unit': 'm'}], 'provider': {'id':
-            'http://sporer.name/buddy', 'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}}, 'provider-ref': 'service_foo', 'status':
-            'active', 'tags': ['tag1', 'tag2']}
+            'http://erdman.info/maia_botsford', 'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
+            'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'}}, 'provider-ref': 'service_foo', 'status':
+            'error', 'tags': ['tag1', 'tag2']}
 
     Attributes:
         id (str): Service ID Example: service:acme:oracle.
         links (SelfT):  Example: {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Blanditiis necessitatibus animi maiores sed odit.'}.
-        parameters (List[ParameterDefT]): Service parameter definitions Example: [{'description': 'The name of the
+            'application/openapi3+json'}, 'self': 'Quibusdam dolores officiis.'}.
+        parameters (List['ParameterDefT']): Service parameter definitions Example: [{'description': 'The name of the
             region as according to ...', 'label': 'Region Name', 'name': 'region', 'type': 'string'}, {'label':
             'Rainfall/month threshold', 'name': 'threshold', 'type': 'float', 'unit': 'm'}].
-        account (Union[Unset, RefT]):  Example: {'id': 'http://gaylord.biz/jacey', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}}.
+        account (Union[Unset, RefT]):  Example: {'id': 'http://oreillyprosacco.net/lonzo', 'links': {'describedBy':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
+            dolores.'}}.
         description (Union[Unset, str]): More detailed description of the service Example: This service ....
-        metadata (Union[Unset, List[ParameterT]]): Optional provider provided meta tags Example: [{'name': 'Beatae
-            numquam maiores rem in laudantium ipsa.', 'value': 'Delectus quod odio nobis.'}, {'name': 'Beatae numquam
-            maiores rem in laudantium ipsa.', 'value': 'Delectus quod odio nobis.'}, {'name': 'Beatae numquam maiores rem in
-            laudantium ipsa.', 'value': 'Delectus quod odio nobis.'}, {'name': 'Beatae numquam maiores rem in laudantium
-            ipsa.', 'value': 'Delectus quod odio nobis.'}].
+        metadata (Union[Unset, List['ParameterT']]): Optional provider provided meta tags Example: [{'name': 'Voluptatem
+            et vitae cupiditate nesciunt necessitatibus ipsa.', 'value': 'Ut optio ullam alias reiciendis.'}, {'name':
+            'Voluptatem et vitae cupiditate nesciunt necessitatibus ipsa.', 'value': 'Ut optio ullam alias reiciendis.'},
+            {'name': 'Voluptatem et vitae cupiditate nesciunt necessitatibus ipsa.', 'value': 'Ut optio ullam alias
+            reiciendis.'}, {'name': 'Voluptatem et vitae cupiditate nesciunt necessitatibus ipsa.', 'value': 'Ut optio ullam
+            alias reiciendis.'}].
         name (Union[Unset, str]): Optional provider provided name Example: Fire risk for Lot2.
-        provider (Union[Unset, RefT]):  Example: {'id': 'http://gaylord.biz/jacey', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}}.
+        provider (Union[Unset, RefT]):  Example: {'id': 'http://oreillyprosacco.net/lonzo', 'links': {'describedBy':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
+            dolores.'}}.
         provider_ref (Union[Unset, str]): Provider provided ID. Needs to be a single string with punctuations allowed.
             Might have been changed Example: service_foo.
-        status (Union[Unset, ServiceStatusRTStatus]): Service status Example: inactive.
+        status (Union[Unset, ServiceStatusRTStatus]): Service status Example: active.
         tags (Union[Unset, List[str]]): Optional provider provided tags Example: ['tag1', 'tag2'].
     """
 
     id: str
-    links: SelfT
-    parameters: List[ParameterDefT]
-    account: Union[Unset, RefT] = UNSET
+    links: "SelfT"
+    parameters: List["ParameterDefT"]
+    account: Union[Unset, "RefT"] = UNSET
     description: Union[Unset, str] = UNSET
-    metadata: Union[Unset, List[ParameterT]] = UNSET
+    metadata: Union[Unset, List["ParameterT"]] = UNSET
     name: Union[Unset, str] = UNSET
-    provider: Union[Unset, RefT] = UNSET
+    provider: Union[Unset, "RefT"] = UNSET
     provider_ref: Union[Unset, str] = UNSET
     status: Union[Unset, ServiceStatusRTStatus] = UNSET
     tags: Union[Unset, List[str]] = UNSET
@@ -134,6 +141,11 @@ class ServiceStatusRT:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.parameter_def_t import ParameterDefT
+        from ..models.parameter_t import ParameterT
+        from ..models.ref_t import RefT
+        from ..models.self_t import SelfT
+
         d = src_dict.copy()
         id = d.pop("id")
 

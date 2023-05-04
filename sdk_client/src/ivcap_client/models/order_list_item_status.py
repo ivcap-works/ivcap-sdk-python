@@ -2,10 +2,10 @@ from enum import Enum
 
 
 class OrderListItemStatus(str, Enum):
-    PENDING = "pending"
+    ERROR = "error"
     EXECUTING = "executing"
     FINISHED = "finished"
-    ERROR = "error"
+    PENDING = "pending"
 
     def __str__(self) -> str:
         return str(self.value)

@@ -10,11 +10,11 @@ class NotImplementedT:
     """Method is not yet implemented
 
     Example:
-        {'message': 'Laudantium cupiditate natus eligendi asperiores aliquam.'}
+        {'message': 'Inventore at dolorem.'}
 
     Attributes:
-        message (str): Information message Default: 'Method not implemented'. Example: Asperiores animi ducimus odit
-            similique occaecati..
+        message (str): Information message Default: 'Method not implemented'. Example: Nobis exercitationem consequuntur
+            incidunt iste ducimus facere..
     """
 
     message: str = "Method not implemented"

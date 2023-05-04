@@ -1,11 +1,12 @@
 """ Contains some shared types for properties """
-from typing import BinaryIO, Generic, MutableMapping, Optional, Tuple, TypeVar
+from http import HTTPStatus
+from typing import BinaryIO, Generic, Literal, MutableMapping, Optional, Tuple, TypeVar
 
 import attr
 
 
 class Unset:
-    def __bool__(self) -> bool:
+    def __bool__(self) -> Literal[False]:
         return False
 
 
@@ -34,7 +35,7 @@ T = TypeVar("T")
 class Response(Generic[T]):
     """A response from an endpoint"""
 
-    status_code: int
+    status_code: HTTPStatus
     content: bytes
     headers: MutableMapping[str, str]
     parsed: Optional[T]

@@ -1,9 +1,12 @@
-from typing import Any, Dict, List, Type, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union, cast
 
 import attr
 
-from ..models.resource_memory_t import ResourceMemoryT
 from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.resource_memory_t import ResourceMemoryT
+
 
 T = TypeVar("T", bound="BasicWorkflowOptsT")
 
@@ -12,28 +15,28 @@ T = TypeVar("T", bound="BasicWorkflowOptsT")
 class BasicWorkflowOptsT:
     """
     Example:
-        {'command': ['Libero mollitia quis delectus omnis et.', 'Exercitationem blanditiis omnis magnam repellat impedit
-            ullam.'], 'cpu': {'limit': 'Deserunt fugiat hic eos quaerat voluptas distinctio.', 'request': 'Reprehenderit
-            molestiae cupiditate voluptas et voluptatibus illum.'}, 'image': 'Quasi quis laborum mollitia animi.', 'memory':
-            {'limit': 'Deserunt fugiat hic eos quaerat voluptas distinctio.', 'request': 'Reprehenderit molestiae cupiditate
-            voluptas et voluptatibus illum.'}}
+        {'command': ['Odit dolorum nulla quo.', 'Asperiores temporibus.', 'Ut voluptatem.'], 'cpu': {'limit': 'Quidem
+            nulla quae provident dolor amet nulla.', 'request': 'Et aut autem deserunt sit architecto.'}, 'image': 'Est esse
+            voluptas consectetur quia.', 'memory': {'limit': 'Quidem nulla quae provident dolor amet nulla.', 'request': 'Et
+            aut autem deserunt sit architecto.'}}
 
     Attributes:
         command (Union[Unset, List[str]]): Command to start the container - needed for some container runtimes Example:
-            ['Nulla est vel reiciendis facere inventore.', 'Repudiandae omnis ipsam animi tempore.', 'Id blanditiis.'].
+            ['Sed error id et cupiditate.', 'Ratione qui amet reiciendis debitis.', 'Reprehenderit voluptate nostrum
+            quibusdam quia.', 'Neque sapiente commodi dolorem.'].
         cpu (Union[Unset, ResourceMemoryT]): See
             and https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/ for units Example:
-            {'limit': 'Et est reiciendis enim adipisci et quibusdam.', 'request': 'Voluptas ut aut placeat autem aut.'}.
-        image (Union[Unset, str]): container image name Example: Dignissimos est autem..
+            {'limit': 'Molestiae et ex hic aut dicta dolorem.', 'request': 'Voluptas odit.'}.
+        image (Union[Unset, str]): container image name Example: Reprehenderit ratione accusamus maxime iusto iste..
         memory (Union[Unset, ResourceMemoryT]): See
             and https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/ for units Example:
-            {'limit': 'Et est reiciendis enim adipisci et quibusdam.', 'request': 'Voluptas ut aut placeat autem aut.'}.
+            {'limit': 'Molestiae et ex hic aut dicta dolorem.', 'request': 'Voluptas odit.'}.
     """
 
     command: Union[Unset, List[str]] = UNSET
-    cpu: Union[Unset, ResourceMemoryT] = UNSET
+    cpu: Union[Unset, "ResourceMemoryT"] = UNSET
     image: Union[Unset, str] = UNSET
-    memory: Union[Unset, ResourceMemoryT] = UNSET
+    memory: Union[Unset, "ResourceMemoryT"] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -66,6 +69,8 @@ class BasicWorkflowOptsT:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.resource_memory_t import ResourceMemoryT
+
         d = src_dict.copy()
         command = cast(List[str], d.pop("command", UNSET))
 

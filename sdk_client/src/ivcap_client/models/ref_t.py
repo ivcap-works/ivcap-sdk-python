@@ -1,9 +1,12 @@
-from typing import Any, Dict, List, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
 
 import attr
 
-from ..models.self_t import SelfT
 from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.self_t import SelfT
+
 
 T = TypeVar("T", bound="RefT")
 
@@ -12,17 +15,17 @@ T = TypeVar("T", bound="RefT")
 class RefT:
     """
     Example:
-        {'id': 'http://gaylord.biz/jacey', 'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}}
+        {'id': 'http://oreillyprosacco.net/lonzo', 'links': {'describedBy': {'href': 'https://api.com/swagger/...',
+            'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'}}
 
     Attributes:
-        id (Union[Unset, str]):  Example: http://lemkerogahn.net/stanford.
+        id (Union[Unset, str]):  Example: http://schmidthoeger.info/roma.
         links (Union[Unset, SelfT]):  Example: {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Blanditiis necessitatibus animi maiores sed odit.'}.
+            'application/openapi3+json'}, 'self': 'Quibusdam dolores officiis.'}.
     """
 
     id: Union[Unset, str] = UNSET
-    links: Union[Unset, SelfT] = UNSET
+    links: Union[Unset, "SelfT"] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -43,6 +46,8 @@ class RefT:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.self_t import SelfT
+
         d = src_dict.copy()
         id = d.pop("id", UNSET)
 

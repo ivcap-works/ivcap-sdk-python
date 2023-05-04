@@ -1,8 +1,10 @@
+from http import HTTPStatus
 from typing import Any, Dict, Optional, Union, cast
 
 import httpx
 
-from ...client import AuthenticatedClient
+from ... import errors
+from ...client import AuthenticatedClient, Client
 from ...models.invalid_parameter_value import InvalidParameterValue
 from ...models.invalid_scopes_t import InvalidScopesT
 from ...models.not_implemented_t import NotImplementedT
@@ -30,53 +32,57 @@ def _get_kwargs(
         "headers": headers,
         "cookies": cookies,
         "timeout": client.get_timeout(),
+        "follow_redirects": client.follow_redirects,
         "json": json_json_body,
     }
 
 
 def _parse_response(
-    *, response: httpx.Response
+    *, client: Client, response: httpx.Response
 ) -> Optional[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, OrderStatusRT, ResourceNotFoundT]]:
-    if response.status_code == 200:
+    if response.status_code == HTTPStatus.OK:
         response_200 = OrderStatusRT.from_dict(response.json())
 
         return response_200
-    if response.status_code == 400:
+    if response.status_code == HTTPStatus.BAD_REQUEST:
         response_400 = cast(Any, None)
         return response_400
-    if response.status_code == 401:
+    if response.status_code == HTTPStatus.UNAUTHORIZED:
         response_401 = cast(Any, None)
         return response_401
-    if response.status_code == 403:
+    if response.status_code == HTTPStatus.FORBIDDEN:
         response_403 = InvalidScopesT.from_dict(response.json())
 
         return response_403
-    if response.status_code == 404:
+    if response.status_code == HTTPStatus.NOT_FOUND:
         response_404 = ResourceNotFoundT.from_dict(response.json())
 
         return response_404
-    if response.status_code == 422:
+    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
         response_422 = InvalidParameterValue.from_dict(response.json())
 
         return response_422
-    if response.status_code == 501:
+    if response.status_code == HTTPStatus.NOT_IMPLEMENTED:
         response_501 = NotImplementedT.from_dict(response.json())
 
         return response_501
-    if response.status_code == 503:
+    if response.status_code == HTTPStatus.SERVICE_UNAVAILABLE:
         response_503 = cast(Any, None)
         return response_503
-    return None
+    if client.raise_on_unexpected_status:
+        raise errors.UnexpectedStatus(response.status_code, response.content)
+    else:
+        return None
 
 
 def _build_response(
-    *, response: httpx.Response
+    *, client: Client, response: httpx.Response
 ) -> Response[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, OrderStatusRT, ResourceNotFoundT]]:
     return Response(
-        status_code=response.status_code,
+        status_code=HTTPStatus(response.status_code),
         content=response.content,
         headers=response.headers,
-        parsed=_parse_response(response=response),
+        parsed=_parse_response(client=client, response=response),
     )
 
 
@@ -91,9 +97,12 @@ def sync_detailed(
 
     Args:
         json_body (OrderRequestT):  Example: {'accountID': '123e4567-e89b-12d3-a456-426614174000',
-            'metadata': {'refID': '33-444'}, 'name': 'Fire risk for Lot2', 'parameters': [{'name':
-            'region', 'value': 'Upper Valley'}, {'name': 'threshold', 'value': 10}], 'serviceID':
-            '123e4567-e89b-12d3-a456-426614174000'}.
+            'name': 'Fire risk for Lot2', 'parameters': [{'name': 'region', 'value': 'Upper Valley'},
+            {'name': 'threshold', 'value': 10}], 'serviceID': '123e4567-e89b-12d3-a456-426614174000'}.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Response[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, OrderStatusRT, ResourceNotFoundT]]
@@ -109,7 +118,7 @@ def sync_detailed(
         **kwargs,
     )
 
-    return _build_response(response=response)
+    return _build_response(client=client, response=response)
 
 
 def sync(
@@ -123,12 +132,15 @@ def sync(
 
     Args:
         json_body (OrderRequestT):  Example: {'accountID': '123e4567-e89b-12d3-a456-426614174000',
-            'metadata': {'refID': '33-444'}, 'name': 'Fire risk for Lot2', 'parameters': [{'name':
-            'region', 'value': 'Upper Valley'}, {'name': 'threshold', 'value': 10}], 'serviceID':
-            '123e4567-e89b-12d3-a456-426614174000'}.
+            'name': 'Fire risk for Lot2', 'parameters': [{'name': 'region', 'value': 'Upper Valley'},
+            {'name': 'threshold', 'value': 10}], 'serviceID': '123e4567-e89b-12d3-a456-426614174000'}.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, OrderStatusRT, ResourceNotFoundT]]
+        Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, OrderStatusRT, ResourceNotFoundT]
     """
 
     return sync_detailed(
@@ -148,9 +160,12 @@ async def asyncio_detailed(
 
     Args:
         json_body (OrderRequestT):  Example: {'accountID': '123e4567-e89b-12d3-a456-426614174000',
-            'metadata': {'refID': '33-444'}, 'name': 'Fire risk for Lot2', 'parameters': [{'name':
-            'region', 'value': 'Upper Valley'}, {'name': 'threshold', 'value': 10}], 'serviceID':
-            '123e4567-e89b-12d3-a456-426614174000'}.
+            'name': 'Fire risk for Lot2', 'parameters': [{'name': 'region', 'value': 'Upper Valley'},
+            {'name': 'threshold', 'value': 10}], 'serviceID': '123e4567-e89b-12d3-a456-426614174000'}.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Response[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, OrderStatusRT, ResourceNotFoundT]]
@@ -164,7 +179,7 @@ async def asyncio_detailed(
     async with httpx.AsyncClient(verify=client.verify_ssl) as _client:
         response = await _client.request(**kwargs)
 
-    return _build_response(response=response)
+    return _build_response(client=client, response=response)
 
 
 async def asyncio(
@@ -178,12 +193,15 @@ async def asyncio(
 
     Args:
         json_body (OrderRequestT):  Example: {'accountID': '123e4567-e89b-12d3-a456-426614174000',
-            'metadata': {'refID': '33-444'}, 'name': 'Fire risk for Lot2', 'parameters': [{'name':
-            'region', 'value': 'Upper Valley'}, {'name': 'threshold', 'value': 10}], 'serviceID':
-            '123e4567-e89b-12d3-a456-426614174000'}.
+            'name': 'Fire risk for Lot2', 'parameters': [{'name': 'region', 'value': 'Upper Valley'},
+            {'name': 'threshold', 'value': 10}], 'serviceID': '123e4567-e89b-12d3-a456-426614174000'}.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, OrderStatusRT, ResourceNotFoundT]]
+        Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, OrderStatusRT, ResourceNotFoundT]
     """
 
     return (

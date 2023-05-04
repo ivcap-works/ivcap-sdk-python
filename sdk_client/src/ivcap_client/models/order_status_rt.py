@@ -1,14 +1,16 @@
-from typing import Any, Dict, List, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
 
 import attr
 
-from ..models.order_status_rt_metadata import OrderStatusRTMetadata
 from ..models.order_status_rt_status import OrderStatusRTStatus
-from ..models.parameter_t import ParameterT
-from ..models.product_t import ProductT
-from ..models.ref_t import RefT
-from ..models.self_t import SelfT
 from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.parameter_t import ParameterT
+    from ..models.product_t import ProductT
+    from ..models.ref_t import RefT
+    from ..models.self_t import SelfT
+
 
 T = TypeVar("T", bound="OrderStatusRT")
 
@@ -17,45 +19,49 @@ T = TypeVar("T", bound="OrderStatusRT")
 class OrderStatusRT:
     """
     Example:
-        {'account': {'id': 'http://sporer.name/buddy', 'links': {'describedBy': {'href': 'https://api.com/swagger/...',
-            'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}}, 'id':
-            '123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}, 'metadata': {'refID': '33-444'}, 'name':
-            'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'parameters': [{'name': 'region', 'value': 'Upper Valley'},
-            {'name': 'threshold', 'value': 10}], 'products': [{'href': 'https:/.../1/artifacts/0000-00001220', 'mime-type':
-            'image/geo+tiff', 'name': 'fire risk map', 'size': 1234963}], 'service': {'id': 'http://sporer.name/buddy',
-            'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self':
-            'Odio officiis reiciendis.'}}, 'status': 'error'}
+        {'account': {'id': 'http://erdman.info/maia_botsford', 'links': {'describedBy': {'href':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'}},
+            'finished_at': '2023-03-17T04:57:00Z', 'id': '123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
+            dolores.'}, 'name': 'Fire risk for Lot2', 'ordered_at': '2023-03-17T04:57:00Z', 'parameters': [{'name':
+            'region', 'value': 'Upper Valley'}, {'name': 'threshold', 'value': 10}], 'products': [{'href':
+            'https:/.../1/artifacts/0000-00001220', 'mime-type': 'image/geo+tiff', 'name': 'fire risk map', 'size':
+            1234963}], 'service': {'id': 'http://erdman.info/maia_botsford', 'links': {'describedBy': {'href':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'}},
+            'started_at': '2023-03-17T04:57:00Z', 'status': 'executing'}
 
     Attributes:
         id (str): Order ID Example: 123e4567-e89b-12d3-a456-426614174000.
-        parameters (List[ParameterT]): Service parameters Example: [{'name': 'region', 'value': 'Upper Valley'},
+        parameters (List['ParameterT']): Service parameters Example: [{'name': 'region', 'value': 'Upper Valley'},
             {'name': 'threshold', 'value': 10}].
-        account (Union[Unset, RefT]):  Example: {'id': 'http://gaylord.biz/jacey', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}}.
+        account (Union[Unset, RefT]):  Example: {'id': 'http://oreillyprosacco.net/lonzo', 'links': {'describedBy':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
+            dolores.'}}.
+        finished_at (Union[Unset, str]): DateTime order processing finished Example: 2023-03-17T04:57:00Z.
         links (Union[Unset, SelfT]):  Example: {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Blanditiis necessitatibus animi maiores sed odit.'}.
-        metadata (Union[Unset, OrderStatusRTMetadata]): Optional key/value metadata for reference Example: {'refID':
-            '33-444'}.
+            'application/openapi3+json'}, 'self': 'Quibusdam dolores officiis.'}.
         name (Union[Unset, str]): Optional customer provided name Example: Fire risk for Lot2.
-        ordered_at (Union[Unset, str]): Order Date Example: 2022-01-01.
-        products (Union[Unset, List[ProductT]]): Products delivered for this order Example: [{'href':
+        ordered_at (Union[Unset, str]): DateTime order was placed Example: 2023-03-17T04:57:00Z.
+        products (Union[Unset, List['ProductT']]): Products delivered for this order Example: [{'href':
             'https:/.../1/artifacts/0000-00001220', 'mime-type': 'image/geo+tiff', 'name': 'fire risk map', 'size':
             1234963}].
-        service (Union[Unset, RefT]):  Example: {'id': 'http://gaylord.biz/jacey', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Odio officiis reiciendis.'}}.
-        status (Union[Unset, OrderStatusRTStatus]): Order status Example: finished.
+        service (Union[Unset, RefT]):  Example: {'id': 'http://oreillyprosacco.net/lonzo', 'links': {'describedBy':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
+            dolores.'}}.
+        started_at (Union[Unset, str]): DateTime order processing started Example: 2023-03-17T04:57:00Z.
+        status (Union[Unset, OrderStatusRTStatus]): Order status Example: succeeded.
     """
 
     id: str
-    parameters: List[ParameterT]
-    account: Union[Unset, RefT] = UNSET
-    links: Union[Unset, SelfT] = UNSET
-    metadata: Union[Unset, OrderStatusRTMetadata] = UNSET
+    parameters: List["ParameterT"]
+    account: Union[Unset, "RefT"] = UNSET
+    finished_at: Union[Unset, str] = UNSET
+    links: Union[Unset, "SelfT"] = UNSET
     name: Union[Unset, str] = UNSET
     ordered_at: Union[Unset, str] = UNSET
-    products: Union[Unset, List[ProductT]] = UNSET
-    service: Union[Unset, RefT] = UNSET
+    products: Union[Unset, List["ProductT"]] = UNSET
+    service: Union[Unset, "RefT"] = UNSET
+    started_at: Union[Unset, str] = UNSET
     status: Union[Unset, OrderStatusRTStatus] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
@@ -71,13 +77,10 @@ class OrderStatusRT:
         if not isinstance(self.account, Unset):
             account = self.account.to_dict()
 
+        finished_at = self.finished_at
         links: Union[Unset, Dict[str, Any]] = UNSET
         if not isinstance(self.links, Unset):
             links = self.links.to_dict()
-
-        metadata: Union[Unset, Dict[str, Any]] = UNSET
-        if not isinstance(self.metadata, Unset):
-            metadata = self.metadata.to_dict()
 
         name = self.name
         ordered_at = self.ordered_at
@@ -93,6 +96,7 @@ class OrderStatusRT:
         if not isinstance(self.service, Unset):
             service = self.service.to_dict()
 
+        started_at = self.started_at
         status: Union[Unset, str] = UNSET
         if not isinstance(self.status, Unset):
             status = self.status.value
@@ -107,10 +111,10 @@ class OrderStatusRT:
         )
         if account is not UNSET:
             field_dict["account"] = account
+        if finished_at is not UNSET:
+            field_dict["finished_at"] = finished_at
         if links is not UNSET:
             field_dict["links"] = links
-        if metadata is not UNSET:
-            field_dict["metadata"] = metadata
         if name is not UNSET:
             field_dict["name"] = name
         if ordered_at is not UNSET:
@@ -119,6 +123,8 @@ class OrderStatusRT:
             field_dict["products"] = products
         if service is not UNSET:
             field_dict["service"] = service
+        if started_at is not UNSET:
+            field_dict["started_at"] = started_at
         if status is not UNSET:
             field_dict["status"] = status
 
@@ -126,6 +132,11 @@ class OrderStatusRT:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.parameter_t import ParameterT
+        from ..models.product_t import ProductT
+        from ..models.ref_t import RefT
+        from ..models.self_t import SelfT
+
         d = src_dict.copy()
         id = d.pop("id")
 
@@ -143,19 +154,14 @@ class OrderStatusRT:
         else:
             account = RefT.from_dict(_account)
 
+        finished_at = d.pop("finished_at", UNSET)
+
         _links = d.pop("links", UNSET)
         links: Union[Unset, SelfT]
         if isinstance(_links, Unset):
             links = UNSET
         else:
             links = SelfT.from_dict(_links)
-
-        _metadata = d.pop("metadata", UNSET)
-        metadata: Union[Unset, OrderStatusRTMetadata]
-        if isinstance(_metadata, Unset):
-            metadata = UNSET
-        else:
-            metadata = OrderStatusRTMetadata.from_dict(_metadata)
 
         name = d.pop("name", UNSET)
 
@@ -175,6 +181,8 @@ class OrderStatusRT:
         else:
             service = RefT.from_dict(_service)
 
+        started_at = d.pop("started_at", UNSET)
+
         _status = d.pop("status", UNSET)
         status: Union[Unset, OrderStatusRTStatus]
         if isinstance(_status, Unset):
@@ -186,12 +194,13 @@ class OrderStatusRT:
             id=id,
             parameters=parameters,
             account=account,
+            finished_at=finished_at,
             links=links,
-            metadata=metadata,
             name=name,
             ordered_at=ordered_at,
             products=products,
             service=service,
+            started_at=started_at,
             status=status,
         )
 

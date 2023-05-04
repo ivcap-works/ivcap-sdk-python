@@ -1,8 +1,10 @@
+from http import HTTPStatus
 from typing import Any, Dict, Optional, Union, cast
 
 import httpx
 
-from ...client import AuthenticatedClient
+from ... import errors
+from ...client import AuthenticatedClient, Client
 from ...models.invalid_parameter_value import InvalidParameterValue
 from ...models.invalid_scopes_t import InvalidScopesT
 from ...models.not_implemented_t import NotImplementedT
@@ -37,51 +39,55 @@ def _get_kwargs(
         "headers": headers,
         "cookies": cookies,
         "timeout": client.get_timeout(),
+        "follow_redirects": client.follow_redirects,
         "json": json_json_body,
         "params": params,
     }
 
 
 def _parse_response(
-    *, response: httpx.Response
+    *, client: Client, response: httpx.Response
 ) -> Optional[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]:
-    if response.status_code == 200:
+    if response.status_code == HTTPStatus.OK:
         response_200 = ServiceStatusRT.from_dict(response.json())
 
         return response_200
-    if response.status_code == 400:
+    if response.status_code == HTTPStatus.BAD_REQUEST:
         response_400 = cast(Any, None)
         return response_400
-    if response.status_code == 401:
+    if response.status_code == HTTPStatus.UNAUTHORIZED:
         response_401 = cast(Any, None)
         return response_401
-    if response.status_code == 403:
+    if response.status_code == HTTPStatus.FORBIDDEN:
         response_403 = InvalidScopesT.from_dict(response.json())
 
         return response_403
-    if response.status_code == 404:
+    if response.status_code == HTTPStatus.NOT_FOUND:
         response_404 = ResourceNotFoundT.from_dict(response.json())
 
         return response_404
-    if response.status_code == 422:
+    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
         response_422 = InvalidParameterValue.from_dict(response.json())
 
         return response_422
-    if response.status_code == 501:
+    if response.status_code == HTTPStatus.NOT_IMPLEMENTED:
         response_501 = NotImplementedT.from_dict(response.json())
 
         return response_501
-    return None
+    if client.raise_on_unexpected_status:
+        raise errors.UnexpectedStatus(response.status_code, response.content)
+    else:
+        return None
 
 
 def _build_response(
-    *, response: httpx.Response
+    *, client: Client, response: httpx.Response
 ) -> Response[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]:
     return Response(
-        status_code=response.status_code,
+        status_code=HTTPStatus(response.status_code),
         content=response.content,
         headers=response.headers,
-        parsed=_parse_response(response=response),
+        parsed=_parse_response(client=client, response=response),
     )
 
 
@@ -97,29 +103,32 @@ def sync_detailed(
      Update an existing services and return its status.
 
     Args:
-        id (str): ID of services to update Example: Enim officiis non repudiandae debitis maxime..
-        force_create (Union[Unset, None, bool]): Create if not already exist
+        id (str): ID of services to update Example: Unde aperiam et nihil rerum..
+        force_create (Union[Unset, None, bool]): Create if not already exist Example: True.
         json_body (ServiceDescriptionT):  Example: {'account-id': 'cayp:account:acme', 'banner':
-            'http://stark.info/tess.gaylord', 'description': 'This service ...', 'metadata': [{'name':
-            'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}, {'name':
-            'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}, {'name':
-            'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}, {'name':
-            'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}], 'name':
-            'Fire risk for Lot2', 'parameters': [{'description': 'The name of the region as according
-            to ...', 'label': 'Region Name', 'name': 'region', 'type': 'string'}, {'label':
-            'Rainfall/month threshold', 'name': 'threshold', 'type': 'float', 'unit': 'm'}],
-            'provider-id': 'cayp:provider:acme', 'provider-ref': 'service_foo_patch_1', 'references':
-            [{'title': 'Commodi aut voluptatem magni.', 'uri': 'http://mclaughlintremblay.name/adam'},
-            {'title': 'Commodi aut voluptatem magni.', 'uri': 'http://mclaughlintremblay.name/adam'},
-            {'title': 'Commodi aut voluptatem magni.', 'uri': 'http://mclaughlintremblay.name/adam'}],
-            'tags': ['tag1', 'tag2'], 'workflow': {'argo': 'Sed ut in distinctio consequatur aut
-            voluptas.', 'basic': {'command': ['Unde fuga sed veniam.', 'Et aut autem deserunt sit
-            architecto.', 'Quidem nulla quae provident dolor amet nulla.'], 'cpu': {'limit': 'Deserunt
-            fugiat hic eos quaerat voluptas distinctio.', 'request': 'Reprehenderit molestiae
-            cupiditate voluptas et voluptatibus illum.'}, 'image': 'Officiis consequatur corporis
-            autem.', 'memory': {'limit': 'Deserunt fugiat hic eos quaerat voluptas distinctio.',
-            'request': 'Reprehenderit molestiae cupiditate voluptas et voluptatibus illum.'}}, 'opts':
-            'Et vel.', 'type': 'Alias aut voluptas molestiae.'}}.
+            'http://renner.info/bethany', 'description': 'This service ...', 'metadata': [{'name':
+            'Quis rerum dignissimos.', 'value': 'Expedita quia deserunt veritatis sequi voluptas.'},
+            {'name': 'Quis rerum dignissimos.', 'value': 'Expedita quia deserunt veritatis sequi
+            voluptas.'}, {'name': 'Quis rerum dignissimos.', 'value': 'Expedita quia deserunt
+            veritatis sequi voluptas.'}, {'name': 'Quis rerum dignissimos.', 'value': 'Expedita quia
+            deserunt veritatis sequi voluptas.'}], 'name': 'Fire risk for Lot2', 'parameters':
+            [{'description': 'The name of the region as according to ...', 'label': 'Region Name',
+            'name': 'region', 'type': 'string'}, {'label': 'Rainfall/month threshold', 'name':
+            'threshold', 'type': 'float', 'unit': 'm'}], 'provider-id': 'cayp:provider:acme',
+            'provider-ref': 'service_foo_patch_1', 'references': [{'title': 'Quod nihil aperiam
+            eligendi ut.', 'uri': 'http://schowaltercrist.net/reynold'}, {'title': 'Quod nihil aperiam
+            eligendi ut.', 'uri': 'http://schowaltercrist.net/reynold'}], 'tags': ['tag1', 'tag2'],
+            'workflow': {'argo': 'Reprehenderit molestiae cupiditate voluptas et voluptatibus illum.',
+            'basic': {'command': ['Aut voluptas.', 'Ut officiis consequatur corporis autem odit.',
+            'Unde fuga sed veniam.'], 'cpu': {'limit': 'Quidem nulla quae provident dolor amet
+            nulla.', 'request': 'Et aut autem deserunt sit architecto.'}, 'image': 'Voluptatem
+            explicabo aut adipisci.', 'memory': {'limit': 'Quidem nulla quae provident dolor amet
+            nulla.', 'request': 'Et aut autem deserunt sit architecto.'}}, 'opts': 'Deserunt fugiat
+            hic eos quaerat voluptas distinctio.', 'type': 'Pariatur aut.'}}.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Response[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]
@@ -137,7 +146,7 @@ def sync_detailed(
         **kwargs,
     )
 
-    return _build_response(response=response)
+    return _build_response(client=client, response=response)
 
 
 def sync(
@@ -152,32 +161,35 @@ def sync(
      Update an existing services and return its status.
 
     Args:
-        id (str): ID of services to update Example: Enim officiis non repudiandae debitis maxime..
-        force_create (Union[Unset, None, bool]): Create if not already exist
+        id (str): ID of services to update Example: Unde aperiam et nihil rerum..
+        force_create (Union[Unset, None, bool]): Create if not already exist Example: True.
         json_body (ServiceDescriptionT):  Example: {'account-id': 'cayp:account:acme', 'banner':
-            'http://stark.info/tess.gaylord', 'description': 'This service ...', 'metadata': [{'name':
-            'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}, {'name':
-            'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}, {'name':
-            'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}, {'name':
-            'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}], 'name':
-            'Fire risk for Lot2', 'parameters': [{'description': 'The name of the region as according
-            to ...', 'label': 'Region Name', 'name': 'region', 'type': 'string'}, {'label':
-            'Rainfall/month threshold', 'name': 'threshold', 'type': 'float', 'unit': 'm'}],
-            'provider-id': 'cayp:provider:acme', 'provider-ref': 'service_foo_patch_1', 'references':
-            [{'title': 'Commodi aut voluptatem magni.', 'uri': 'http://mclaughlintremblay.name/adam'},
-            {'title': 'Commodi aut voluptatem magni.', 'uri': 'http://mclaughlintremblay.name/adam'},
-            {'title': 'Commodi aut voluptatem magni.', 'uri': 'http://mclaughlintremblay.name/adam'}],
-            'tags': ['tag1', 'tag2'], 'workflow': {'argo': 'Sed ut in distinctio consequatur aut
-            voluptas.', 'basic': {'command': ['Unde fuga sed veniam.', 'Et aut autem deserunt sit
-            architecto.', 'Quidem nulla quae provident dolor amet nulla.'], 'cpu': {'limit': 'Deserunt
-            fugiat hic eos quaerat voluptas distinctio.', 'request': 'Reprehenderit molestiae
-            cupiditate voluptas et voluptatibus illum.'}, 'image': 'Officiis consequatur corporis
-            autem.', 'memory': {'limit': 'Deserunt fugiat hic eos quaerat voluptas distinctio.',
-            'request': 'Reprehenderit molestiae cupiditate voluptas et voluptatibus illum.'}}, 'opts':
-            'Et vel.', 'type': 'Alias aut voluptas molestiae.'}}.
+            'http://renner.info/bethany', 'description': 'This service ...', 'metadata': [{'name':
+            'Quis rerum dignissimos.', 'value': 'Expedita quia deserunt veritatis sequi voluptas.'},
+            {'name': 'Quis rerum dignissimos.', 'value': 'Expedita quia deserunt veritatis sequi
+            voluptas.'}, {'name': 'Quis rerum dignissimos.', 'value': 'Expedita quia deserunt
+            veritatis sequi voluptas.'}, {'name': 'Quis rerum dignissimos.', 'value': 'Expedita quia
+            deserunt veritatis sequi voluptas.'}], 'name': 'Fire risk for Lot2', 'parameters':
+            [{'description': 'The name of the region as according to ...', 'label': 'Region Name',
+            'name': 'region', 'type': 'string'}, {'label': 'Rainfall/month threshold', 'name':
+            'threshold', 'type': 'float', 'unit': 'm'}], 'provider-id': 'cayp:provider:acme',
+            'provider-ref': 'service_foo_patch_1', 'references': [{'title': 'Quod nihil aperiam
+            eligendi ut.', 'uri': 'http://schowaltercrist.net/reynold'}, {'title': 'Quod nihil aperiam
+            eligendi ut.', 'uri': 'http://schowaltercrist.net/reynold'}], 'tags': ['tag1', 'tag2'],
+            'workflow': {'argo': 'Reprehenderit molestiae cupiditate voluptas et voluptatibus illum.',
+            'basic': {'command': ['Aut voluptas.', 'Ut officiis consequatur corporis autem odit.',
+            'Unde fuga sed veniam.'], 'cpu': {'limit': 'Quidem nulla quae provident dolor amet
+            nulla.', 'request': 'Et aut autem deserunt sit architecto.'}, 'image': 'Voluptatem
+            explicabo aut adipisci.', 'memory': {'limit': 'Quidem nulla quae provident dolor amet
+            nulla.', 'request': 'Et aut autem deserunt sit architecto.'}}, 'opts': 'Deserunt fugiat
+            hic eos quaerat voluptas distinctio.', 'type': 'Pariatur aut.'}}.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]
+        Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]
     """
 
     return sync_detailed(
@@ -200,29 +212,32 @@ async def asyncio_detailed(
      Update an existing services and return its status.
 
     Args:
-        id (str): ID of services to update Example: Enim officiis non repudiandae debitis maxime..
-        force_create (Union[Unset, None, bool]): Create if not already exist
+        id (str): ID of services to update Example: Unde aperiam et nihil rerum..
+        force_create (Union[Unset, None, bool]): Create if not already exist Example: True.
         json_body (ServiceDescriptionT):  Example: {'account-id': 'cayp:account:acme', 'banner':
-            'http://stark.info/tess.gaylord', 'description': 'This service ...', 'metadata': [{'name':
-            'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}, {'name':
-            'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}, {'name':
-            'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}, {'name':
-            'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}], 'name':
-            'Fire risk for Lot2', 'parameters': [{'description': 'The name of the region as according
-            to ...', 'label': 'Region Name', 'name': 'region', 'type': 'string'}, {'label':
-            'Rainfall/month threshold', 'name': 'threshold', 'type': 'float', 'unit': 'm'}],
-            'provider-id': 'cayp:provider:acme', 'provider-ref': 'service_foo_patch_1', 'references':
-            [{'title': 'Commodi aut voluptatem magni.', 'uri': 'http://mclaughlintremblay.name/adam'},
-            {'title': 'Commodi aut voluptatem magni.', 'uri': 'http://mclaughlintremblay.name/adam'},
-            {'title': 'Commodi aut voluptatem magni.', 'uri': 'http://mclaughlintremblay.name/adam'}],
-            'tags': ['tag1', 'tag2'], 'workflow': {'argo': 'Sed ut in distinctio consequatur aut
-            voluptas.', 'basic': {'command': ['Unde fuga sed veniam.', 'Et aut autem deserunt sit
-            architecto.', 'Quidem nulla quae provident dolor amet nulla.'], 'cpu': {'limit': 'Deserunt
-            fugiat hic eos quaerat voluptas distinctio.', 'request': 'Reprehenderit molestiae
-            cupiditate voluptas et voluptatibus illum.'}, 'image': 'Officiis consequatur corporis
-            autem.', 'memory': {'limit': 'Deserunt fugiat hic eos quaerat voluptas distinctio.',
-            'request': 'Reprehenderit molestiae cupiditate voluptas et voluptatibus illum.'}}, 'opts':
-            'Et vel.', 'type': 'Alias aut voluptas molestiae.'}}.
+            'http://renner.info/bethany', 'description': 'This service ...', 'metadata': [{'name':
+            'Quis rerum dignissimos.', 'value': 'Expedita quia deserunt veritatis sequi voluptas.'},
+            {'name': 'Quis rerum dignissimos.', 'value': 'Expedita quia deserunt veritatis sequi
+            voluptas.'}, {'name': 'Quis rerum dignissimos.', 'value': 'Expedita quia deserunt
+            veritatis sequi voluptas.'}, {'name': 'Quis rerum dignissimos.', 'value': 'Expedita quia
+            deserunt veritatis sequi voluptas.'}], 'name': 'Fire risk for Lot2', 'parameters':
+            [{'description': 'The name of the region as according to ...', 'label': 'Region Name',
+            'name': 'region', 'type': 'string'}, {'label': 'Rainfall/month threshold', 'name':
+            'threshold', 'type': 'float', 'unit': 'm'}], 'provider-id': 'cayp:provider:acme',
+            'provider-ref': 'service_foo_patch_1', 'references': [{'title': 'Quod nihil aperiam
+            eligendi ut.', 'uri': 'http://schowaltercrist.net/reynold'}, {'title': 'Quod nihil aperiam
+            eligendi ut.', 'uri': 'http://schowaltercrist.net/reynold'}], 'tags': ['tag1', 'tag2'],
+            'workflow': {'argo': 'Reprehenderit molestiae cupiditate voluptas et voluptatibus illum.',
+            'basic': {'command': ['Aut voluptas.', 'Ut officiis consequatur corporis autem odit.',
+            'Unde fuga sed veniam.'], 'cpu': {'limit': 'Quidem nulla quae provident dolor amet
+            nulla.', 'request': 'Et aut autem deserunt sit architecto.'}, 'image': 'Voluptatem
+            explicabo aut adipisci.', 'memory': {'limit': 'Quidem nulla quae provident dolor amet
+            nulla.', 'request': 'Et aut autem deserunt sit architecto.'}}, 'opts': 'Deserunt fugiat
+            hic eos quaerat voluptas distinctio.', 'type': 'Pariatur aut.'}}.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Response[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]
@@ -238,7 +253,7 @@ async def asyncio_detailed(
     async with httpx.AsyncClient(verify=client.verify_ssl) as _client:
         response = await _client.request(**kwargs)
 
-    return _build_response(response=response)
+    return _build_response(client=client, response=response)
 
 
 async def asyncio(
@@ -253,32 +268,35 @@ async def asyncio(
      Update an existing services and return its status.
 
     Args:
-        id (str): ID of services to update Example: Enim officiis non repudiandae debitis maxime..
-        force_create (Union[Unset, None, bool]): Create if not already exist
+        id (str): ID of services to update Example: Unde aperiam et nihil rerum..
+        force_create (Union[Unset, None, bool]): Create if not already exist Example: True.
         json_body (ServiceDescriptionT):  Example: {'account-id': 'cayp:account:acme', 'banner':
-            'http://stark.info/tess.gaylord', 'description': 'This service ...', 'metadata': [{'name':
-            'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}, {'name':
-            'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}, {'name':
-            'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}, {'name':
-            'Odit aut quod nihil aperiam.', 'value': 'Ut enim ut fugit possimus pariatur.'}], 'name':
-            'Fire risk for Lot2', 'parameters': [{'description': 'The name of the region as according
-            to ...', 'label': 'Region Name', 'name': 'region', 'type': 'string'}, {'label':
-            'Rainfall/month threshold', 'name': 'threshold', 'type': 'float', 'unit': 'm'}],
-            'provider-id': 'cayp:provider:acme', 'provider-ref': 'service_foo_patch_1', 'references':
-            [{'title': 'Commodi aut voluptatem magni.', 'uri': 'http://mclaughlintremblay.name/adam'},
-            {'title': 'Commodi aut voluptatem magni.', 'uri': 'http://mclaughlintremblay.name/adam'},
-            {'title': 'Commodi aut voluptatem magni.', 'uri': 'http://mclaughlintremblay.name/adam'}],
-            'tags': ['tag1', 'tag2'], 'workflow': {'argo': 'Sed ut in distinctio consequatur aut
-            voluptas.', 'basic': {'command': ['Unde fuga sed veniam.', 'Et aut autem deserunt sit
-            architecto.', 'Quidem nulla quae provident dolor amet nulla.'], 'cpu': {'limit': 'Deserunt
-            fugiat hic eos quaerat voluptas distinctio.', 'request': 'Reprehenderit molestiae
-            cupiditate voluptas et voluptatibus illum.'}, 'image': 'Officiis consequatur corporis
-            autem.', 'memory': {'limit': 'Deserunt fugiat hic eos quaerat voluptas distinctio.',
-            'request': 'Reprehenderit molestiae cupiditate voluptas et voluptatibus illum.'}}, 'opts':
-            'Et vel.', 'type': 'Alias aut voluptas molestiae.'}}.
+            'http://renner.info/bethany', 'description': 'This service ...', 'metadata': [{'name':
+            'Quis rerum dignissimos.', 'value': 'Expedita quia deserunt veritatis sequi voluptas.'},
+            {'name': 'Quis rerum dignissimos.', 'value': 'Expedita quia deserunt veritatis sequi
+            voluptas.'}, {'name': 'Quis rerum dignissimos.', 'value': 'Expedita quia deserunt
+            veritatis sequi voluptas.'}, {'name': 'Quis rerum dignissimos.', 'value': 'Expedita quia
+            deserunt veritatis sequi voluptas.'}], 'name': 'Fire risk for Lot2', 'parameters':
+            [{'description': 'The name of the region as according to ...', 'label': 'Region Name',
+            'name': 'region', 'type': 'string'}, {'label': 'Rainfall/month threshold', 'name':
+            'threshold', 'type': 'float', 'unit': 'm'}], 'provider-id': 'cayp:provider:acme',
+            'provider-ref': 'service_foo_patch_1', 'references': [{'title': 'Quod nihil aperiam
+            eligendi ut.', 'uri': 'http://schowaltercrist.net/reynold'}, {'title': 'Quod nihil aperiam
+            eligendi ut.', 'uri': 'http://schowaltercrist.net/reynold'}], 'tags': ['tag1', 'tag2'],
+            'workflow': {'argo': 'Reprehenderit molestiae cupiditate voluptas et voluptatibus illum.',
+            'basic': {'command': ['Aut voluptas.', 'Ut officiis consequatur corporis autem odit.',
+            'Unde fuga sed veniam.'], 'cpu': {'limit': 'Quidem nulla quae provident dolor amet
+            nulla.', 'request': 'Et aut autem deserunt sit architecto.'}, 'image': 'Voluptatem
+            explicabo aut adipisci.', 'memory': {'limit': 'Quidem nulla quae provident dolor amet
+            nulla.', 'request': 'Et aut autem deserunt sit architecto.'}}, 'opts': 'Deserunt fugiat
+            hic eos quaerat voluptas distinctio.', 'type': 'Pariatur aut.'}}.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]
+        Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]
     """
 
     return (
