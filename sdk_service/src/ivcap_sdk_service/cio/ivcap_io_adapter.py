@@ -9,9 +9,7 @@ Implementation of the IOAdapter class for use inside the IVCAP platform
 import base64
 import os
 import sys
-from typing import IO, Callable, Optional, Sequence, Tuple, BinaryIO, Dict, Union
-import io
-import json
+from typing import IO, Callable, Optional, Sequence, Union
 from os import access, R_OK
 from os.path import isfile
 import requests
@@ -19,7 +17,6 @@ from urllib.parse import urlparse
 import collections.abc
 
 from .readable_proxy_file import ReadableProxyFile
-from .utils import download
 from ..utils import json_dump
 from ..itypes import MetaDict, Url, SupportedMimeTypes
 
@@ -73,14 +70,9 @@ class IvcapIOAdapter(IOAdapter):
         Returns:
             IOReadable: The content of the artifact as a file-like object
         """
-
-        # u = urlparse(artifact_id)
-        # curl = self.cachable_url(artifact_id)
-        # if u.scheme == '' or u.scheme == 'file':
-        #     return self.read_local(u.path, binary_content=binary_content)
-        # else:
-        #     
-        return self.read_external(artifact_id, binary_content=binary_content, no_caching=True, seekable=seekable)
+        curl = self.cachable_url(artifact_id)
+        ior = ReadableProxyFile(artifact_id, None, curl, is_binary=binary_content, writable_also=False, use_temp_file=False)
+        return ior
 
     def read_external(self, 
         url: Url, 
@@ -103,7 +95,6 @@ class IvcapIOAdapter(IOAdapter):
         if bool(self.cache) and not no_caching:
             return self.cache.get_and_cache_file(url)
 
-        
         if bool(local_file_name):
             name = local_file_name
             use_temp_file = False
@@ -118,9 +109,7 @@ class IvcapIOAdapter(IOAdapter):
             curl = url
         else:
             curl = self.cachable_url(url)
-        ior = ReadableProxyFile(name, path, is_binary=binary_content, writable_also=True, use_temp_file=use_temp_file)
-        download(curl, ior._file_obj, close_fhdl=False)
-        logger.debug("LocalIOAdapter#read_external: Read external content '%s' into '%s'", curl, ior.path)
+        ior = ReadableProxyFile(name, path, curl, is_binary=binary_content, writable_also=True, use_temp_file=use_temp_file)
         return ior
 
     def artifact_readable(self, artifact_id: str) -> bool:
@@ -180,7 +169,7 @@ class IvcapIOAdapter(IOAdapter):
         name: Optional[str],
         collection_name: Optional[str],
         metadata: Optional[Union[MetaDict, Sequence[MetaDict]]],
-    ) -> Url:
+    ) -> str:
         logger.info("Upload artifact '%s'", name)
         fd.flush()
         fd.seek(0)
@@ -215,14 +204,17 @@ class IvcapIOAdapter(IOAdapter):
             logger.fatal(f"error response {r.status_code} while posting result data {self.storage_url}")
             sys.exit(-1)
 
-        url = r.headers.get('Location')
-        artifactID = r.headers.get('X-Artifact-Id')
-        size = int(r.headers.get('Content-Length', -1))
+        j = r.json()
+        size = j['size']
+        artifactID = j['id']
+        if not artifactID:
+            artifactID = r.headers.get('X-Artifact-Id')
         logger.info(f"IvcapIOAdapter: created artifact '{artifactID}' of size '{size}' via '{self.storage_url}'")
 
         if not metadataUploaded and len(metadata) > 0:
+            url = r.headers.get('Location')
             self._upload_metadata(metadata, artifactID, url)
-        return url
+        return artifactID
 
     def _upload_metadata(
         self, 
@@ -283,7 +275,7 @@ class IvcapIOAdapter(IOAdapter):
             IOReadable: The content of the local file as a file-like object
         """
         path = self._to_path(self.in_dir, name, collection_name)
-        return ReadableProxyFile(name, path, is_binary=binary_content, use_temp_file=False)
+        return ReadableProxyFile(name, path, None, is_binary=binary_content, use_temp_file=False)
 
     # def readable(self, name: str, collection_name: str = None) -> bool:
     #     file_name = self._to_path(self.in_dir, name, collection_name)

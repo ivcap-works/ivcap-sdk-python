@@ -138,8 +138,8 @@ class LocalIOAdapter(IOAdapter):
             name = p.replace('/', '__')
             use_temp_file = True
         path = self._to_path(self.in_dir, name)
-        ior = ReadableProxyFile(url, path, is_binary=binary_content, writable_also=True, use_temp_file=use_temp_file)
-        download(url, ior._file_obj, close_fhdl=False)
+        ior = ReadableProxyFile(url, path, url, is_binary=binary_content, writable_also=True, use_temp_file=use_temp_file)
+        #download(url, ior._file_obj, close_fhdl=False)
         logger.debug("LocalIOAdapter#read_external: Read external content '%s' into '%s'", url, ior.name)
         return ior
 
@@ -249,7 +249,7 @@ class LocalIOAdapter(IOAdapter):
             IOReadable: The content of the local file as a file-like object
         """
         path = self._to_path(self.in_dir, name, collection_name)
-        return ReadableProxyFile(name, path, is_binary=binary_content, use_temp_file=False)
+        return ReadableProxyFile(name, path, None, is_binary=binary_content, use_temp_file=False)
 
     # def readable(self, name: str, collection_name: str = None) -> bool:
     #     file_name = self._to_path(self.in_dir, name, collection_name)

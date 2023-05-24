@@ -3,14 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file. See the AUTHORS file for names of contributors.
 #
-from hashlib import sha256
-import io
-import json
-import re
-from typing import Any, BinaryIO
-import uuid
+from typing import BinaryIO
 import requests
-from pathlib import Path
 
 from ..logger import sys_logger as logger
 from ..itypes import Url
