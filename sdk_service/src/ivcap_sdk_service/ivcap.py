@@ -52,7 +52,7 @@ def deliver_data(
     metadata: Optional[Union[MetaDict, Sequence[MetaDict]]] = None, 
     seekable=False,
     on_close: Optional[OnCloseF] = None
-):
+) -> str:
     """Deliver a result of this service
 
     Args:
@@ -74,13 +74,16 @@ def deliver_data(
 
     global DELIVERED
 
-    def _on_close(url):
+    _artifactID = None
+    def _on_close(artifactID):
+        nonlocal _artifactID
+        _artifactID = artifactID
         mt = mime_type.value if isinstance(mime_type, SupportedMimeTypes) else mime_type
-        m = dict(name=name, url=url, mime_type=mt, meta=metadata)
+        m = dict(name=name, artID=artifactID, mime_type=mt, meta=metadata)
         DELIVERED.append(m)
         notify(m, _CONFIG.SCHEMA_PREFIX + 'deliver')
         if on_close:
-            on_close(url)
+            on_close(artifactID)
 
     if callable(data_or_lambda):
         l = cast(Callable[[IOWritable], None],  data_or_lambda)
@@ -103,6 +106,7 @@ def deliver_data(
             collection_name=collection_name, metadata=metadata, seekable=seekable, on_close=_on_close)
         else:
             raise UnsupportedMimeType(mime_type)
+    return _artifactID
 
 def register_saver(mime_type: str, obj_type: Any, saverF: SaverF):
     """Register a 'saver' function used in 'deliver' for a specific data type.
@@ -134,6 +138,7 @@ def fetch_data(url: Url, binary_content=True, no_caching=False, seekable=False) 
         return get_config().IO_ADAPTER.read_external(url, binary_content, no_caching, seekable)
     else:
         return get_config().IO_ADAPTER.read_artifact(url, binary_content, no_caching, seekable)
+
 
 def get_order_id():
     """Returns the ID of the currently processed order"""
@@ -176,7 +181,7 @@ def get_config() -> Config:
     return _CONFIG
 
 def is_valid_resource_urn(urn: str, resource: Resource) -> bool:
-    prefix = f"{get_config().SCHEMA_PREFIX}:{resource.value}:"
+    prefix = f"{get_config().SCHEMA_PREFIX}{resource.value}:"
     return urn.startswith(prefix)
 
 #### Initialize

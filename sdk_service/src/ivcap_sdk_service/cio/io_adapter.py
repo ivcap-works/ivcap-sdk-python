@@ -70,7 +70,7 @@ class IOReadable(_IOBase):
 
     @property
     @abstractmethod
-    def path(self) -> str:
+    def as_local_file(self) -> str:
         pass
 
 class IOWritable(_IOBase):
