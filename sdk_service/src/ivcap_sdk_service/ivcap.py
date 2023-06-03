@@ -11,6 +11,7 @@ import json
 from argparse import ArgumentParser
 from typing import Callable, Dict, Any, Optional, Sequence, Union, cast
 from urllib.parse import urlparse
+import validators
 
 from .utils import json_dump
 
@@ -181,8 +182,18 @@ def get_config() -> Config:
     return _CONFIG
 
 def is_valid_resource_urn(urn: str, resource: Resource) -> bool:
-    prefix = f"{get_config().SCHEMA_PREFIX}{resource.value}:"
-    return urn.startswith(prefix)
+    if not urn.startswith("urn"):
+        return False
+    
+    artPrefix = f"{get_config().SCHEMA_PREFIX}{resource.value}:"
+    if urn.startswith(artPrefix):
+        return True
+    
+    ## Still OK if 'urn:http...'
+    try:
+        return validators.url(urn[4:])
+    except:
+        return False
 
 #### Initialize
 

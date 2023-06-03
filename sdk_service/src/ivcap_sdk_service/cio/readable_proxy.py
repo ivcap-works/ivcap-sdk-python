@@ -11,38 +11,29 @@ import io
 from ivcap_sdk_service.cio.utils import download
 from ..logger import sys_logger as logger
 
-from .io_adapter import IOReadable
+from .io_adapter import IOReadable, IOWritable
 
-class ReadableProxyFile(IOReadable):
+class ReadableProxy(IOReadable):
 
     def __init__(self, 
-        name: str,
-        path: Optional[str],
-        download_url: Optional[str],
+        url: str,
+        name=None,
         on_close: Callable[[IO[bytes]], None]=None, 
         is_binary=True, 
-        use_temp_file=True, 
         encoding=None,
-        writable_also=False
+        cache: Optional[IOWritable] = None
     ):
-        if writable_also:
-            # needed for temporary files which are first written
-            self._mode = "w+b" if is_binary else "w+"
-        else:
-            self._mode = "rb" if is_binary else "r"
-
-        self._name = name
-        self._path = path
+        self._name = name if name else url
         self._is_binary = is_binary
-        self._download_url = download_url
-        self._use_temp_file = use_temp_file
+        self._mode = "rb" if is_binary else "r"
+        self._download_url = url
         self._encoding = encoding
         self._on_close = on_close
-        self._writable_also = writable_also
+        self._cache = cache
         self._offset = 0
         self._file_obj = None
         self._closed = False
-
+    
     @property
     def closed(self) -> bool:
         return self._closed
@@ -64,6 +55,13 @@ class ReadableProxyFile(IOReadable):
 
     def readable(self) -> bool:
         return True
+    
+    def readline(self, limit: int = -1) -> AnyStr:
+        raise Exception("not implemented")
+
+    def readlines(self, hint: int = -1) -> List[AnyStr]:
+        raise Exception("not implemented")
+
 
     def seek(self, offset, whence=io.SEEK_SET):
         """
@@ -76,6 +74,8 @@ class ReadableProxyFile(IOReadable):
         # else:
         #     raise OSError(-1, "cannot seek from end")
         self._get_file_obj().seek(offset, whence)
+        if self._cache:
+            self._cache.seek(offset, whence)
 
     def seekable(self) -> bool:
         return True
@@ -87,24 +87,40 @@ class ReadableProxyFile(IOReadable):
         return self._get_file_obj().tell()
 
     def read(self, n: int = -1) -> AnyStr:
-        return self._get_file_obj().read(n)
-
-    def readline(self, limit: int = -1) -> AnyStr:
-        return self._get_file_obj().readline(limit)
-
-    def readlines(self, hint: int = -1) -> List[AnyStr]:
-        return self._get_file_obj().readlines(hint)
+        s = self._get_file_obj().read(n)
+        if self._cache:
+            n = self._cache.write(s)
+            if n != len(s):
+                logger.warn("ReadableProxy#read: caching last read failed")
+                try:
+                    self._cache.close()
+                except:
+                    pass
+                finally:
+                    self._cache = None
+        return s
 
     def close(self):
         self._closed = True
+ 
+        if self._cache:
+            try:
+                self._cache.close()
+            except:
+                logger.warn("ReadableProxy#close: closing cache failed with '%s'", err)
+            finally:
+                self._cache = None
+
+
         f = self._get_file_obj()
         try:
             if self._on_close:
                 self._on_close(f)
         except BaseException as err:
-            logger.warn("ReadableProxyFile#close: on_close '%s' failed with '%s'", self._on_close, err)
+            logger.warn("ReadableProxyclose: on_close '%s' failed with '%s'", self._on_close, err)
         finally:
             f.close()
+ 
 
     def _get_file_obj(self):
         if self._file_obj == None:
@@ -123,18 +139,20 @@ class ReadableProxyFile(IOReadable):
             self._file_obj = tempfile.NamedTemporaryFile(mode, encoding=self._encoding)
             self._path = self._file_obj.name
             try:
-                download(self._download_url, self._file_obj, close_fhdl=False)
+                cacheID = download(self._download_url, self._file_obj, close_fhdl=False)
+                if cacheID:
+                    self._name = f"{self._name} ({cacheID})"
             except BaseException as ex:
-                logger.error("ReadableProxyFile#_open_file_obj: While downloading - %s", ex.__repr__())
+                logger.error("ReadableProxy#_open_file_obj: While downloading - %s", ex.__repr__())
                 raise ex
             
-            logger.debug("ReadableProxyFile#_open_file_obj: Read external content '%s' into '%s'", self._download_url, self._path)
+            logger.debug("ReadableProxy#_open_file_obj: Read external content '%s' into '%s'", self._download_url, self._path)
 
         elif self._path:
             self._file_obj = io.open(self._path, mode=self._mode, encoding=self._encoding)
 
     def __repr__(self):
-        return f"<ReadableProxyFile name={self._name} closed={self._closed} mode={self._mode}>"
+        return f"<ReadableProxy name={self._name} closed={self._closed} mode={self._mode}>"
 
     def to_json(self):
         return self._name
