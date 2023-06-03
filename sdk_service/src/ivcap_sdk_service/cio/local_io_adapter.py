@@ -8,45 +8,21 @@ FileAdapter a thin wrapper around io.IOBase that sets a storage path with
 standard filesystem backend
 """
 import os
-from typing import IO, Optional, Tuple, BinaryIO, Dict
-import io
-import json
+from typing import Optional
 from os import access, R_OK
-from os.path import isfile
+from os.path import isfile, join
 from urllib.parse import urlparse
+from ivcap_sdk_service.cio.readable_file import ReadableFile
 
-from .readable_proxy_file import ReadableProxyFile
-from .utils import download
+from ivcap_sdk_service.cio.readable_proxy import ReadableProxy
+from ivcap_sdk_service.cio.writable_file import WritableFile
+
+from .utils import get_cache_name
 from ..utils import json_dump
 from ..itypes import MetaDict, Url, SupportedMimeTypes
 
 from ..logger import sys_logger as logger
 from .io_adapter import IOAdapter, IOReadable, IOWritable, OnCloseF
-from .writable_proxy_file import WritableProxyFile
-from .cache import Cache
-
-# class FileProxy(IOProxy):
-#     def __init__(self, name: str):
-#         self._fname = name
-#         self._fhdl = None
-
-#     def open(self, mode: str, **kwargs) -> io.IOBase:
-#         """Return an IO object to read or write to depending on 'mode'"""
-#         if self._fhdl != None:
-#             raise IOError("file '{self._fname}' already opened")
-#         self._fhdl = io.open(self._fname, mode=mode, **kwargs)
-#         return self._fhdl
-
-#     def close(self):
-#         if self._fhdl != None:
-#             self._fhdl.close()
-#         self._fhdl = None
-
-#     def name(self) -> str:
-#         return self._fname
-
-#     def __repr__(self):
-#         return f"FileProxy(fname={self._fname}, open={self._fhdl != None})"
 
 class LocalIOAdapter(IOAdapter):
     """
@@ -66,7 +42,7 @@ class LocalIOAdapter(IOAdapter):
     exists(name='filename.txt')
         Check if filename exists
     """
-    def __init__(self, in_dir: str, out_dir: str, cache: Cache=None) -> None:
+    def __init__(self, in_dir: str, out_dir: str, cache_dir: str=None) -> None:
         """
         Initialise FileAdapter data paths
 
@@ -87,7 +63,7 @@ class LocalIOAdapter(IOAdapter):
         super().__init__()
         self.in_dir = os.path.abspath(in_dir)
         self.out_dir = os.path.abspath(out_dir)
-        self.cache = cache
+        self.cache_dir = os.path.abspath(cache_dir) if cache_dir else None
 
     def read_artifact(self, artifact_id: str, binary_content=True, no_caching=False, seekable=False) -> IOReadable:
         """Return a readable file-like object providing the content of an artifact
@@ -125,22 +101,16 @@ class LocalIOAdapter(IOAdapter):
         Returns:
             IOReadable: The content of the external data item as a file-like object
         """
-        if bool(self.cache) and not no_caching:
-            return self.cache.get_and_cache_file(url)
+        cache = None
+        if self.cache_dir and not no_caching:
+            cname = local_file_name if local_file_name else join(self.cache_dir, get_cache_name(url))
+            if isfile(cname) and access(cname, R_OK):
+                return ReadableFile(f"{url} (cached)", cname, is_binary=binary_content)
+            cache = WritableFile(cname, is_binary=binary_content)
 
-        if bool(local_file_name):
-            name = local_file_name
-            use_temp_file = False
-        else:
-            p = urlparse(url).path
-            p = p if p != '' else '/index.html'
-            p = p if p[0] != '/' else p[1:]
-            name = p.replace('/', '__')
-            use_temp_file = True
-        path = self._to_path(self.in_dir, name)
-        ior = ReadableProxyFile(url, path, url, is_binary=binary_content, writable_also=True, use_temp_file=use_temp_file)
-        #download(url, ior._file_obj, close_fhdl=False)
-        logger.debug("LocalIOAdapter#read_external: Read external content '%s' into '%s'", url, ior.name)
+        ior = ReadableProxy(url, url, is_binary=binary_content, cache=cache)
+        if cache:
+            logger.debug("LocalIOAdapter#read_external: Cache external content '%s' into '%s'", url, cache.name)
         return ior
 
     def artifact_readable(self, artifact_id: str) -> bool:
@@ -187,36 +157,14 @@ class LocalIOAdapter(IOAdapter):
             mime_type = mime_type.value
         is_binary = not mime_type.startswith('text')
 
-        def _on_close(fd: IO[bytes], _):
+        def _on_close(_1, _2):
             logger.info("Written artifact '%s' to '%s'", name, fname)
             if metadata != {}:
                 json_dump(metadata, f"{fname}-meta.json")
             if on_close:
                 on_close(f"file://{fname}")
 
-        return WritableProxyFile(fname, _on_close, is_binary, use_temp_file=False)
-
-    # def get_fd(self, name: str, dataPeek: any = None, metadata: Dict[str, any] = {}) -> Tuple[BinaryIO, str]:
-    #     """
-    #     Create and return a file handle and path
-
-    #     Parameters
-    #     ----------
-    #     name: str
-    #         Filename used to save data, file path is set by adapter
-    #     metadata: None
-    #         Unused in this Adapter
-
-    #     Returns
-    #     -------
-    #         file_obj: capy.io.io_adapter.WritableProxyFile
-    #             A thin wrapper of io.IOBase and used in same manner
-
-    #     """
-    #     file_name = f"{self.out_dir}/{name}"
-    #     logger.debug(f"Returning file handle for '{name}' - '{file_name}'")
-    #     file_obj = WritableProxyFile(file_name)
-    #     return (file_obj, f"{file_name}")
+        return WritableFile(fname, _on_close, is_binary, use_temp_file=False)
 
     def readable_local(self, name: str, collection_name: str = None) -> bool:
         """Return true if file exists and is readable. If 'name' starts with a '/'
@@ -232,11 +180,6 @@ class LocalIOAdapter(IOAdapter):
         file_name = self._to_path(self.in_dir, name, collection_name)
         return isfile(file_name) and access(file_name, R_OK)
 
-        # file_exists = False
-        # if os.path.exists(file_name):
-        #     file_exists = True
-        # return (file_exists,file_name)
-
     def read_local(self, name: str, collection_name: str = None, binary_content=True) -> IOReadable:
         """Return a readable file-like object providing the content of an external data item.
 
@@ -249,11 +192,7 @@ class LocalIOAdapter(IOAdapter):
             IOReadable: The content of the local file as a file-like object
         """
         path = self._to_path(self.in_dir, name, collection_name)
-        return ReadableProxyFile(name, path, None, is_binary=binary_content, use_temp_file=False)
-
-    # def readable(self, name: str, collection_name: str = None) -> bool:
-    #     file_name = self._to_path(self.in_dir, name, collection_name)
-    #     return os.path.exists(file_name)
+        return ReadableFile(name, path, is_binary=binary_content)
 
     def _to_path(self, prefix: str, name: str, collection_name: str = None) -> str:
         if name.startswith('/'):
@@ -265,12 +204,6 @@ class LocalIOAdapter(IOAdapter):
                 return os.path.join(prefix, collection_name, name)
             else:
                 return os.path.join(prefix, name)
-
-    # def read(self, name: str, seekable=False, use_cache_proxy=True) -> IOProxy:
-    #     file_name = self._to_path(name)
-    #     if not os.path.exists(file_name):
-    #         raise ValueError(f"Cannot find local file '{file_name}")
-    #     return FileProxy(file_name)
 
     def __repr__(self):
         return f"<LocalIOAdapter in_dir={self.in_dir} out_dir={self.out_dir}>"
