@@ -18,13 +18,13 @@ class OrderListItem:
     Example:
         {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
             'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis incidunt.'},
             'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'started_at':
             '2022-01-01', 'status': 'pending'}
 
     Attributes:
         links (SelfT):  Example: {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Quibusdam dolores officiis.'}.
+            'application/openapi3+json'}, 'self': 'Corrupti laborum qui incidunt.'}.
         account_id (Union[Unset, str]): ID of ordered service Example: 2022-01-01.
         finished_at (Union[Unset, str]): DateTime order was finished Example: 2022-01-01.
         id (Union[Unset, str]): Order ID Example: cayp:order:123e4567-e89b-12d3-a456-426614174000.
@@ -32,7 +32,7 @@ class OrderListItem:
         ordered_at (Union[Unset, str]): DateTime order was placed Example: 2022-01-01.
         service_id (Union[Unset, str]): ID of ordered service Example: 2022-01-01.
         started_at (Union[Unset, str]): DateTime processing of order started Example: 2022-01-01.
-        status (Union[Unset, OrderListItemStatus]): Order status Example: pending.
+        status (Union[Unset, OrderListItemStatus]): Order status Example: finished.
     """
 
     links: "SelfT"

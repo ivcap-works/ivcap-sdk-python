@@ -129,7 +129,7 @@ def sync_detailed(
     Args:
         entity_id (Union[Unset, None, str]): Entity for which to request metadata Example:
             urn:blue:image.collA.12.
-        schema (Union[Unset, None, str]): Optional schema to filter on Example: urn:blue:image.
+        schema (Union[Unset, None, str]): Optional schema to filter on Example: urn:blue:image%.
         aspect_path (Union[Unset, None, str]): To learn more about the supported format, see
                                                 https://www.postgresql.org/docs/current/datatype-json.html#DATATYPE-JSONPATH Example:
             $.images[*] ? (@.size > 10000).
@@ -152,7 +152,7 @@ def sync_detailed(
             on
                                         property EndsAt in descending order. Default: ''. Example: orderby=EndsAt.
         order_desc (Union[Unset, None, bool]): When set order result in descending order.
-            Ascending order is the default. Example: True.
+            Ascending order is the default.
         page (Union[Unset, None, str]): The content of '$page' is returned in the 'links' part of
             a previous query and
                                         will when set, ALL other parameters, except for 'limit' are ignored. Example:
@@ -207,7 +207,7 @@ def sync(
     Args:
         entity_id (Union[Unset, None, str]): Entity for which to request metadata Example:
             urn:blue:image.collA.12.
-        schema (Union[Unset, None, str]): Optional schema to filter on Example: urn:blue:image.
+        schema (Union[Unset, None, str]): Optional schema to filter on Example: urn:blue:image%.
         aspect_path (Union[Unset, None, str]): To learn more about the supported format, see
                                                 https://www.postgresql.org/docs/current/datatype-json.html#DATATYPE-JSONPATH Example:
             $.images[*] ? (@.size > 10000).
@@ -230,7 +230,7 @@ def sync(
             on
                                         property EndsAt in descending order. Default: ''. Example: orderby=EndsAt.
         order_desc (Union[Unset, None, bool]): When set order result in descending order.
-            Ascending order is the default. Example: True.
+            Ascending order is the default.
         page (Union[Unset, None, str]): The content of '$page' is returned in the 'links' part of
             a previous query and
                                         will when set, ALL other parameters, except for 'limit' are ignored. Example:
@@ -278,7 +278,7 @@ async def asyncio_detailed(
     Args:
         entity_id (Union[Unset, None, str]): Entity for which to request metadata Example:
             urn:blue:image.collA.12.
-        schema (Union[Unset, None, str]): Optional schema to filter on Example: urn:blue:image.
+        schema (Union[Unset, None, str]): Optional schema to filter on Example: urn:blue:image%.
         aspect_path (Union[Unset, None, str]): To learn more about the supported format, see
                                                 https://www.postgresql.org/docs/current/datatype-json.html#DATATYPE-JSONPATH Example:
             $.images[*] ? (@.size > 10000).
@@ -301,7 +301,7 @@ async def asyncio_detailed(
             on
                                         property EndsAt in descending order. Default: ''. Example: orderby=EndsAt.
         order_desc (Union[Unset, None, bool]): When set order result in descending order.
-            Ascending order is the default. Example: True.
+            Ascending order is the default.
         page (Union[Unset, None, str]): The content of '$page' is returned in the 'links' part of
             a previous query and
                                         will when set, ALL other parameters, except for 'limit' are ignored. Example:
@@ -354,7 +354,7 @@ async def asyncio(
     Args:
         entity_id (Union[Unset, None, str]): Entity for which to request metadata Example:
             urn:blue:image.collA.12.
-        schema (Union[Unset, None, str]): Optional schema to filter on Example: urn:blue:image.
+        schema (Union[Unset, None, str]): Optional schema to filter on Example: urn:blue:image%.
         aspect_path (Union[Unset, None, str]): To learn more about the supported format, see
                                                 https://www.postgresql.org/docs/current/datatype-json.html#DATATYPE-JSONPATH Example:
             $.images[*] ? (@.size > 10000).
@@ -377,7 +377,7 @@ async def asyncio(
             on
                                         property EndsAt in descending order. Default: ''. Example: orderby=EndsAt.
         order_desc (Union[Unset, None, bool]): When set order result in descending order.
-            Ascending order is the default. Example: True.
+            Ascending order is the default.
         page (Union[Unset, None, str]): The content of '$page' is returned in the 'links' part of
             a previous query and
                                         will when set, ALL other parameters, except for 'limit' are ignored. Example:

@@ -12,14 +12,12 @@ class InvalidParameterValue:
     """Invalide parameter value
 
     Example:
-        {'message': 'Doloremque dolorem facilis et.', 'name': 'Non et nemo excepturi ex.', 'value': 'Corrupti laborum
-            qui incidunt.'}
+        {'message': 'Aspernatur architecto.', 'name': 'Dolore et itaque non.', 'value': 'Vel quis rerum.'}
 
     Attributes:
-        message (str): message describing expected type or pattern. Example: Ut sint dolorum qui corrupti..
-        name (str): name of parameter. Example: Aut accusantium quo suscipit ducimus fugiat..
-        value (Union[Unset, str]): provided parameter value. Example: Dolorem pariatur repudiandae excepturi commodi
-            autem ad..
+        message (str): message describing expected type or pattern. Example: Alias sit qui occaecati id quis..
+        name (str): name of parameter. Example: Nisi perferendis..
+        value (Union[Unset, str]): provided parameter value. Example: Ipsa autem non sapiente labore iste voluptas..
     """
 
     message: str

@@ -11,10 +11,11 @@ readme = "README.md"
 include = ["CHANGELOG.md", "src/ivcap_sdk_client/py.typed"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.9"
 httpx = ">=0.15.4,<0.24.0"
 attrs = ">=21.3.0"
 python-dateutil = "^2.8.0"
+tuspy = ">=1.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

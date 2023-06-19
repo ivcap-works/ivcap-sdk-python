@@ -77,7 +77,7 @@ def sync_detailed(
      Delete an existing services.
 
     Args:
-        id (str): ID of services to update Example: Cupiditate et nihil esse..
+        id (str): ID of services to update Example: Aut ipsum qui necessitatibus quidem sint..
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -110,7 +110,7 @@ def sync(
      Delete an existing services.
 
     Args:
-        id (str): ID of services to update Example: Cupiditate et nihil esse..
+        id (str): ID of services to update Example: Aut ipsum qui necessitatibus quidem sint..
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -136,7 +136,7 @@ async def asyncio_detailed(
      Delete an existing services.
 
     Args:
-        id (str): ID of services to update Example: Cupiditate et nihil esse..
+        id (str): ID of services to update Example: Aut ipsum qui necessitatibus quidem sint..
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -167,7 +167,7 @@ async def asyncio(
      Delete an existing services.
 
     Args:
-        id (str): ID of services to update Example: Cupiditate et nihil esse..
+        id (str): ID of services to update Example: Aut ipsum qui necessitatibus quidem sint..
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

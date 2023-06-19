@@ -18,13 +18,13 @@ class CreateResponseBodyTiny:
 
     Example:
         {'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self':
-            'Provident sapiente dolores.'}, 'name': 'Fire risk for Lot2', 'status': 'scheduled'}
+            'Officiis reiciendis incidunt.'}, 'name': 'Fire risk for Lot2', 'status': 'pending'}
 
     Attributes:
         links (Union[Unset, SelfT]):  Example: {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Quibusdam dolores officiis.'}.
+            'application/openapi3+json'}, 'self': 'Corrupti laborum qui incidunt.'}.
         name (Union[Unset, str]): Optional customer provided name Example: Fire risk for Lot2.
-        status (Union[Unset, CreateResponseBodyTinyStatus]): Order status Example: unknown.
+        status (Union[Unset, CreateResponseBodyTinyStatus]): Order status Example: executing.
     """
 
     links: Union[Unset, "SelfT"] = UNSET

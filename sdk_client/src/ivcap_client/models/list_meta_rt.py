@@ -18,8 +18,8 @@ T = TypeVar("T", bound="ListMetaRT")
 class ListMetaRT:
     """
     Example:
-        {'aspect-path': 'Ratione quas molestiae non qui est corporis.', 'at-time': '1996-12-19T16:39:57-08:00', 'entity-
-            id': 'urn:blue:image.collA.12', 'links': {'first': 'https://api.com/foo/...', 'next': 'https://api.com/foo/...',
+        {'aspect-path': 'Fugiat facere quas.', 'at-time': '1996-12-19T16:39:57-08:00', 'entity-id':
+            'urn:blue:image.collA.12', 'links': {'first': 'https://api.com/foo/...', 'next': 'https://api.com/foo/...',
             'self': 'https://api.com/foo/...'}, 'records': [{'aspect': '{...}', 'aspectContext': 'Iste laborum dolorem.',
             'entity': 'urn:blue:transect.1', 'record-id': 'urn:ivcap:record.123e4567-e89b-12d3-a456-426614174000', 'schema':
             'urn:blue:schema.image'}, {'aspect': '{...}', 'aspectContext': 'Iste laborum dolorem.', 'entity':
@@ -37,13 +37,9 @@ class ListMetaRT:
             'Iste laborum dolorem.', 'entity': 'urn:blue:transect.1', 'record-id':
             'urn:ivcap:record.123e4567-e89b-12d3-a456-426614174000', 'schema': 'urn:blue:schema.image'}, {'aspect': '{...}',
             'aspectContext': 'Iste laborum dolorem.', 'entity': 'urn:blue:transect.1', 'record-id':
-            'urn:ivcap:record.123e4567-e89b-12d3-a456-426614174000', 'schema': 'urn:blue:schema.image'}, {'aspect': '{...}',
-            'aspectContext': 'Iste laborum dolorem.', 'entity': 'urn:blue:transect.1', 'record-id':
-            'urn:ivcap:record.123e4567-e89b-12d3-a456-426614174000', 'schema': 'urn:blue:schema.image'}, {'aspect': '{...}',
-            'aspectContext': 'Iste laborum dolorem.', 'entity': 'urn:blue:transect.1', 'record-id':
             'urn:ivcap:record.123e4567-e89b-12d3-a456-426614174000', 'schema': 'urn:blue:schema.image'}].
-        aspect_path (Union[Unset, str]): Optional json path to further filter on returned list Example: Sunt ut
-            molestiae quia voluptatem quis..
+        aspect_path (Union[Unset, str]): Optional json path to further filter on returned list Example: Ad alias unde
+            sapiente..
         at_time (Union[Unset, datetime.datetime]): Time at which this list was valid Example: 1996-12-19T16:39:57-08:00.
         entity_id (Union[Unset, str]): Entity for which to request metadata Example: urn:blue:image.collA.12.
         schema (Union[Unset, str]): Optional schema to filter on Example: urn:blue:image,urn:blue:location.

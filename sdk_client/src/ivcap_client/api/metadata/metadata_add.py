@@ -9,12 +9,13 @@ from ...models.add_meta_rt import AddMetaRT
 from ...models.invalid_parameter_value import InvalidParameterValue
 from ...models.invalid_scopes_t import InvalidScopesT
 from ...models.not_implemented_t import NotImplementedT
-from ...types import UNSET, Response, Unset
+from ...types import UNSET, File, Response, Unset
 
 
 def _get_kwargs(
     *,
     client: AuthenticatedClient,
+    json_body: Dict,
     entity_id: str,
     schema: str,
     content_type: Union[Unset, str] = UNSET,
@@ -34,6 +35,8 @@ def _get_kwargs(
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
+    json_json_body = json_body
+
     return {
         "method": "post",
         "url": url,
@@ -41,6 +44,7 @@ def _get_kwargs(
         "cookies": cookies,
         "timeout": client.get_timeout(),
         "follow_redirects": client.follow_redirects,
+        "json": json_json_body,
         "params": params,
     }
 
@@ -90,6 +94,7 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
+    json_body: Dict,
     entity_id: str,
     schema: str,
     content_type: Union[Unset, str] = UNSET,
@@ -99,10 +104,12 @@ def sync_detailed(
      Attach new metadata to an entity.
 
     Args:
-        entity_id (str): Entity to which attach metadata Example: http://moen.biz/christian.
-        schema (str): Schema of metadata Example: http://klein.net/bonnie.
+        entity_id (str): Entity to which attach metadata Example:
+            http://rice.biz/rickie_christiansen.
+        schema (str): Schema of metadata Example: http://haag.com/ashton.senger.
         content_type (Union[Unset, str]): Content-Type header, MUST be of application/json.
             Example: application/json.
+        json_body (Dict): Metadata content Example: {"$schema": ...}.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -114,6 +121,7 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         client=client,
+        json_body=json_body,
         entity_id=entity_id,
         schema=schema,
         content_type=content_type,
@@ -130,6 +138,7 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
+    json_body: Dict,
     entity_id: str,
     schema: str,
     content_type: Union[Unset, str] = UNSET,
@@ -139,10 +148,12 @@ def sync(
      Attach new metadata to an entity.
 
     Args:
-        entity_id (str): Entity to which attach metadata Example: http://moen.biz/christian.
-        schema (str): Schema of metadata Example: http://klein.net/bonnie.
+        entity_id (str): Entity to which attach metadata Example:
+            http://rice.biz/rickie_christiansen.
+        schema (str): Schema of metadata Example: http://haag.com/ashton.senger.
         content_type (Union[Unset, str]): Content-Type header, MUST be of application/json.
             Example: application/json.
+        json_body (Dict): Metadata content Example: {"$schema": ...}.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -154,6 +165,7 @@ def sync(
 
     return sync_detailed(
         client=client,
+        json_body=json_body,
         entity_id=entity_id,
         schema=schema,
         content_type=content_type,
@@ -163,6 +175,7 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
+    json_body: Dict,
     entity_id: str,
     schema: str,
     content_type: Union[Unset, str] = UNSET,
@@ -172,10 +185,12 @@ async def asyncio_detailed(
      Attach new metadata to an entity.
 
     Args:
-        entity_id (str): Entity to which attach metadata Example: http://moen.biz/christian.
-        schema (str): Schema of metadata Example: http://klein.net/bonnie.
+        entity_id (str): Entity to which attach metadata Example:
+            http://rice.biz/rickie_christiansen.
+        schema (str): Schema of metadata Example: http://haag.com/ashton.senger.
         content_type (Union[Unset, str]): Content-Type header, MUST be of application/json.
             Example: application/json.
+        json_body (Dict): Metadata content Example: {"$schema": ...}.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -187,6 +202,7 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         client=client,
+        json_body=json_body,
         entity_id=entity_id,
         schema=schema,
         content_type=content_type,
@@ -201,6 +217,7 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
+    json_body: Dict,
     entity_id: str,
     schema: str,
     content_type: Union[Unset, str] = UNSET,
@@ -210,10 +227,12 @@ async def asyncio(
      Attach new metadata to an entity.
 
     Args:
-        entity_id (str): Entity to which attach metadata Example: http://moen.biz/christian.
-        schema (str): Schema of metadata Example: http://klein.net/bonnie.
+        entity_id (str): Entity to which attach metadata Example:
+            http://rice.biz/rickie_christiansen.
+        schema (str): Schema of metadata Example: http://haag.com/ashton.senger.
         content_type (Union[Unset, str]): Content-Type header, MUST be of application/json.
             Example: application/json.
+        json_body (Dict): Metadata content Example: {"$schema": ...}.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -226,6 +245,7 @@ async def asyncio(
     return (
         await asyncio_detailed(
             client=client,
+            json_body=json_body,
             entity_id=entity_id,
             schema=schema,
             content_type=content_type,

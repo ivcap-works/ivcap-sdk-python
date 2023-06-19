@@ -12,14 +12,13 @@ T = TypeVar("T", bound="MetadataListItemRT")
 class MetadataListItemRT:
     """
     Example:
-        {'aspect': '{...}', 'aspectContext': 'Et ut dolores expedita voluptatibus qui.', 'entity':
-            'urn:blue:transect.1', 'record-id': 'urn:ivcap:record.123e4567-e89b-12d3-a456-426614174000', 'schema':
-            'urn:blue:schema.image'}
+        {'aspect': '{...}', 'aspectContext': 'Minus ut.', 'entity': 'urn:blue:transect.1', 'record-id':
+            'urn:ivcap:record.123e4567-e89b-12d3-a456-426614174000', 'schema': 'urn:blue:schema.image'}
 
     Attributes:
         aspect (Union[Unset, File]): Attached metadata aspect Example: {...}.
-        aspect_context (Union[Unset, File]): If aspectPath was defined, this is what matched the query Example: Fugit
-            repellendus..
+        aspect_context (Union[Unset, File]): If aspectPath was defined, this is what matched the query Example: Deleniti
+            magnam tempore..
         entity (Union[Unset, str]): Entity ID Example: urn:blue:transect.1.
         record_id (Union[Unset, str]): Record ID Example: urn:ivcap:record.123e4567-e89b-12d3-a456-426614174000.
         schema (Union[Unset, str]): Schema ID Example: urn:blue:schema.image.
@@ -69,14 +68,15 @@ class MetadataListItemRT:
         if isinstance(_aspect, Unset):
             aspect = UNSET
         else:
-            aspect = File(payload=BytesIO(_aspect))
+            aspect = _aspect
 
         _aspect_context = d.pop("aspectContext", UNSET)
         aspect_context: Union[Unset, File]
         if isinstance(_aspect_context, Unset):
             aspect_context = UNSET
         else:
-            aspect_context = File(payload=BytesIO(_aspect_context))
+            #aspect_context = File(payload=BytesIO(_aspect_context))
+            aspect_context = _aspect_context
 
         entity = d.pop("entity", UNSET)
 

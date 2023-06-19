@@ -17,12 +17,12 @@ class ArtifactListItem:
     """
     Example:
         {'id': 'cayp:artifact:0000-000', 'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'}, 'mime-type': 'image/jpeg', 'name': 'Fire
+            'application/openapi3+json'}, 'self': 'Officiis reiciendis incidunt.'}, 'mime-type': 'image/jpeg', 'name': 'Fire
             risk for Lot2', 'size': 19000, 'status': 'ready'}
 
     Attributes:
         links (SelfT):  Example: {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Quibusdam dolores officiis.'}.
+            'application/openapi3+json'}, 'self': 'Corrupti laborum qui incidunt.'}.
         id (Union[Unset, str]): Artifact ID Example: cayp:artifact:0000-000.
         mime_type (Union[Unset, str]): Mime (content) type of artifact Example: image/jpeg.
         name (Union[Unset, str]): Optional name Example: Fire risk for Lot2.

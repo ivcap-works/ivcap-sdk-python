@@ -4,9 +4,9 @@
 # found in the LICENSE file. See the AUTHORS file for names of contributors.
 #
 """ A client library for accessing IVCAP """
-from .client import AuthenticatedClient, Client
+from .ivcap import IVCAP
+
 
 __all__ = (
-    "AuthenticatedClient",
-    "Client",
+    "IVCAP",
 )

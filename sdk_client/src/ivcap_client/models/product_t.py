@@ -15,21 +15,20 @@ T = TypeVar("T", bound="ProductT")
 class ProductT:
     """
     Example:
-        {'id': 'Aut nostrum maiores deleniti placeat tenetur qui.', 'links': {'data': 'Officiis dolore quo ea.',
-            'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self':
-            'Perspiciatis cumque quo praesentium.'}, 'mime-type': 'Repellendus vel nulla repellendus eum neque autem.',
-            'name': 'Et iusto et magni vitae ut.', 'size': 2047404228262726111, 'status': 'Minus et ad eius commodi non
-            pariatur.'}
+        {'id': 'Maxime hic soluta quis reprehenderit dignissimos.', 'links': {'data': 'Ut et temporibus magnam qui velit
+            ea.', 'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self':
+            'Voluptas facilis ut maxime distinctio minima.'}, 'mime-type': 'Eligendi est.', 'name': 'Accusamus aut sint et
+            ut molestias expedita.', 'size': 1910614714403410712, 'status': 'Recusandae rerum dolor eum vitae esse.'}
 
     Attributes:
-        id (Union[Unset, str]):  Example: Fugiat facere quas..
-        links (Union[Unset, SelfWithDataT]):  Example: {'data': 'Repellendus atque ad doloremque adipisci atque.',
-            'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Iure
-            assumenda dolore animi assumenda dolorem eveniet.'}.
-        mime_type (Union[Unset, str]):  Example: Animi minus sapiente incidunt quas..
-        name (Union[Unset, str]):  Example: Laborum autem delectus..
-        size (Union[Unset, int]):  Example: 7775421525677750405.
-        status (Union[Unset, str]):  Example: Quo et aut quas..
+        id (Union[Unset, str]):  Example: Est iure accusamus..
+        links (Union[Unset, SelfWithDataT]):  Example: {'data': 'Repellendus vel nulla repellendus eum neque autem.',
+            'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Minus et
+            ad eius commodi non pariatur.'}.
+        mime_type (Union[Unset, str]):  Example: Atque itaque..
+        name (Union[Unset, str]):  Example: Dolorem iure assumenda dolore animi..
+        size (Union[Unset, int]):  Example: 6434265844788398676.
+        status (Union[Unset, str]):  Example: Dolorem eveniet illo repellendus atque ad doloremque..
     """
 
     id: Union[Unset, str] = UNSET

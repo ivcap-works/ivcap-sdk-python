@@ -19,45 +19,39 @@ T = TypeVar("T", bound="ServiceStatusRT")
 class ServiceStatusRT:
     """
     Example:
-        {'account': {'id': 'http://erdman.info/maia_botsford', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'}},
+        {'account': {'id': 'http://gorczany.com/breanne.block', 'links': {'describedBy': {'href':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis incidunt.'}},
             'description': 'This service ...', 'id': 'service:acme:oracle', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
-            'metadata': [{'name': 'Voluptatem et vitae cupiditate nesciunt necessitatibus ipsa.', 'value': 'Ut optio ullam
-            alias reiciendis.'}, {'name': 'Voluptatem et vitae cupiditate nesciunt necessitatibus ipsa.', 'value': 'Ut optio
-            ullam alias reiciendis.'}, {'name': 'Voluptatem et vitae cupiditate nesciunt necessitatibus ipsa.', 'value': 'Ut
-            optio ullam alias reiciendis.'}, {'name': 'Voluptatem et vitae cupiditate nesciunt necessitatibus ipsa.',
-            'value': 'Ut optio ullam alias reiciendis.'}], 'name': 'Fire risk for Lot2', 'parameters': [{'description': 'The
-            name of the region as according to ...', 'label': 'Region Name', 'name': 'region', 'type': 'string'}, {'label':
-            'Rainfall/month threshold', 'name': 'threshold', 'type': 'float', 'unit': 'm'}], 'provider': {'id':
-            'http://erdman.info/maia_botsford', 'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'}}, 'provider-ref': 'service_foo', 'status':
-            'error', 'tags': ['tag1', 'tag2']}
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis incidunt.'},
+            'metadata': [{'name': 'Voluptatem tempore qui quis numquam.', 'value': 'Cumque quo praesentium labore
+            officiis.'}, {'name': 'Voluptatem tempore qui quis numquam.', 'value': 'Cumque quo praesentium labore
+            officiis.'}], 'name': 'Fire risk for Lot2', 'parameters': [{'description': 'The name of the region as according
+            to ...', 'label': 'Region Name', 'name': 'region', 'type': 'string'}, {'label': 'Rainfall/month threshold',
+            'name': 'threshold', 'type': 'float', 'unit': 'm'}], 'provider': {'id': 'http://gorczany.com/breanne.block',
+            'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self':
+            'Officiis reiciendis incidunt.'}}, 'provider-ref': 'service_foo', 'status': 'active', 'tags': ['tag1', 'tag2']}
 
     Attributes:
         id (str): Service ID Example: service:acme:oracle.
         links (SelfT):  Example: {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Quibusdam dolores officiis.'}.
+            'application/openapi3+json'}, 'self': 'Corrupti laborum qui incidunt.'}.
         parameters (List['ParameterDefT']): Service parameter definitions Example: [{'description': 'The name of the
             region as according to ...', 'label': 'Region Name', 'name': 'region', 'type': 'string'}, {'label':
             'Rainfall/month threshold', 'name': 'threshold', 'type': 'float', 'unit': 'm'}].
-        account (Union[Unset, RefT]):  Example: {'id': 'http://oreillyprosacco.net/lonzo', 'links': {'describedBy':
-            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
-            dolores.'}}.
+        account (Union[Unset, RefT]):  Example: {'id': 'http://dooley.name/marlee.mueller', 'links': {'describedBy':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis
+            incidunt.'}}.
         description (Union[Unset, str]): More detailed description of the service Example: This service ....
         metadata (Union[Unset, List['ParameterT']]): Optional provider provided meta tags Example: [{'name': 'Voluptatem
-            et vitae cupiditate nesciunt necessitatibus ipsa.', 'value': 'Ut optio ullam alias reiciendis.'}, {'name':
-            'Voluptatem et vitae cupiditate nesciunt necessitatibus ipsa.', 'value': 'Ut optio ullam alias reiciendis.'},
-            {'name': 'Voluptatem et vitae cupiditate nesciunt necessitatibus ipsa.', 'value': 'Ut optio ullam alias
-            reiciendis.'}, {'name': 'Voluptatem et vitae cupiditate nesciunt necessitatibus ipsa.', 'value': 'Ut optio ullam
-            alias reiciendis.'}].
+            tempore qui quis numquam.', 'value': 'Cumque quo praesentium labore officiis.'}, {'name': 'Voluptatem tempore
+            qui quis numquam.', 'value': 'Cumque quo praesentium labore officiis.'}].
         name (Union[Unset, str]): Optional provider provided name Example: Fire risk for Lot2.
-        provider (Union[Unset, RefT]):  Example: {'id': 'http://oreillyprosacco.net/lonzo', 'links': {'describedBy':
-            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
-            dolores.'}}.
+        provider (Union[Unset, RefT]):  Example: {'id': 'http://dooley.name/marlee.mueller', 'links': {'describedBy':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis
+            incidunt.'}}.
         provider_ref (Union[Unset, str]): Provider provided ID. Needs to be a single string with punctuations allowed.
             Might have been changed Example: service_foo.
-        status (Union[Unset, ServiceStatusRTStatus]): Service status Example: active.
+        status (Union[Unset, ServiceStatusRTStatus]): Service status Example: error.
         tags (Union[Unset, List[str]]): Optional provider provided tags Example: ['tag1', 'tag2'].
     """
 

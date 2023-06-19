@@ -96,9 +96,11 @@ def sync_detailed(
      Create a new orders and return its status.
 
     Args:
-        json_body (OrderRequestT):  Example: {'accountID': '123e4567-e89b-12d3-a456-426614174000',
-            'name': 'Fire risk for Lot2', 'parameters': [{'name': 'region', 'value': 'Upper Valley'},
-            {'name': 'threshold', 'value': 10}], 'serviceID': '123e4567-e89b-12d3-a456-426614174000'}.
+        json_body (OrderRequestT):  Example: {'accountID':
+            'urn:ivcap:account:123e4567-e89b-12d3-a456-426614174000', 'name': 'Fire risk for Lot2',
+            'parameters': [{'name': 'region', 'value': 'Upper Valley'}, {'name': 'threshold', 'value':
+            10}], 'policyID': 'urn:ivcap:policy:123e4567-e89b-12d3-a456-426614174000', 'serviceID':
+            'urn:ivcap:service:123e4567-e89b-12d3-a456-426614174000'}.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -131,9 +133,11 @@ def sync(
      Create a new orders and return its status.
 
     Args:
-        json_body (OrderRequestT):  Example: {'accountID': '123e4567-e89b-12d3-a456-426614174000',
-            'name': 'Fire risk for Lot2', 'parameters': [{'name': 'region', 'value': 'Upper Valley'},
-            {'name': 'threshold', 'value': 10}], 'serviceID': '123e4567-e89b-12d3-a456-426614174000'}.
+        json_body (OrderRequestT):  Example: {'accountID':
+            'urn:ivcap:account:123e4567-e89b-12d3-a456-426614174000', 'name': 'Fire risk for Lot2',
+            'parameters': [{'name': 'region', 'value': 'Upper Valley'}, {'name': 'threshold', 'value':
+            10}], 'policyID': 'urn:ivcap:policy:123e4567-e89b-12d3-a456-426614174000', 'serviceID':
+            'urn:ivcap:service:123e4567-e89b-12d3-a456-426614174000'}.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -159,9 +163,11 @@ async def asyncio_detailed(
      Create a new orders and return its status.
 
     Args:
-        json_body (OrderRequestT):  Example: {'accountID': '123e4567-e89b-12d3-a456-426614174000',
-            'name': 'Fire risk for Lot2', 'parameters': [{'name': 'region', 'value': 'Upper Valley'},
-            {'name': 'threshold', 'value': 10}], 'serviceID': '123e4567-e89b-12d3-a456-426614174000'}.
+        json_body (OrderRequestT):  Example: {'accountID':
+            'urn:ivcap:account:123e4567-e89b-12d3-a456-426614174000', 'name': 'Fire risk for Lot2',
+            'parameters': [{'name': 'region', 'value': 'Upper Valley'}, {'name': 'threshold', 'value':
+            10}], 'policyID': 'urn:ivcap:policy:123e4567-e89b-12d3-a456-426614174000', 'serviceID':
+            'urn:ivcap:service:123e4567-e89b-12d3-a456-426614174000'}.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -192,9 +198,11 @@ async def asyncio(
      Create a new orders and return its status.
 
     Args:
-        json_body (OrderRequestT):  Example: {'accountID': '123e4567-e89b-12d3-a456-426614174000',
-            'name': 'Fire risk for Lot2', 'parameters': [{'name': 'region', 'value': 'Upper Valley'},
-            {'name': 'threshold', 'value': 10}], 'serviceID': '123e4567-e89b-12d3-a456-426614174000'}.
+        json_body (OrderRequestT):  Example: {'accountID':
+            'urn:ivcap:account:123e4567-e89b-12d3-a456-426614174000', 'name': 'Fire risk for Lot2',
+            'parameters': [{'name': 'region', 'value': 'Upper Valley'}, {'name': 'threshold', 'value':
+            10}], 'policyID': 'urn:ivcap:policy:123e4567-e89b-12d3-a456-426614174000', 'serviceID':
+            'urn:ivcap:service:123e4567-e89b-12d3-a456-426614174000'}.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

@@ -15,22 +15,22 @@ T = TypeVar("T", bound="BasicWorkflowOptsT")
 class BasicWorkflowOptsT:
     """
     Example:
-        {'command': ['Odit dolorum nulla quo.', 'Asperiores temporibus.', 'Ut voluptatem.'], 'cpu': {'limit': 'Quidem
-            nulla quae provident dolor amet nulla.', 'request': 'Et aut autem deserunt sit architecto.'}, 'image': 'Est esse
-            voluptas consectetur quia.', 'memory': {'limit': 'Quidem nulla quae provident dolor amet nulla.', 'request': 'Et
-            aut autem deserunt sit architecto.'}}
+        {'command': ['Voluptatem facilis libero voluptatem quis quam.', 'Dolor odit rerum quia.', 'Est voluptatem rerum
+            qui amet.'], 'cpu': {'limit': 'Sed ut in distinctio consequatur aut voluptas.', 'request': 'Quaerat voluptas
+            distinctio.'}, 'image': 'Asperiores temporibus.', 'memory': {'limit': 'Sed ut in distinctio consequatur aut
+            voluptas.', 'request': 'Quaerat voluptas distinctio.'}}
 
     Attributes:
         command (Union[Unset, List[str]]): Command to start the container - needed for some container runtimes Example:
-            ['Sed error id et cupiditate.', 'Ratione qui amet reiciendis debitis.', 'Reprehenderit voluptate nostrum
-            quibusdam quia.', 'Neque sapiente commodi dolorem.'].
+            ['Neque sapiente commodi dolorem.', 'Voluptatum nihil optio sit.', 'Iure facere excepturi voluptatem
+            provident.'].
         cpu (Union[Unset, ResourceMemoryT]): See
             and https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/ for units Example:
-            {'limit': 'Molestiae et ex hic aut dicta dolorem.', 'request': 'Voluptas odit.'}.
-        image (Union[Unset, str]): container image name Example: Reprehenderit ratione accusamus maxime iusto iste..
+            {'limit': 'Aut odit dolorum nulla quo.', 'request': 'Est esse voluptas consectetur quia.'}.
+        image (Union[Unset, str]): container image name Example: Debitis perferendis..
         memory (Union[Unset, ResourceMemoryT]): See
             and https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/ for units Example:
-            {'limit': 'Molestiae et ex hic aut dicta dolorem.', 'request': 'Voluptas odit.'}.
+            {'limit': 'Aut odit dolorum nulla quo.', 'request': 'Est esse voluptas consectetur quia.'}.
     """
 
     command: Union[Unset, List[str]] = UNSET

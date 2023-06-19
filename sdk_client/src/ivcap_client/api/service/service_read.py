@@ -4,7 +4,8 @@ from typing import Any, Dict, Optional, Union, cast
 import httpx
 
 from ... import errors
-from ...client import Client
+from ...client import AuthenticatedClient, Client
+from ...models.invalid_scopes_t import InvalidScopesT
 from ...models.not_implemented_t import NotImplementedT
 from ...models.resource_not_found_t import ResourceNotFoundT
 from ...models.service_status_rt import ServiceStatusRT
@@ -14,7 +15,7 @@ from ...types import Response
 def _get_kwargs(
     id: str,
     *,
-    client: Client,
+    client: AuthenticatedClient,
 ) -> Dict[str, Any]:
     url = "{}/1/services/{id}".format(client.base_url, id=id)
 
@@ -33,7 +34,7 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: Client, response: httpx.Response
-) -> Optional[Union[Any, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]:
+) -> Optional[Union[Any, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]:
     if response.status_code == HTTPStatus.OK:
         response_200 = ServiceStatusRT.from_dict(response.json())
 
@@ -44,6 +45,10 @@ def _parse_response(
     if response.status_code == HTTPStatus.UNAUTHORIZED:
         response_401 = cast(Any, None)
         return response_401
+    if response.status_code == HTTPStatus.FORBIDDEN:
+        response_403 = InvalidScopesT.from_dict(response.json())
+
+        return response_403
     if response.status_code == HTTPStatus.NOT_FOUND:
         response_404 = ResourceNotFoundT.from_dict(response.json())
 
@@ -60,7 +65,7 @@ def _parse_response(
 
 def _build_response(
     *, client: Client, response: httpx.Response
-) -> Response[Union[Any, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]:
+) -> Response[Union[Any, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -72,8 +77,8 @@ def _build_response(
 def sync_detailed(
     id: str,
     *,
-    client: Client,
-) -> Response[Union[Any, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]:
+    client: AuthenticatedClient,
+) -> Response[Union[Any, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]:
     """read service
 
      Show services by ID
@@ -86,7 +91,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Any, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]
+        Response[Union[Any, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]
     """
 
     kwargs = _get_kwargs(
@@ -105,8 +110,8 @@ def sync_detailed(
 def sync(
     id: str,
     *,
-    client: Client,
-) -> Optional[Union[Any, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]:
+    client: AuthenticatedClient,
+) -> Optional[Union[Any, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]:
     """read service
 
      Show services by ID
@@ -119,7 +124,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[Any, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]
+        Union[Any, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]
     """
 
     return sync_detailed(
@@ -131,8 +136,8 @@ def sync(
 async def asyncio_detailed(
     id: str,
     *,
-    client: Client,
-) -> Response[Union[Any, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]:
+    client: AuthenticatedClient,
+) -> Response[Union[Any, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]:
     """read service
 
      Show services by ID
@@ -145,7 +150,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Any, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]
+        Response[Union[Any, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]
     """
 
     kwargs = _get_kwargs(
@@ -162,8 +167,8 @@ async def asyncio_detailed(
 async def asyncio(
     id: str,
     *,
-    client: Client,
-) -> Optional[Union[Any, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]:
+    client: AuthenticatedClient,
+) -> Optional[Union[Any, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]]:
     """read service
 
      Show services by ID
@@ -176,7 +181,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[Any, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]
+        Union[Any, InvalidScopesT, NotImplementedT, ResourceNotFoundT, ServiceStatusRT]
     """
 
     return (

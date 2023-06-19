@@ -19,22 +19,22 @@ class WorkflowT:
     'opts' is expected to contain the same schema as 'basic'
 
     Example:
-        {'argo': 'Possimus distinctio.', 'basic': {'command': ['Aut voluptas.', 'Ut officiis consequatur corporis autem
-            odit.', 'Unde fuga sed veniam.'], 'cpu': {'limit': 'Quidem nulla quae provident dolor amet nulla.', 'request':
-            'Et aut autem deserunt sit architecto.'}, 'image': 'Voluptatem explicabo aut adipisci.', 'memory': {'limit':
-            'Quidem nulla quae provident dolor amet nulla.', 'request': 'Et aut autem deserunt sit architecto.'}}, 'opts':
-            'Blanditiis quos officia.', 'type': 'Rerum qui amet.'}
+        {'argo': 'Eos est vitae quos consequatur.', 'basic': {'command': ['Molestiae cupiditate voluptas.',
+            'Voluptatibus illum aut deserunt fugiat hic.'], 'cpu': {'limit': 'Sed ut in distinctio consequatur aut
+            voluptas.', 'request': 'Quaerat voluptas distinctio.'}, 'image': 'Quidem nulla quae provident dolor amet
+            nulla.', 'memory': {'limit': 'Sed ut in distinctio consequatur aut voluptas.', 'request': 'Quaerat voluptas
+            distinctio.'}}, 'opts': 'Qui eum.', 'type': 'Et suscipit voluptatum qui earum inventore.'}
 
     Attributes:
-        argo (Union[Unset, File]): Defines the workflow using argo's WF schema Example: Libero voluptatem quis quam
-            repudiandae dolor..
-        basic (Union[Unset, BasicWorkflowOptsT]):  Example: {'command': ['Odit dolorum nulla quo.', 'Asperiores
-            temporibus.', 'Ut voluptatem.'], 'cpu': {'limit': 'Quidem nulla quae provident dolor amet nulla.', 'request':
-            'Et aut autem deserunt sit architecto.'}, 'image': 'Est esse voluptas consectetur quia.', 'memory': {'limit':
-            'Quidem nulla quae provident dolor amet nulla.', 'request': 'Et aut autem deserunt sit architecto.'}}.
+        argo (Union[Unset, File]): Defines the workflow using argo's WF schema Example: Possimus distinctio..
+        basic (Union[Unset, BasicWorkflowOptsT]):  Example: {'command': ['Voluptatem facilis libero voluptatem quis
+            quam.', 'Dolor odit rerum quia.', 'Est voluptatem rerum qui amet.'], 'cpu': {'limit': 'Sed ut in distinctio
+            consequatur aut voluptas.', 'request': 'Quaerat voluptas distinctio.'}, 'image': 'Asperiores temporibus.',
+            'memory': {'limit': 'Sed ut in distinctio consequatur aut voluptas.', 'request': 'Quaerat voluptas
+            distinctio.'}}.
         opts (Union[Unset, File]): Type specific options - left for backward compatibility, if possible use type
-            specific elements Example: Rerum quia nesciunt est..
-        type (Union[Unset, str]): Type of workflow Example: Beatae commodi optio et magni..
+            specific elements Example: Blanditiis quos officia..
+        type (Union[Unset, str]): Type of workflow Example: Cupiditate tenetur ratione qui amet..
     """
 
     argo: Union[Unset, File] = UNSET

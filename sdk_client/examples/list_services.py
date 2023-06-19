@@ -1,16 +1,19 @@
 import sys, os
-sys.path.append(os.path.join(os.getcwd(), '../src'))
 
-from ivcap_client import AuthenticatedClient
-from ivcap_client.api.service import service_list
-from ivcap_client.models import ServiceListRT
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../src'))
+from ivcap_client.ivcap import IVCAP
+from ivcap_client.service import PType
+
 import pprint
 pp = pprint.PrettyPrinter(indent=2)
 
-ivcap_url= os.getenv('IVCAP_URL', 'https://api.ivcap.net')
-token = os.environ['IVCAP_JWT']
-account_id = os.environ['IVCAP_ACCOUNT_ID']
-client = AuthenticatedClient(base_url=ivcap_url, token=token)
+ivcap = IVCAP()
 
-services: ServiceListRT = service_list.sync(client=client, limit=50)
-pp.pprint(list(map(lambda el: el.to_dict(), services.services)))
+for i, s in enumerate(ivcap.list_services(filter="foo")):
+    print(f"===== {i}")
+    pp.pprint(s)
+    for n, p in s.parameters.items():
+        print(f".. {n}: {p}")
+        if p.type == PType.OPTION:
+            p.verify("gpu")
+            p.verify("bnoo")

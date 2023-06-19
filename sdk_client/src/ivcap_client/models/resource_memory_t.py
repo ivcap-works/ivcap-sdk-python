@@ -13,12 +13,11 @@ class ResourceMemoryT:
     and https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/ for units
 
         Example:
-            {'limit': 'Molestiae et ex hic aut dicta dolorem.', 'request': 'Voluptas odit.'}
+            {'limit': 'Aut odit dolorum nulla quo.', 'request': 'Est esse voluptas consectetur quia.'}
 
         Attributes:
-            limit (Union[Unset, str]): minimal requirements [system limit] Example: Iure facere excepturi voluptatem
-                provident..
-            request (Union[Unset, str]): minimal requirements [0] Example: Voluptatum nihil optio sit..
+            limit (Union[Unset, str]): minimal requirements [system limit] Example: Molestiae et ex hic aut dicta dolorem..
+            request (Union[Unset, str]): minimal requirements [0] Example: Voluptas odit..
     """
 
     limit: Union[Unset, str] = UNSET

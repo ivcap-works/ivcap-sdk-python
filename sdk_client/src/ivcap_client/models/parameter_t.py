@@ -11,11 +11,11 @@ T = TypeVar("T", bound="ParameterT")
 class ParameterT:
     """
     Example:
-        {'name': 'Tempore aut minus ut ullam quisquam ad.', 'value': 'Unde sapiente.'}
+        {'name': 'Vel a aut temporibus.', 'value': 'Dolores quod ipsa.'}
 
     Attributes:
-        name (Union[Unset, str]):  Example: Id accusamus commodi dolores repellat reiciendis..
-        value (Union[Unset, str]):  Example: Nulla nostrum et deleniti..
+        name (Union[Unset, str]):  Example: Quo et aut quas..
+        value (Union[Unset, str]):  Example: Animi minus sapiente incidunt quas..
     """
 
     name: Union[Unset, str] = UNSET

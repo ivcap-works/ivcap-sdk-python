@@ -17,21 +17,21 @@ class ServiceListItem:
     """
     Example:
         {'description': 'Some lengthy description of fire risk', 'id': 'service:acme:oracle', 'links': {'describedBy':
-            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
-            dolores.'}, 'name': 'Fire risk for region', 'provider': {'id': 'http://erdman.info/maia_botsford', 'links':
-            {'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident
-            sapiente dolores.'}}}
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis
+            incidunt.'}, 'name': 'Fire risk for region', 'provider': {'id': 'http://gorczany.com/breanne.block', 'links':
+            {'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis
+            reiciendis incidunt.'}}}
 
     Attributes:
         links (SelfT):  Example: {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Quibusdam dolores officiis.'}.
+            'application/openapi3+json'}, 'self': 'Corrupti laborum qui incidunt.'}.
         description (Union[Unset, str]): Optional description of the service Example: Some lengthy description of fire
             risk.
         id (Union[Unset, str]): Service ID Example: service:acme:oracle.
         name (Union[Unset, str]): Optional customer provided name Example: Fire risk for region.
-        provider (Union[Unset, RefT]):  Example: {'id': 'http://oreillyprosacco.net/lonzo', 'links': {'describedBy':
-            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
-            dolores.'}}.
+        provider (Union[Unset, RefT]):  Example: {'id': 'http://dooley.name/marlee.mueller', 'links': {'describedBy':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis
+            incidunt.'}}.
     """
 
     links: "SelfT"

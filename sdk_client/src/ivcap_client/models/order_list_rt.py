@@ -19,17 +19,21 @@ class OrderListRT:
         {'at-time': '1996-12-19T16:39:57-08:00', 'links': {'first': 'https://api.com/foo/...', 'next':
             'https://api.com/foo/...', 'self': 'https://api.com/foo/...'}, 'orders': [{'account_id': '2022-01-01',
             'finished_at': '2022-01-01', 'id': 'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy':
-            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
-            dolores.'}, 'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'started_at':
-            '2022-01-01', 'status': 'error'}, {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis
+            incidunt.'}, 'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'started_at':
+            '2022-01-01', 'status': 'finished'}, {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
             'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis incidunt.'},
             'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'started_at':
-            '2022-01-01', 'status': 'error'}, {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
+            '2022-01-01', 'status': 'finished'}, {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
             'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis incidunt.'},
             'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'started_at':
-            '2022-01-01', 'status': 'error'}]}
+            '2022-01-01', 'status': 'finished'}, {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
+            'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy': {'href':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis incidunt.'},
+            'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'started_at':
+            '2022-01-01', 'status': 'finished'}]}
 
     Attributes:
         at_time (datetime.datetime): Time at which this list was valid Example: 1996-12-19T16:39:57-08:00.
@@ -37,17 +41,21 @@ class OrderListRT:
             'https://api.com/foo/...'}.
         orders (List['OrderListItem']): Orders Example: [{'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
             'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis incidunt.'},
             'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'started_at':
-            '2022-01-01', 'status': 'error'}, {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
+            '2022-01-01', 'status': 'finished'}, {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
             'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis incidunt.'},
             'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'started_at':
-            '2022-01-01', 'status': 'error'}, {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
+            '2022-01-01', 'status': 'finished'}, {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
             'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis incidunt.'},
             'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'started_at':
-            '2022-01-01', 'status': 'error'}].
+            '2022-01-01', 'status': 'finished'}, {'account_id': '2022-01-01', 'finished_at': '2022-01-01', 'id':
+            'cayp:order:123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy': {'href':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis incidunt.'},
+            'name': 'Fire risk for Lot2', 'ordered_at': '2022-01-01', 'service_id': '2022-01-01', 'started_at':
+            '2022-01-01', 'status': 'finished'}].
     """
 
     at_time: datetime.datetime

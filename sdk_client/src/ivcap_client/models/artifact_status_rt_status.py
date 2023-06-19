@@ -2,9 +2,11 @@ from enum import Enum
 
 
 class ArtifactStatusRTStatus(str, Enum):
-    COMPLETE = "complete"
-    ERROR = "error"
-    PENDING = "pending"
+    PENDING  = "pending"
+    PARTIAL  = "partial"
+    READY    = "ready"
+    ERROR    = "error"
+    UNKNOWN  = "unknown"
 
     def __str__(self) -> str:
         return str(self.value)

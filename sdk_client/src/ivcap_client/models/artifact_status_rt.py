@@ -17,38 +17,37 @@ T = TypeVar("T", bound="ArtifactStatusRT")
 class ArtifactStatusRT:
     """
     Example:
-        {'account': {'id': 'http://erdman.info/maia_botsford', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'}},
-            'cache-of': 'Illum vel odio quibusdam.', 'created-at': '2022-01-01', 'data': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
-            'etag': 'Quis ut.', 'id': 'type:scope:name', 'last-modified-at': '2022-01-01', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'},
-            'mime-type': 'Aspernatur aliquid sed rerum.', 'name': 'Fire risk per LGA', 'policy': {'id':
-            'http://erdman.info/maia_botsford', 'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'}}, 'size': 3702979125211923010, 'status':
-            'complete'}
+        {'account': {'id': 'http://gorczany.com/breanne.block', 'links': {'describedBy': {'href':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis incidunt.'}},
+            'cache-of': 'Commodi dolores.', 'created-at': '2022-01-01', 'data': {'describedBy': {'href':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis incidunt.'},
+            'etag': 'Reiciendis tempore nulla nostrum.', 'id': 'type:scope:name', 'last-modified-at': '2022-01-01', 'links':
+            {'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis
+            reiciendis incidunt.'}, 'mime-type': 'Sit vel.', 'name': 'Fire risk per LGA', 'policy': {'id':
+            'http://gorczany.com/breanne.block', 'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
+            'application/openapi3+json'}, 'self': 'Officiis reiciendis incidunt.'}}, 'size': 3024051993118367746, 'status':
+            'error'}
 
     Attributes:
         id (str): Artifact ID Example: type:scope:name.
         links (SelfT):  Example: {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Quibusdam dolores officiis.'}.
+            'application/openapi3+json'}, 'self': 'Corrupti laborum qui incidunt.'}.
         status (ArtifactStatusRTStatus): Artifact status Example: pending.
-        account (Union[Unset, RefT]):  Example: {'id': 'http://oreillyprosacco.net/lonzo', 'links': {'describedBy':
-            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
-            dolores.'}}.
-        cache_of (Union[Unset, str]): URL of object this artifact is caching Example: Praesentium eaque explicabo
-            facilis quos..
+        account (Union[Unset, RefT]):  Example: {'id': 'http://dooley.name/marlee.mueller', 'links': {'describedBy':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis
+            incidunt.'}}.
+        cache_of (Union[Unset, str]): URL of object this artifact is caching Example: Explicabo ducimus..
         created_at (Union[Unset, str]): DateTime artifact was created Example: 2022-01-01.
         data (Union[Unset, SelfT]):  Example: {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Quibusdam dolores officiis.'}.
-        etag (Union[Unset, str]): ETAG of artifact Example: Velit nihil mollitia velit..
+            'application/openapi3+json'}, 'self': 'Corrupti laborum qui incidunt.'}.
+        etag (Union[Unset, str]): ETAG of artifact Example: Est illo..
         last_modified_at (Union[Unset, str]): DateTime artifact was last modified Example: 2022-01-01.
-        mime_type (Union[Unset, str]): Mime-type of data Example: Consequatur at..
+        mime_type (Union[Unset, str]): Mime-type of data Example: Perferendis quis a..
         name (Union[Unset, str]): Optional name Example: Fire risk per LGA.
-        policy (Union[Unset, RefT]):  Example: {'id': 'http://oreillyprosacco.net/lonzo', 'links': {'describedBy':
-            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
-            dolores.'}}.
-        size (Union[Unset, int]): Size of data Example: 6842487488736750457.
+        policy (Union[Unset, RefT]):  Example: {'id': 'http://dooley.name/marlee.mueller', 'links': {'describedBy':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis
+            incidunt.'}}.
+        size (Union[Unset, int]): Size of data Example: 6677373902791452367.
     """
 
     id: str

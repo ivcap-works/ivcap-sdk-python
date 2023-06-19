@@ -135,7 +135,7 @@ def sync_detailed(
             on
                                         property EndsAt in descending order. Example: orderby=EndsAt.
         order_desc (Union[Unset, None, bool]): When set order result in descending order.
-            Ascending order is the default. Example: True.
+            Ascending order is the default.
         at_time (Union[Unset, None, datetime.datetime]): Return the state of the respective
             resources at that time [now] Example: 1996-12-19T16:39:57-08:00.
 
@@ -200,7 +200,7 @@ def sync(
             on
                                         property EndsAt in descending order. Example: orderby=EndsAt.
         order_desc (Union[Unset, None, bool]): When set order result in descending order.
-            Ascending order is the default. Example: True.
+            Ascending order is the default.
         at_time (Union[Unset, None, datetime.datetime]): Return the state of the respective
             resources at that time [now] Example: 1996-12-19T16:39:57-08:00.
 
@@ -258,7 +258,7 @@ async def asyncio_detailed(
             on
                                         property EndsAt in descending order. Example: orderby=EndsAt.
         order_desc (Union[Unset, None, bool]): When set order result in descending order.
-            Ascending order is the default. Example: True.
+            Ascending order is the default.
         at_time (Union[Unset, None, datetime.datetime]): Return the state of the respective
             resources at that time [now] Example: 1996-12-19T16:39:57-08:00.
 
@@ -321,7 +321,7 @@ async def asyncio(
             on
                                         property EndsAt in descending order. Example: orderby=EndsAt.
         order_desc (Union[Unset, None, bool]): When set order result in descending order.
-            Ascending order is the default. Example: True.
+            Ascending order is the default.
         at_time (Union[Unset, None, datetime.datetime]): Return the state of the respective
             resources at that time [now] Example: 1996-12-19T16:39:57-08:00.
 

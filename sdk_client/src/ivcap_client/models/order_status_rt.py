@@ -19,35 +19,35 @@ T = TypeVar("T", bound="OrderStatusRT")
 class OrderStatusRT:
     """
     Example:
-        {'account': {'id': 'http://erdman.info/maia_botsford', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'}},
+        {'account': {'id': 'http://gorczany.com/breanne.block', 'links': {'describedBy': {'href':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis incidunt.'}},
             'finished_at': '2023-03-17T04:57:00Z', 'id': '123e4567-e89b-12d3-a456-426614174000', 'links': {'describedBy':
-            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
-            dolores.'}, 'name': 'Fire risk for Lot2', 'ordered_at': '2023-03-17T04:57:00Z', 'parameters': [{'name':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis
+            incidunt.'}, 'name': 'Fire risk for Lot2', 'ordered_at': '2023-03-17T04:57:00Z', 'parameters': [{'name':
             'region', 'value': 'Upper Valley'}, {'name': 'threshold', 'value': 10}], 'products': [{'href':
             'https:/.../1/artifacts/0000-00001220', 'mime-type': 'image/geo+tiff', 'name': 'fire risk map', 'size':
-            1234963}], 'service': {'id': 'http://erdman.info/maia_botsford', 'links': {'describedBy': {'href':
-            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente dolores.'}},
-            'started_at': '2023-03-17T04:57:00Z', 'status': 'executing'}
+            1234963}], 'service': {'id': 'http://gorczany.com/breanne.block', 'links': {'describedBy': {'href':
+            'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis incidunt.'}},
+            'started_at': '2023-03-17T04:57:00Z', 'status': 'unknown'}
 
     Attributes:
         id (str): Order ID Example: 123e4567-e89b-12d3-a456-426614174000.
         parameters (List['ParameterT']): Service parameters Example: [{'name': 'region', 'value': 'Upper Valley'},
             {'name': 'threshold', 'value': 10}].
-        account (Union[Unset, RefT]):  Example: {'id': 'http://oreillyprosacco.net/lonzo', 'links': {'describedBy':
-            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
-            dolores.'}}.
+        account (Union[Unset, RefT]):  Example: {'id': 'http://dooley.name/marlee.mueller', 'links': {'describedBy':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis
+            incidunt.'}}.
         finished_at (Union[Unset, str]): DateTime order processing finished Example: 2023-03-17T04:57:00Z.
         links (Union[Unset, SelfT]):  Example: {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Quibusdam dolores officiis.'}.
+            'application/openapi3+json'}, 'self': 'Corrupti laborum qui incidunt.'}.
         name (Union[Unset, str]): Optional customer provided name Example: Fire risk for Lot2.
         ordered_at (Union[Unset, str]): DateTime order was placed Example: 2023-03-17T04:57:00Z.
         products (Union[Unset, List['ProductT']]): Products delivered for this order Example: [{'href':
             'https:/.../1/artifacts/0000-00001220', 'mime-type': 'image/geo+tiff', 'name': 'fire risk map', 'size':
             1234963}].
-        service (Union[Unset, RefT]):  Example: {'id': 'http://oreillyprosacco.net/lonzo', 'links': {'describedBy':
-            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Provident sapiente
-            dolores.'}}.
+        service (Union[Unset, RefT]):  Example: {'id': 'http://dooley.name/marlee.mueller', 'links': {'describedBy':
+            {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self': 'Officiis reiciendis
+            incidunt.'}}.
         started_at (Union[Unset, str]): DateTime order processing started Example: 2023-03-17T04:57:00Z.
         status (Union[Unset, OrderStatusRTStatus]): Order status Example: succeeded.
     """

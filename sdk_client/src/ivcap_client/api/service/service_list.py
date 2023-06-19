@@ -5,8 +5,9 @@ from typing import Any, Dict, Optional, Union, cast
 import httpx
 
 from ... import errors
-from ...client import Client
+from ...client import AuthenticatedClient, Client
 from ...models.invalid_parameter_value import InvalidParameterValue
+from ...models.invalid_scopes_t import InvalidScopesT
 from ...models.not_implemented_t import NotImplementedT
 from ...models.service_list_rt import ServiceListRT
 from ...types import UNSET, Response, Unset
@@ -14,7 +15,7 @@ from ...types import UNSET, Response, Unset
 
 def _get_kwargs(
     *,
-    client: Client,
+    client: AuthenticatedClient,
     limit: Union[Unset, None, int] = 10,
     page: Union[Unset, None, str] = UNSET,
     filter_: Union[Unset, None, str] = UNSET,
@@ -59,7 +60,7 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: Client, response: httpx.Response
-) -> Optional[Union[Any, InvalidParameterValue, NotImplementedT, ServiceListRT]]:
+) -> Optional[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ServiceListRT]]:
     if response.status_code == HTTPStatus.OK:
         response_200 = ServiceListRT.from_dict(response.json())
 
@@ -70,6 +71,10 @@ def _parse_response(
     if response.status_code == HTTPStatus.UNAUTHORIZED:
         response_401 = cast(Any, None)
         return response_401
+    if response.status_code == HTTPStatus.FORBIDDEN:
+        response_403 = InvalidScopesT.from_dict(response.json())
+
+        return response_403
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
         response_422 = InvalidParameterValue.from_dict(response.json())
 
@@ -86,7 +91,7 @@ def _parse_response(
 
 def _build_response(
     *, client: Client, response: httpx.Response
-) -> Response[Union[Any, InvalidParameterValue, NotImplementedT, ServiceListRT]]:
+) -> Response[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ServiceListRT]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -97,14 +102,14 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Client,
+    client: AuthenticatedClient,
     limit: Union[Unset, None, int] = 10,
     page: Union[Unset, None, str] = UNSET,
     filter_: Union[Unset, None, str] = UNSET,
     order_by: Union[Unset, None, str] = UNSET,
     order_desc: Union[Unset, None, bool] = False,
     at_time: Union[Unset, None, datetime.datetime] = UNSET,
-) -> Response[Union[Any, InvalidParameterValue, NotImplementedT, ServiceListRT]]:
+) -> Response[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ServiceListRT]]:
     """list service
 
      services
@@ -130,7 +135,7 @@ def sync_detailed(
             on
                                         property EndsAt in descending order. Example: orderby=EndsAt.
         order_desc (Union[Unset, None, bool]): When set order result in descending order.
-            Ascending order is the default. Example: True.
+            Ascending order is the default.
         at_time (Union[Unset, None, datetime.datetime]): Return the state of the respective
             resources at that time [now] Example: 1996-12-19T16:39:57-08:00.
 
@@ -139,7 +144,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Any, InvalidParameterValue, NotImplementedT, ServiceListRT]]
+        Response[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ServiceListRT]]
     """
 
     kwargs = _get_kwargs(
@@ -162,14 +167,14 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Client,
+    client: AuthenticatedClient,
     limit: Union[Unset, None, int] = 10,
     page: Union[Unset, None, str] = UNSET,
     filter_: Union[Unset, None, str] = UNSET,
     order_by: Union[Unset, None, str] = UNSET,
     order_desc: Union[Unset, None, bool] = False,
     at_time: Union[Unset, None, datetime.datetime] = UNSET,
-) -> Optional[Union[Any, InvalidParameterValue, NotImplementedT, ServiceListRT]]:
+) -> Optional[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ServiceListRT]]:
     """list service
 
      services
@@ -195,7 +200,7 @@ def sync(
             on
                                         property EndsAt in descending order. Example: orderby=EndsAt.
         order_desc (Union[Unset, None, bool]): When set order result in descending order.
-            Ascending order is the default. Example: True.
+            Ascending order is the default.
         at_time (Union[Unset, None, datetime.datetime]): Return the state of the respective
             resources at that time [now] Example: 1996-12-19T16:39:57-08:00.
 
@@ -204,7 +209,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[Any, InvalidParameterValue, NotImplementedT, ServiceListRT]
+        Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ServiceListRT]
     """
 
     return sync_detailed(
@@ -220,14 +225,14 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Client,
+    client: AuthenticatedClient,
     limit: Union[Unset, None, int] = 10,
     page: Union[Unset, None, str] = UNSET,
     filter_: Union[Unset, None, str] = UNSET,
     order_by: Union[Unset, None, str] = UNSET,
     order_desc: Union[Unset, None, bool] = False,
     at_time: Union[Unset, None, datetime.datetime] = UNSET,
-) -> Response[Union[Any, InvalidParameterValue, NotImplementedT, ServiceListRT]]:
+) -> Response[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ServiceListRT]]:
     """list service
 
      services
@@ -253,7 +258,7 @@ async def asyncio_detailed(
             on
                                         property EndsAt in descending order. Example: orderby=EndsAt.
         order_desc (Union[Unset, None, bool]): When set order result in descending order.
-            Ascending order is the default. Example: True.
+            Ascending order is the default.
         at_time (Union[Unset, None, datetime.datetime]): Return the state of the respective
             resources at that time [now] Example: 1996-12-19T16:39:57-08:00.
 
@@ -262,7 +267,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Any, InvalidParameterValue, NotImplementedT, ServiceListRT]]
+        Response[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ServiceListRT]]
     """
 
     kwargs = _get_kwargs(
@@ -283,14 +288,14 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Client,
+    client: AuthenticatedClient,
     limit: Union[Unset, None, int] = 10,
     page: Union[Unset, None, str] = UNSET,
     filter_: Union[Unset, None, str] = UNSET,
     order_by: Union[Unset, None, str] = UNSET,
     order_desc: Union[Unset, None, bool] = False,
     at_time: Union[Unset, None, datetime.datetime] = UNSET,
-) -> Optional[Union[Any, InvalidParameterValue, NotImplementedT, ServiceListRT]]:
+) -> Optional[Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ServiceListRT]]:
     """list service
 
      services
@@ -316,7 +321,7 @@ async def asyncio(
             on
                                         property EndsAt in descending order. Example: orderby=EndsAt.
         order_desc (Union[Unset, None, bool]): When set order result in descending order.
-            Ascending order is the default. Example: True.
+            Ascending order is the default.
         at_time (Union[Unset, None, datetime.datetime]): Return the state of the respective
             resources at that time [now] Example: 1996-12-19T16:39:57-08:00.
 
@@ -325,7 +330,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[Any, InvalidParameterValue, NotImplementedT, ServiceListRT]
+        Union[Any, InvalidParameterValue, InvalidScopesT, NotImplementedT, ServiceListRT]
     """
 
     return (

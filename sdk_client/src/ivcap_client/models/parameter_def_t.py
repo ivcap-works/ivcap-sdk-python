@@ -15,24 +15,25 @@ T = TypeVar("T", bound="ParameterDefT")
 class ParameterDefT:
     """
     Example:
-        {'constant': False, 'default': 'Corporis consequatur quo ex mollitia eum consequatur.', 'description': 'Iusto
-            nihil dolor recusandae.', 'label': 'Unde perferendis recusandae quisquam nostrum et.', 'name': 'Magni nulla
-            debitis reiciendis libero.', 'optional': False, 'options': [{'description': 'Fugiat autem corporis omnis.',
-            'value': 'Est exercitationem.'}, {'description': 'Fugiat autem corporis omnis.', 'value': 'Est
-            exercitationem.'}], 'type': 'Eius fuga beatae blanditiis.', 'unit': 'Aliquam iure vero rerum incidunt commodi.'}
+        {'constant': True, 'default': 'Reiciendis incidunt.', 'description': 'Cupiditate autem corporis.', 'label':
+            'Dolor recusandae.', 'name': 'Beatae blanditiis sed iusto.', 'optional': False, 'options': [{'description':
+            'Esse modi.', 'value': 'Cumque quia sit exercitationem.'}, {'description': 'Esse modi.', 'value': 'Cumque quia
+            sit exercitationem.'}, {'description': 'Esse modi.', 'value': 'Cumque quia sit exercitationem.'},
+            {'description': 'Esse modi.', 'value': 'Cumque quia sit exercitationem.'}], 'type': 'Aliquam iure vero rerum
+            incidunt commodi.', 'unit': 'Quo ex mollitia.'}
 
     Attributes:
         constant (Union[Unset, bool]):  Example: True.
-        default (Union[Unset, str]):  Example: Qui fugit pariatur numquam omnis similique quisquam..
-        description (Union[Unset, str]):  Example: Et beatae laboriosam et accusamus maxime..
-        label (Union[Unset, str]):  Example: Qui eum..
-        name (Union[Unset, str]):  Example: Eos est vitae quos consequatur..
+        default (Union[Unset, str]):  Example: Veniam dolorem velit quia fugit sapiente..
+        description (Union[Unset, str]):  Example: Quis numquam cumque magnam..
+        label (Union[Unset, str]):  Example: Nihil quia qui..
+        name (Union[Unset, str]):  Example: Ea libero..
         optional (Union[Unset, bool]):  Example: True.
-        options (Union[Unset, List['ParameterOptT']]):  Example: [{'description': 'Fugiat autem corporis omnis.',
-            'value': 'Est exercitationem.'}, {'description': 'Fugiat autem corporis omnis.', 'value': 'Est
-            exercitationem.'}].
-        type (Union[Unset, str]):  Example: Fuga ipsam quo..
-        unit (Union[Unset, str]):  Example: Ea libero..
+        options (Union[Unset, List['ParameterOptT']]):  Example: [{'description': 'Esse modi.', 'value': 'Cumque quia
+            sit exercitationem.'}, {'description': 'Esse modi.', 'value': 'Cumque quia sit exercitationem.'},
+            {'description': 'Esse modi.', 'value': 'Cumque quia sit exercitationem.'}].
+        type (Union[Unset, str]):  Example: Pariatur numquam omnis similique quisquam officia..
+        unit (Union[Unset, str]):  Example: Voluptates dolor atque..
     """
 
     constant: Union[Unset, bool] = UNSET

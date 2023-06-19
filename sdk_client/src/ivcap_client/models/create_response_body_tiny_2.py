@@ -17,11 +17,11 @@ class CreateResponseBodyTiny2:
 
     Example:
         {'links': {'describedBy': {'href': 'https://api.com/swagger/...', 'type': 'application/openapi3+json'}, 'self':
-            'Provident sapiente dolores.'}, 'name': 'Fire risk for Lot2'}
+            'Officiis reiciendis incidunt.'}, 'name': 'Fire risk for Lot2'}
 
     Attributes:
         links (SelfT):  Example: {'describedBy': {'href': 'https://api.com/swagger/...', 'type':
-            'application/openapi3+json'}, 'self': 'Quibusdam dolores officiis.'}.
+            'application/openapi3+json'}, 'self': 'Corrupti laborum qui incidunt.'}.
         name (Union[Unset, str]): Optional provider provided name Example: Fire risk for Lot2.
     """
 

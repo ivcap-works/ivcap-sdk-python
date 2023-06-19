@@ -10,6 +10,7 @@ build: gen
 	poetry build
 
 SRC_DIR=${ROOT_DIR}/src/ivcap_client
+OPENAPI_URL=https://raw.githubusercontent.com/reinventingscience/ivcap-core-api/main/openapi3.json
 gen:
 	@if ! type "openapi-python-client" > /dev/null; then \
 		echo ">>>\n>>> You need to first install 'openapi-python-client'\n>>>"; \
@@ -17,7 +18,7 @@ gen:
 	fi
 	rm -rf ${ROOT_DIR}/build && mkdir -p ${ROOT_DIR}/build
 	cd ${ROOT_DIR}/build \
-	  && curl https://raw.githubusercontent.com/reinventingscience/ivcap-core-api/main/openapi3.json -o openapi3.json \
+	  && curl ${OPENAPI_URL} -o openapi3.json \
 		&& openapi-python-client generate --path openapi3.json --config ${ROOT_DIR}/config.yml \
 		&& python ${ROOT_DIR}/fix_auto_generated.py \
 		&& cd sdk_client/ivcap_client && mkdir client && mv *.py client \
