@@ -7,3 +7,7 @@ class ResourceNotFound(BaseException):
 class MissingParameterValue(Exception):
     pass
 
+class HttpException(Exception):
+    status_code: int
+    msg: str
+

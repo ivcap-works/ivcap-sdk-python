@@ -1,6 +1,5 @@
 
 from __future__ import annotations
-import dataclasses
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -34,6 +33,10 @@ class Service:
         self._description = _unset(listItem.description) if listItem else None
         self._parameters: dict[str, ParameterDefT] = None
         self._ivcap = ivcap
+
+    @property
+    def urn(self) -> str:
+        return self._id
 
     @property
     def name(self) -> str:

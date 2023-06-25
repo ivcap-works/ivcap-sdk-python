@@ -20,6 +20,10 @@ class Artifact:
         self._status = status
 
     @property
+    def urn(self) -> str:
+        return self._id
+
+    @property
     def status(self, refresh=True) -> ArtifactStatusRT:
         if refresh or not self._status:
             r = artifact_read.sync_detailed(client=self._ivcap._client, id=self._id)

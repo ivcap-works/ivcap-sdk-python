@@ -18,6 +18,10 @@ class Order:
         self._ivcap = ivcap
         self._status = status
 
+    @property
+    def urn(self) -> str:
+        return self._id
+
     def status(self, refresh=True) -> OrderStatusRT:
         if refresh or not self._status:
             r = order_read.sync_detailed(client=self._ivcap._client, id=self._id)

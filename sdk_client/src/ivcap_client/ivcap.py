@@ -6,6 +6,7 @@ from typing import IO, Dict, Iterator, Optional
 from urllib.parse import quote
 from ivcap_client.api.artifact import artifact_upload
 from ivcap_client.artifact import Artifact, ArtifactIter
+from ivcap_client.models import metadata_list_item_rt
 from ivcap_client.models.artifact_status_rt import ArtifactStatusRT 
 from tusclient.client import TusClient
 from sys import maxsize as MAXSIZE
@@ -19,7 +20,7 @@ from ivcap_client.models.add_meta_rt import AddMetaRT
 from ivcap_client.order import Order, OrderIter
 from ivcap_client.service import Service, ServiceIter
 from ivcap_client.utils import process_error
-
+from ivcap_client.models.metadata_list_item_rt import MetadataListItemRT
 
 class IVCAP:
     """A class to represent a particular IVCAP deployment and it's capabilities
@@ -150,7 +151,12 @@ class IVCAP:
             return process_error('add_metadata', r)
         
         res:AddMetaRT = r.parsed
-        return Metadata(res.record_id, self)
+        d = res.to_dict()
+        d['entity'] = entity
+        d['schema'] = schema
+        d['aspect'] = aspect
+        li = MetadataListItemRT.from_dict(d)
+        return Metadata(res.record_id, self, li)
     
     def search_metadata(self, 
         entity: Optional[str] = None,
@@ -231,6 +237,7 @@ class IVCAP:
         return ArtifactIter(self, **kwargs)
     
     def upload_artifact(self,
+                        *,
                         name: Optional[str] = None,
                         file_path: Optional[str] = None,
                         io_stream: Optional[IO] = None,

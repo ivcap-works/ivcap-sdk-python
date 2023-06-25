@@ -21,6 +21,10 @@ class Metadata:
         self._aspect = listItem.aspect if listItem else None
 
     @property
+    def urn(self) -> str:
+        return self._id
+
+    @property
     def entity(self, refresh=False) -> str:
         if refresh:
             self._refresh()

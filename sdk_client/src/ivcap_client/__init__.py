@@ -5,8 +5,11 @@
 #
 """ A client library for accessing IVCAP """
 from .ivcap import IVCAP
+from .service import Service
+from .order import Order
+from .artifact import Artifact
+from .metadata import Metadata
 
-
-__all__ = (
-    "IVCAP",
-)
+# __all__ = (
+#     "IVCAP",
+# )
