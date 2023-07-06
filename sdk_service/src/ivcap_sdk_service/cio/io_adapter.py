@@ -94,21 +94,16 @@ class IOWritable(_IOBase):
 class IO_ReadWritable(IOReadable, IOWritable):
     pass
 
-# class IOProxy(ABC):
-#     """Represents a file-like object to read and write to"""
+class Collection(ABC):
+    """A collection of artifacts
 
-#     @abstractmethod
-#     def open(self, mode: str, **kwargs) -> IO_ReadWritable:
-#         """Return an IO object to read or write to depending on 'mode'"""
-
-#     @abstractmethod
-#     def close(self) -> None:
-#         pass
-
-#     @abstractmethod
-#     def name(self) -> str:
-#         """Returns name of underlying object"""
-#         pass
+    Args:
+        ABC (_type_): _description_
+    """
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        pass
 
 OnCloseF = Callable[[Url], None]
 
@@ -188,37 +183,15 @@ class IOAdapter(ABC):
         """
         pass
 
-    # @abstractmethod
-    # def get_fd(self, name: str, metadata: Dict[str, any] = {}) -> Tuple[Union[str, BinaryIO], str]:
-    #     """
-    #     Create and return a file handle and path
+    @abstractmethod
+    def get_collection(self, collection_urn: str) -> Collection:
+        """Return a collection representing a set of artifacts
 
-    #     Parameters
-    #     ----------
-    #     name: str
-    #         Filename used to save data, file path is set by adapter
-    #     metadata: None
-    #         Unused in this Adapter
+        Args:
+            collection_urn (URN): Collection identifies
 
-    #     Returns
-    #     -------
-    #         file_obj: capy.io.io_adapter.WritableProxyFile
-    #             A thin wrapper of io.IOBase and used in same manner
-
-    #     """
-    #     pass
-
-    # @abstractmethod
-    # def exists(self, name: str) -> Tuple[bool, str]:
-    #     pass
-
-    # @abstractmethod
-    # def readable(self, name: str) -> bool:
-    #     pass
-    
-    # @abstractmethod
-    # def read(self, name: str, seekable=False, use_cache_proxy=True) -> IOProxy:
-    #     pass
-
-
-
+        Returns:
+            Collection: An instance of a collection object appropriate for
+            the current context
+        """
+        pass

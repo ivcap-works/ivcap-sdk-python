@@ -35,6 +35,7 @@ class Resource(Enum):
     ORDER = 'order'
     SERVICE = 'service'
     ARTIFACT = 'artifact'  
+    COLLECTION = 'collection'
     ACCOUNT = 'account'
 
 @dataclass(init=False)

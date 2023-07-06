@@ -32,6 +32,7 @@ class Type(Enum):
     BOOL = 'bool'
     OPTION = 'option'
     ARTIFACT = 'artifact'
+    COLLECTION = 'collection'
 
 @dataclass()
 class Parameter(JSONWizard):
@@ -155,6 +156,11 @@ class Service(JSONWizard):
                 args['metavar'] = "URN"
                 args['action'] = ArtifactAction
                 pass
+            elif p.type == Type.COLLECTION:
+                args['type'] = verify_collection
+                args['metavar'] = "URN"
+                args['action'] = CollectionAction
+                pass
             elif p.type == Type.BOOL:
                 args['action'] ='store_true'
                 args['required'] = False
@@ -203,6 +209,29 @@ class ArtifactAction(Action):
     def __call__(self, _1, namespace, value, _2=None):
         try:
             v = get_config().IO_ADAPTER.read_artifact(value)
+            setattr(namespace, self.dest, v)
+        except Exception as err:
+            raise ArgumentTypeError(err)
+
+def verify_collection(urn):
+    if is_valid_resource_urn(urn, Resource.COLLECTION):
+        return urn
+    if is_valid_resource_urn(urn, Resource.ARTIFACT):
+        # treating a artifact as a collection of ONE
+        return urn
+
+
+    if INSIDE_CONTAINER:
+        raise ArgumentTypeError(f"Illegal collection reference '{urn}' - expected url")
+    else:
+        # throws an exception if we can't create a collection object
+        get_config().IO_ADAPTER.get_collection(urn)
+        return urn 
+
+class CollectionAction(Action):
+    def __call__(self, _1, namespace, value, _2=None):
+        try:
+            v = get_config().IO_ADAPTER.get_collection(value)
             setattr(namespace, self.dest, v)
         except Exception as err:
             raise ArgumentTypeError(err)
