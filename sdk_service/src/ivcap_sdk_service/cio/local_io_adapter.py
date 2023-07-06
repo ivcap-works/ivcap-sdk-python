@@ -27,20 +27,6 @@ from .cache import Cache
 class LocalIOAdapter(IOAdapter):
     """
     An adapter for a standard file system backend.
-
-    Attributes
-    ----------
-    in_dir: str
-        Path for input data, set via Config/API
-    out_dir: str
-        Path for output data, set via Config/API
-
-    Methods
-    -------
-    get_fd(name='filename.txt')
-        Return an open file handle and path to file
-    exists(name='filename.txt')
-        Check if filename exists
     """
     def __init__(self, in_dir: str, out_dir: str, cache: Cache=None) -> None:
         """

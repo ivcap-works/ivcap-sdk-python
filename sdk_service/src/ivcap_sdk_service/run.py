@@ -24,7 +24,7 @@ def run(args: Dict, handler: Callable[[Dict], int]) -> int:
     code = handler(args, logger)
     return code
 
-def print_banner(service: Service):
+def _print_banner(service: Service):
     from .__init__ import __version__
     sdk_v = os.getenv('IVCAP_SDK_VERSION', __version__)
     sdk_c = os.getenv('IVCAP_SDK_COMMIT', '#?')
@@ -37,7 +37,7 @@ def print_banner(service: Service):
 def register_service(service: Service, handler: Callable[[Dict], int]):
     if INSIDE_ARGO:
         # print banner immediately when inside the cluster
-        print_banner(service)
+        _print_banner(service)
 
     init(None, service.append_arguments)
     cmd = get_config().SERVICE_COMMAND
@@ -45,7 +45,7 @@ def register_service(service: Service, handler: Callable[[Dict], int]):
 
     if cmd == Command.SERVICE_RUN:
         if not INSIDE_ARGO:
-            print_banner(service)
+            _print_banner(service)
         wait_for_data_proxy()
         cfg = get_config()
         sys_logger.info(f"Starting order '{cfg.ORDER_ID}' for service '{service.name}' on node '{cfg.NODE_ID}'")

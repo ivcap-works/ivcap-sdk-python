@@ -3,29 +3,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file. See the AUTHORS file for names of contributors.
 #
+
 from __future__ import annotations
 from dataclasses import dataclass, field
 from dataclass_wizard import JSONWizard, json_field
-from argparse import ArgumentParser, Action, ArgumentTypeError
+from argparse import ArgumentParser
 from typing import List, Any
 import yaml
 from enum import Enum
-import validators
 import os
 
 from typing import Dict
 
+from .verifiers import verify_artifact, verify_collection, ArtifactAction, CollectionAction
 from .utils import read_yaml_no_dates
-from .ivcap import get_config, is_valid_resource_urn
-from .config import Resource, INSIDE_CONTAINER
 
 @dataclass
 class Option:
+    """Defines one option of a `Parameter` of type `OPTION`
+    """
     value: str
     name: str = None
     description: str = None
 
 class Type(Enum):
+    """Enumerates the different types of service `Parameters`
+    """
     STRING = 'string'
     INT = 'int'
     FLOAT = 'float'
@@ -36,6 +39,8 @@ class Type(Enum):
 
 @dataclass()
 class Parameter(JSONWizard):
+    """Defines a `Service` parameter
+    """
     class _(JSONWizard.Meta):
         skip_defaults = True
 
@@ -67,6 +72,7 @@ class Parameter(JSONWizard):
 
 @dataclass
 class Workflow(JSONWizard):
+    """Defines the workflow associated with a `Service`"""
     class _(JSONWizard.Meta):
         skip_defaults = False
 
@@ -74,6 +80,13 @@ class Workflow(JSONWizard):
 
 @dataclass
 class BasicWorkflow(Workflow):
+    """Defines an IVCAP 'Service' workflow consisting of a single container
+
+    Args:
+        image (str): Name of docker image ['IVCAP_CONTAINER', '@CONTAINER@']
+        command (str): Path to init executable/script
+        min_memory (int): Min memory requirement in ???
+    """
     type: str = "basic"
     image: str = os.getenv('IVCAP_CONTAINER', '@CONTAINER@')
     command: List[str] = field(default_factory=list)
@@ -91,9 +104,16 @@ class BasicWorkflow(Workflow):
             'basic': basic
         }
 
-
 @dataclass
 class PythonWorkflow(BasicWorkflow):
+    """Defines an IVCAP 'Service' workflow consisting of a single python script
+
+    Args:
+        image (str): Name of docker image ['IVCAP_CONTAINER', '@CONTAINER@']
+        script (str): Path to main python script ['/app/service.py']
+        min_memory (int): Min memory requirement in ???
+    """
+   
     script: str = '/app/service.py'
 
     @classmethod
@@ -107,6 +127,18 @@ class PythonWorkflow(BasicWorkflow):
 
 @dataclass
 class Service(JSONWizard):
+    """Defines an IVCAP service with all it's necessary components
+
+    Args:
+        id(URN): Service URN ['IVCAP_SERVICE_ID', '@SERVICE_ID@']
+        name(str): Human friendly service name
+        description(str): Detailed description of this service
+        providerID(URN): Provider URN ['IVCAP_PROVIDER_ID', '@PROVIDER_ID@']
+        accountID(URN): Account URN ['IVCAP_ACCOUNT_ID', '@ACCOUNT_ID@']
+        parameters(List[Parameter]): List of parameters for this service
+        workflow(Workflow): Workflow to use when executing the service [PythonWorkflow]
+
+    """
     # class _(JSONWizard.Meta):
     #     skip_defaults = True
 
@@ -188,50 +220,4 @@ class Service(JSONWizard):
             ap.add_argument(f"--{name}", **args)
         return ap
 
-# TODO: Add verifying code
-def verify_artifact(urn):
-    if is_valid_resource_urn(urn, Resource.ARTIFACT):
-        return urn
 
-    if INSIDE_CONTAINER:
-        if not validators.url(urn):
-            raise ArgumentTypeError(f"Illegal artifact reference '{urn}' - expected url")
-        return urn
-    else:
-        if validators.url(urn):
-            return urn
-        # outside container we allow resource to be local file
-        if not get_config().IO_ADAPTER.artifact_readable(urn):
-            raise ArgumentTypeError(f"Cannot find local file '{urn}' - {get_config().IO_ADAPTER}")
-        return urn
-
-class ArtifactAction(Action):
-    def __call__(self, _1, namespace, value, _2=None):
-        try:
-            v = get_config().IO_ADAPTER.read_artifact(value)
-            setattr(namespace, self.dest, v)
-        except Exception as err:
-            raise ArgumentTypeError(err)
-
-def verify_collection(urn):
-    if is_valid_resource_urn(urn, Resource.COLLECTION):
-        return urn
-    if is_valid_resource_urn(urn, Resource.ARTIFACT):
-        # treating a artifact as a collection of ONE
-        return urn
-
-
-    if INSIDE_CONTAINER:
-        raise ArgumentTypeError(f"Illegal collection reference '{urn}' - expected url")
-    else:
-        # throws an exception if we can't create a collection object
-        get_config().IO_ADAPTER.get_collection(urn)
-        return urn 
-
-class CollectionAction(Action):
-    def __call__(self, _1, namespace, value, _2=None):
-        try:
-            v = get_config().IO_ADAPTER.get_collection(value)
-            setattr(namespace, self.dest, v)
-        except Exception as err:
-            raise ArgumentTypeError(err)

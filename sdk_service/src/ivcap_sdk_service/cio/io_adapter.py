@@ -7,9 +7,7 @@ from abc import ABC, abstractmethod
 from typing import AnyStr, List, Callable, Optional, Sequence, Union
 import io
 
-#from ..logger import logger
 from ..itypes import MetaDict, Url
-
 
 class _IOBase(ABC):
     @property
@@ -109,10 +107,9 @@ OnCloseF = Callable[[Url], None]
 
 class IOAdapter(ABC):
 
-    @classmethod
-    def create_cache(cls, cache_dir: str, cache_proxy_url: str):
-        #return Cache(cache_dir=cacheDir, url_mapper=urlMapper)
-        return None
+    # @classmethod
+    # def create_cache(cls, cache_dir: str, cache_proxy_url: str):
+    #     return None
 
     @abstractmethod
     def read_artifact(self, artifact_id: str, binary_content=True, no_caching=False, seekable=False) -> IOReadable:
@@ -129,20 +126,20 @@ class IOAdapter(ABC):
         """
         pass
 
-    @abstractmethod
-    def read_external(self, url: Url, binary_content=True, no_caching=False, seekable=False) -> IOReadable:
-        """Return a readable file-like object providing the content of an external data item.
+    # @abstractmethod
+    # def read_external(self, url: Url, binary_content=True, no_caching=False, seekable=False) -> IOReadable:
+    #     """Return a readable file-like object providing the content of an external data item.
 
-        Args:
-            url (Url): URL of external object to read
-            binary_content (bool, optional): If true content is expected to be of binary format otherwise text is expected. Defaults to True.
-            no_caching (bool, optional): If set, content is not cached nor read from cache. Defaults to False.
-            seekable (bool, optional): If true, returned readable should be seekable
+    #     Args:
+    #         url (Url): URL of external object to read
+    #         binary_content (bool, optional): If true content is expected to be of binary format otherwise text is expected. Defaults to True.
+    #         no_caching (bool, optional): If set, content is not cached nor read from cache. Defaults to False.
+    #         seekable (bool, optional): If true, returned readable should be seekable
 
-        Returns:
-            IOReadable: The content of the external data item as a file-like object
-        """
-        pass
+    #     Returns:
+    #         IOReadable: The content of the external data item as a file-like object
+    #     """
+    #     pass
 
     @abstractmethod
     def artifact_readable(self, artifact_id: str) -> bool:

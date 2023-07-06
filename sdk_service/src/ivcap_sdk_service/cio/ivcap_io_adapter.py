@@ -30,21 +30,7 @@ from .cache import Cache
 
 class IvcapIOAdapter(IOAdapter):
     """
-    An adapter for a standard file system backend.
-
-    Attributes
-    ----------
-    in_dir: str
-        Path for input data, set via Config/API
-    out_dir: str
-        Path for output data, set via Config/API
-
-    Methods
-    -------
-    get_fd(name='filename.txt')
-        Return an open file handle and path to file
-    exists(name='filename.txt')
-        Check if filename exists
+    An adapter for operating inside an IVCAP container.
     """
     def __init__(self, 
         storage_url: Url, 

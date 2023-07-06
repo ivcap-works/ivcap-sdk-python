@@ -4,15 +4,13 @@
 # found in the LICENSE file. See the AUTHORS file for names of contributors.
 #
 from enum import Enum
-from typing import Dict, Any, NamedTuple, Optional, Union, Callable
+from typing import Dict, NamedTuple, Optional, Union
 from numbers import Number
-#from .cio import IOAdapter
 
 class SupportedMimeTypes(Enum):
     NETCDF = 'application/netcdf'
     PNG = 'image/png'
     JPEG = 'image/jpeg'
-
 
 # type
 Url = str
