@@ -1,5 +1,9 @@
+#
+# Copyright (c) 2023 Commonwealth Scientific and Industrial Research Organisation (CSIRO). All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file. See the AUTHORS file for names of contributors.
+#
 from typing import Dict
-#TypedDict
 from ivcap_sdk_service import Service, Parameter, PythonWorkflow, Type, register_service
 import logging
 

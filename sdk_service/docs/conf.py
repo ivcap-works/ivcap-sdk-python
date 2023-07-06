@@ -22,6 +22,13 @@ extensions = [
     "sphinx.ext.viewcode",
 ]
 autoapi_dirs = ["../src"]
+autoapi_ignore = [
+    "**/utils.py", 
+    "**/verifiers.py",
+    "**/config.py",
+    "**/*_io_adapter.py",
+    "**/cache.py",
+]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

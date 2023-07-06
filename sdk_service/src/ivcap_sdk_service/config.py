@@ -35,6 +35,7 @@ class Resource(Enum):
     ORDER = 'order'
     SERVICE = 'service'
     ARTIFACT = 'artifact'  
+    COLLECTION = 'collection'
     ACCOUNT = 'account'
 
 @dataclass(init=False)
@@ -54,16 +55,12 @@ class Config:
   SERVICE_COMMAND: Command = Command.SERVICE_RUN
 
 
-#   CREATE_REPORT: bool
-
   def __init__(self, argv:Dict[str, str] = None, modify_ap: Callable[[ArgumentParser], ArgumentParser] = None):
     prog = os.path.basename(sys.argv[0])
     if prog == '__main__.py' or prog == '-m':
         prog = self._def_prog_name()
 
     ap = ArgumentParser(prog=prog, description='Execute a service to create information products.')
-    # if modify_ap:
-    #     ap = modify_ap(ap)
     self.add_arguments(ap)
 
     if argv is None:
@@ -72,7 +69,6 @@ class Config:
     args = vars(pargs)
 
     self._set(args)
-    #self.SERVICE_ARGS = args # whtever is left
 
   def _def_prog_name(self):
     return "ivcap-service"
@@ -81,23 +77,18 @@ class Config:
     order_id_def = os.getenv('IVCAP_ORDER_ID')
     node_id_def = os.getenv('ARGO_NODE_ID')
 
-    # self.SERVICE_FILE = args.pop('ivcap:service_file', None)
-
     if args.pop('ivcap:service_help', False):
         self.SERVICE_COMMAND = Command.SERVICE_HELP
     elif args.pop('ivcap:print_service_description', False):
         self.SERVICE_COMMAND = Command.SERVICE_FILE
 
-    # self.CREATE_REPORT = args.pop('ivcap:with_report']
-
     self.ORDER_ID = args.pop('ivcap:order_id', order_id_def)
     self.NODE_ID = args.pop('ivcap:node_id', node_id_def)
-
 
     self.CACHE_PROXY_URL = args.pop('ivcap:cache_proxy', None)
     cacheDir = args.pop('ivcap:cache_dir', None)
     if cacheDir != '':
-        self.CACHE = Cache(cache_dir=cacheDir, url_mapper=self.cachable_url)
+        self.CACHE = Cache(cache_dir=cacheDir)
     else:
         self.CACHE = None
 
@@ -119,9 +110,6 @@ class Config:
     self.SCHEMA_PREFIX = args.pop('ivcap:schema_prefix', None)
 
   def add_arguments(self, ap):
-    # service_file_def =  os.getenv('IVCAP_SERVICE_FILE', None)
-    #   with_report_def =  os.getenv('IVCAP_WITH_REPORT', None)
-
     order_id_def = os.getenv('IVCAP_ORDER_ID')
     node_id_def = os.getenv('ARGO_NODE_ID')
 
@@ -140,12 +128,6 @@ class Config:
 
     storage_url_def = os.getenv('IVCAP_STORAGE_URL', None)
 
-    # ap.add_argument("-s", "--ivcap:service-file", metavar="FILE", 
-    #     help="Service description file [IVCAP_SERVICE_FILE]",
-    #     required=INSIDE_CONTAINER and service_file_def == None,
-    #     default=service_file_def,
-    #     type=verify_file)
-
     ap.add_argument("-H", "--ivcap:service-help",
         action='store_true',
         help="Show service help")
@@ -154,21 +136,13 @@ class Config:
         action='store_true',
         help="Print service description")
 
-    #   ap.add_argument("--ivcap:with-report",
-    #       help="Also ivcapate PDF report from 'public' tagged cells [IVCAP_WITH_REPORT]",
-    #       default=with_report_def,
-    #       action='store_true')
-
     ap.add_argument("--ivcap:order-id", metavar="ID", 
         help=f"Order ID [IVCAP_ORDER_ID={order_id_def}]",
         default=order_id_def,
         required=INSIDE_CONTAINER and not order_id_def)
     ap.add_argument("--ivcap:node-id", metavar="ID", 
         help=f"Execution node ID [ARGO_NODE_ID={node_id_def}]",
-        default=node_id_def,
-        #required=INSIDE_CONTAINER and not node_id_def
-        )
-
+        default=node_id_def)
     ap.add_argument("--ivcap:out-dir", metavar="DIR", 
         help=f"Directory to place results into [IVCAP_OUT_DIR={out_dir_def}]",
         default=out_dir_def,

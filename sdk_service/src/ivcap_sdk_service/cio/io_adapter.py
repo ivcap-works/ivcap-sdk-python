@@ -7,9 +7,7 @@ from abc import ABC, abstractmethod
 from typing import AnyStr, List, Callable, Optional, Sequence, Union
 import io
 
-#from ..logger import logger
 from ..itypes import MetaDict, Url
-
 
 class _IOBase(ABC):
     @property
@@ -94,30 +92,24 @@ class IOWritable(_IOBase):
 class IO_ReadWritable(IOReadable, IOWritable):
     pass
 
-# class IOProxy(ABC):
-#     """Represents a file-like object to read and write to"""
+class Collection(ABC):
+    """A collection of artifacts
 
-#     @abstractmethod
-#     def open(self, mode: str, **kwargs) -> IO_ReadWritable:
-#         """Return an IO object to read or write to depending on 'mode'"""
-
-#     @abstractmethod
-#     def close(self) -> None:
-#         pass
-
-#     @abstractmethod
-#     def name(self) -> str:
-#         """Returns name of underlying object"""
-#         pass
+    Args:
+        ABC (_type_): _description_
+    """
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        pass
 
 OnCloseF = Callable[[Url], None]
 
 class IOAdapter(ABC):
 
-    @classmethod
-    def create_cache(cls, cache_dir: str, cache_proxy_url: str):
-        #return Cache(cache_dir=cacheDir, url_mapper=urlMapper)
-        return None
+    # @classmethod
+    # def create_cache(cls, cache_dir: str, cache_proxy_url: str):
+    #     return None
 
     @abstractmethod
     def read_artifact(self, artifact_id: str, binary_content=True, no_caching=False, seekable=False) -> IOReadable:
@@ -134,20 +126,20 @@ class IOAdapter(ABC):
         """
         pass
 
-    @abstractmethod
-    def read_external(self, url: Url, binary_content=True, no_caching=False, seekable=False) -> IOReadable:
-        """Return a readable file-like object providing the content of an external data item.
+    # @abstractmethod
+    # def read_external(self, url: Url, binary_content=True, no_caching=False, seekable=False) -> IOReadable:
+    #     """Return a readable file-like object providing the content of an external data item.
 
-        Args:
-            url (Url): URL of external object to read
-            binary_content (bool, optional): If true content is expected to be of binary format otherwise text is expected. Defaults to True.
-            no_caching (bool, optional): If set, content is not cached nor read from cache. Defaults to False.
-            seekable (bool, optional): If true, returned readable should be seekable
+    #     Args:
+    #         url (Url): URL of external object to read
+    #         binary_content (bool, optional): If true content is expected to be of binary format otherwise text is expected. Defaults to True.
+    #         no_caching (bool, optional): If set, content is not cached nor read from cache. Defaults to False.
+    #         seekable (bool, optional): If true, returned readable should be seekable
 
-        Returns:
-            IOReadable: The content of the external data item as a file-like object
-        """
-        pass
+    #     Returns:
+    #         IOReadable: The content of the external data item as a file-like object
+    #     """
+    #     pass
 
     @abstractmethod
     def artifact_readable(self, artifact_id: str) -> bool:
@@ -188,37 +180,15 @@ class IOAdapter(ABC):
         """
         pass
 
-    # @abstractmethod
-    # def get_fd(self, name: str, metadata: Dict[str, any] = {}) -> Tuple[Union[str, BinaryIO], str]:
-    #     """
-    #     Create and return a file handle and path
+    @abstractmethod
+    def get_collection(self, collection_urn: str) -> Collection:
+        """Return a collection representing a set of artifacts
 
-    #     Parameters
-    #     ----------
-    #     name: str
-    #         Filename used to save data, file path is set by adapter
-    #     metadata: None
-    #         Unused in this Adapter
+        Args:
+            collection_urn (URN): Collection identifies
 
-    #     Returns
-    #     -------
-    #         file_obj: capy.io.io_adapter.WritableProxyFile
-    #             A thin wrapper of io.IOBase and used in same manner
-
-    #     """
-    #     pass
-
-    # @abstractmethod
-    # def exists(self, name: str) -> Tuple[bool, str]:
-    #     pass
-
-    # @abstractmethod
-    # def readable(self, name: str) -> bool:
-    #     pass
-    
-    # @abstractmethod
-    # def read(self, name: str, seekable=False, use_cache_proxy=True) -> IOProxy:
-    #     pass
-
-
-
+        Returns:
+            Collection: An instance of a collection object appropriate for
+            the current context
+        """
+        pass

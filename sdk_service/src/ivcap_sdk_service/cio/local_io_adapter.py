@@ -8,12 +8,11 @@ FileAdapter a thin wrapper around io.IOBase that sets a storage path with
 standard filesystem backend
 """
 import os
-from typing import IO, Optional, Tuple, BinaryIO, Dict
-import io
-import json
+from typing import IO, Optional
 from os import access, R_OK
 from os.path import isfile
 from urllib.parse import urlparse
+from pathlib import Path
 
 from .readable_proxy_file import ReadableProxyFile
 from .utils import download
@@ -21,50 +20,13 @@ from ..utils import json_dump
 from ..itypes import MetaDict, Url, SupportedMimeTypes
 
 from ..logger import sys_logger as logger
-from .io_adapter import IOAdapter, IOReadable, IOWritable, OnCloseF
+from .io_adapter import Collection, IOAdapter, IOReadable, IOWritable, OnCloseF
 from .writable_proxy_file import WritableProxyFile
 from .cache import Cache
-
-# class FileProxy(IOProxy):
-#     def __init__(self, name: str):
-#         self._fname = name
-#         self._fhdl = None
-
-#     def open(self, mode: str, **kwargs) -> io.IOBase:
-#         """Return an IO object to read or write to depending on 'mode'"""
-#         if self._fhdl != None:
-#             raise IOError("file '{self._fname}' already opened")
-#         self._fhdl = io.open(self._fname, mode=mode, **kwargs)
-#         return self._fhdl
-
-#     def close(self):
-#         if self._fhdl != None:
-#             self._fhdl.close()
-#         self._fhdl = None
-
-#     def name(self) -> str:
-#         return self._fname
-
-#     def __repr__(self):
-#         return f"FileProxy(fname={self._fname}, open={self._fhdl != None})"
 
 class LocalIOAdapter(IOAdapter):
     """
     An adapter for a standard file system backend.
-
-    Attributes
-    ----------
-    in_dir: str
-        Path for input data, set via Config/API
-    out_dir: str
-        Path for output data, set via Config/API
-
-    Methods
-    -------
-    get_fd(name='filename.txt')
-        Return an open file handle and path to file
-    exists(name='filename.txt')
-        Check if filename exists
     """
     def __init__(self, in_dir: str, out_dir: str, cache: Cache=None) -> None:
         """
@@ -196,28 +158,6 @@ class LocalIOAdapter(IOAdapter):
 
         return WritableProxyFile(fname, _on_close, is_binary, use_temp_file=False)
 
-    # def get_fd(self, name: str, dataPeek: any = None, metadata: Dict[str, any] = {}) -> Tuple[BinaryIO, str]:
-    #     """
-    #     Create and return a file handle and path
-
-    #     Parameters
-    #     ----------
-    #     name: str
-    #         Filename used to save data, file path is set by adapter
-    #     metadata: None
-    #         Unused in this Adapter
-
-    #     Returns
-    #     -------
-    #         file_obj: capy.io.io_adapter.WritableProxyFile
-    #             A thin wrapper of io.IOBase and used in same manner
-
-    #     """
-    #     file_name = f"{self.out_dir}/{name}"
-    #     logger.debug(f"Returning file handle for '{name}' - '{file_name}'")
-    #     file_obj = WritableProxyFile(file_name)
-    #     return (file_obj, f"{file_name}")
-
     def readable_local(self, name: str, collection_name: str = None) -> bool:
         """Return true if file exists and is readable. If 'name' starts with a '/'
         it is assumed to be an absolute path. If not, it's assumed to be local to self._in_dir
@@ -231,11 +171,6 @@ class LocalIOAdapter(IOAdapter):
         """
         file_name = self._to_path(self.in_dir, name, collection_name)
         return isfile(file_name) and access(file_name, R_OK)
-
-        # file_exists = False
-        # if os.path.exists(file_name):
-        #     file_exists = True
-        # return (file_exists,file_name)
 
     def read_local(self, name: str, collection_name: str = None, binary_content=True) -> IOReadable:
         """Return a readable file-like object providing the content of an external data item.
@@ -251,10 +186,6 @@ class LocalIOAdapter(IOAdapter):
         path = self._to_path(self.in_dir, name, collection_name)
         return ReadableProxyFile(name, path, is_binary=binary_content, use_temp_file=False)
 
-    # def readable(self, name: str, collection_name: str = None) -> bool:
-    #     file_name = self._to_path(self.in_dir, name, collection_name)
-    #     return os.path.exists(file_name)
-
     def _to_path(self, prefix: str, name: str, collection_name: str = None) -> str:
         if name.startswith('/'):
             return name
@@ -266,13 +197,54 @@ class LocalIOAdapter(IOAdapter):
             else:
                 return os.path.join(prefix, name)
 
-    # def read(self, name: str, seekable=False, use_cache_proxy=True) -> IOProxy:
-    #     file_name = self._to_path(name)
-    #     if not os.path.exists(file_name):
-    #         raise ValueError(f"Cannot find local file '{file_name}")
-    #     return FileProxy(file_name)
-
+    def get_collection(self, collection_urn: str) -> Collection:
+        u = urlparse(collection_urn)
+        if u.scheme == '' or u.scheme == 'file':
+            if os.path.isfile(u.path) or os.path.isdir(u.path):
+                return LocalCollection(u.path, self)
+            else:
+                raise ValueError(f"Cannot find local file or directory '{u.path}")
+        else:
+            raise ValueError(f"Remote collection is not supported, yet")
+    
     def __repr__(self):
         return f"<LocalIOAdapter in_dir={self.in_dir} out_dir={self.out_dir}>"
 
 
+class LocalCollection(Collection):
+    def __init__(self, path: str, adapter: IOAdapter) -> None:
+        super().__init__()
+        self._path = path
+        self._adapter = adapter
+        
+    def name(self) -> str:
+        return self._collection_urn
+    
+    def __iter__(self):
+        if os.path.isfile(self._path):
+            return SingleFileIter(self._path, self._adapter)
+        else:
+            return DirectoryIter(self._path, self._adapter)
+
+class SingleFileIter:
+    def __init__(self, path: str, adapter: IOAdapter) -> None:
+        self._path = path
+        self._adapter = adapter
+        self._already_served = False
+        
+    def __next__(self):
+        if self._already_served:
+            raise StopIteration
+        else:
+            self._already_served = True
+            return self._adapter.read_local(self._path)
+
+class DirectoryIter:
+    def __init__(self, path: str, adapter: IOAdapter) -> None:
+        self._iter = Path(path).glob('*')
+        self._adapter = adapter
+        self._already_served = False
+        
+    def __next__(self):
+        f = str(next(self._iter))
+        return self._adapter.read_local(f)

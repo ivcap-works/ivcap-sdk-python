@@ -24,27 +24,13 @@ from ..utils import json_dump
 from ..itypes import MetaDict, Url, SupportedMimeTypes
 
 from ..logger import sys_logger as logger
-from .io_adapter import IOAdapter, IOReadable, IOWritable, OnCloseF
+from .io_adapter import Collection, IOAdapter, IOReadable, IOWritable, OnCloseF
 from .writable_proxy_file import WritableProxyFile
 from .cache import Cache
 
 class IvcapIOAdapter(IOAdapter):
     """
-    An adapter for a standard file system backend.
-
-    Attributes
-    ----------
-    in_dir: str
-        Path for input data, set via Config/API
-    out_dir: str
-        Path for output data, set via Config/API
-
-    Methods
-    -------
-    get_fd(name='filename.txt')
-        Return an open file handle and path to file
-    exists(name='filename.txt')
-        Check if filename exists
+    An adapter for operating inside an IVCAP container.
     """
     def __init__(self, 
         storage_url: Url, 
@@ -53,7 +39,7 @@ class IvcapIOAdapter(IOAdapter):
         order_id:str, 
         cachable_url: Callable[[str], str],
         cache: Cache=None,
-        ) -> None:
+    ) -> None:
         super().__init__()
         self.in_dir = os.path.abspath(in_dir)
         self.out_dir = os.path.abspath(out_dir)
@@ -300,6 +286,9 @@ class IvcapIOAdapter(IOAdapter):
             else:
                 return os.path.join(prefix, name)
 
+    def get_collection(self, collection_urn: str) -> Collection:
+        return IvcapCollection(collection_urn)
+
     # def read(self, name: str, seekable=False, use_cache_proxy=True) -> IOProxy:
     #     file_name = self._to_path(name)
     #     if not os.path.exists(file_name):
@@ -307,8 +296,13 @@ class IvcapIOAdapter(IOAdapter):
     #     return FileProxy(file_name)
 
     def __repr__(self):
-        return f"<LocalIOAdapter in_dir={self.in_dir} out_dir={self.out_dir}>"
+        return f"<IvcapIOAdapter in_dir={self.in_dir} out_dir={self.out_dir}>"
 
+
+class IvcapCollection(Collection):
+    def __init__(self, collection_urn: str) -> None:
+        super().__init__()
+        self._collection_urn = collection_urn
 
 def encode64(s: str) -> str:
     sb = s.encode('ascii')
