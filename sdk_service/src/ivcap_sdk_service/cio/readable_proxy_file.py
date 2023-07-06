@@ -97,7 +97,7 @@ class ReadableProxyFile(IOReadable):
             self._file_obj.close()
 
     def __repr__(self):
-        return f"<ReadableProxyFile name={self._name} closed={self._closed} mode={self._mode} fp={self._file_obj}>"
+        return f"<ReadableProxyFile name={self._name} closed={self._closed} mode={self._mode}>"
 
     def to_json(self):
         return self._name
