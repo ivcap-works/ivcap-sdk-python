@@ -1,5 +1,6 @@
 import sys, os
-sys.path.append(os.path.join(os.getcwd(), '../../src'))
+SCRIPT_DIR=os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(SCRIPT_DIR, '../../src'))
 
 import logging
 from PIL import Image, ImageDraw, ImageFont
@@ -17,15 +18,15 @@ SERVICE = Service(
             name='msg', 
             type=Type.STRING, 
             description='Message to display.'),
-        Parameter(
-            name='img-art', 
+         Parameter(
+            name='backgrounds', 
+            type=Type.COLLECTION, 
+            description='Create a new result for every image in collection.',
+            optional=True),
+       Parameter(
+            name='bg-artifact', 
             type=Type.ARTIFACT, 
             description='Image artifact to use as background.',
-            optional=True),
-        Parameter(
-            name='img-url', 
-            type=Type.STRING, 
-            description='Image url (external) to use as background.',
             optional=True),
         Parameter(
             name='width', 
@@ -37,30 +38,51 @@ SERVICE = Service(
             type=Type.INT, 
             description='Image height.',
             default=480),
+        Parameter(
+            name='transparent-background', 
+            type=Type.BOOL, 
+            description='Indicate transparent background image(s)'),
     ]
 )
+
+def create_img(count: int, msg: str, width: int, height: int, bg_img, bg_transparent: bool):
+    # Create an image
+    img = Image.new("RGBA", (width, height), "white")
+    
+    # Add background
+    if bg_img:
+        background = Image.open(bg_img)
+        if bg_transparent:
+            img.paste(background, mask=background)
+        else:
+            img.paste(background)
+    
+    # Draw message
+    canvas = ImageDraw.Draw(img)
+    font = ImageFont.truetype(os.path.join(SCRIPT_DIR, 'CaveatBrush-Regular.ttf'), 100)
+    center = (width / 2, height / 2)
+    canvas.text(center, msg, font=font, anchor='mm', fill=(255, 130, 0))   
+    
+    md = {
+        'msg': msg,
+        'width': width,
+        'height': height,
+    }
+    if bg_img:
+        md['background'] = bg_img 
+    meta = create_metadata('urn:testing:schema:simple-python-service', md)
+    deliver_data(f'image.{count}.png', lambda fd: img.save(fd, format="png"), SupportedMimeTypes.JPEG, metadata=meta)
 
 def service(args: ServiceArgs, svc_logger: logging):
     global logger 
     logger = svc_logger
-
-    # Create an image
-    img = Image.new("RGBA", (args.width, args.height), "white")
     
-    # Add background
-    if args.img_url:
-        f = fetch_data(args.img_url)
-        background = Image.open(f)
-        img.paste(background)
-        f.close() # the above code does not close the file
-    
-    # Draw message
-    canvas = ImageDraw.Draw(img)
-    font = ImageFont.truetype('CaveatBrush-Regular.ttf', 100)
-    center = (args.width / 2, args.height / 2)
-    canvas.text(center, args.msg, font=font, anchor='mm', fill=(255, 130, 0))   
-    
-    meta = create_metadata('urn:ivcap.test:simple-python-service', **args._asdict())
-    deliver_data("image.png", lambda fd: img.save(fd, format="png"), SupportedMimeTypes.JPEG, metadata=meta)
+    bg_tran = args.transparent_background
+    if args.backgrounds:
+        for count, bg in enumerate(args.backgrounds):
+            count += 1
+            create_img(count, args.msg, args.width, args.height, bg, bg_tran)
+    else:
+        create_img(0, args.msg, args.width, args.height, args.bg_artifact, bg_tran)
     
 register_service(SERVICE, service)
