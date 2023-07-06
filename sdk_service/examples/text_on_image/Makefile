@@ -9,6 +9,9 @@ PROJECT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 TMP_DIR=/tmp
 IMG_URL=https://juststickers.in/wp-content/uploads/2016/07/go-programming-language.png
 
+run-help:
+	@PYTHONPATH=../../src python ${PROJECT_DIR}/${SERVICE_FILE} -H
+
 run:
 	mkdir -p ${PROJECT_DIR}/DATA
 	python ${SERVICE_FILE} \
@@ -19,14 +22,8 @@ run:
 	@echo ">>> Output should be in '${PROJECT_DIR}/DATA'"
 
 run-no-cache:
-	mkdir -p ${PROJECT_DIR}/DATA
 	rm -rf ${PROJECT_DIR}/DATA/cache
-	python ${SERVICE_FILE} \
-	  --msg "$(shell date "+%d/%m-%H:%M:%S")" \
-		--bg-artifact ${IMG_URL} \
-		--ivcap:out-dir ${PROJECT_DIR}/DATA \
-		--ivcap:cache-dir ${PROJECT_DIR}/DATA/cache
-	@echo ">>> Output should be in '${PROJECT_DIR}/DATA'"
+	make -f ${PROJECT_DIR}/Makefile run
 
 run-collection:
 	mkdir -p ${PROJECT_DIR}/DATA
