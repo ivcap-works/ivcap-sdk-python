@@ -14,7 +14,7 @@ DOCKER_BILD_ARGS=--build-arg GIT_REVISION=${GIT_REVISION} --build-arg GIT_REPOSI
 
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
-build:
+build: add-license
 	poetry build
 
 test:
@@ -45,8 +45,14 @@ docker-run: #docker-build
 
 add-license:
 	licenseheaders -t .license.tmpl -y 2023 -d src
+	licenseheaders -t .license.tmpl -y 2023 -d examples
+
+docs:
+	cd ${ROOT_DIR}/docs && make html
 
 clean:
 	rm -rf *.egg-info
 	rm -rf dist
 	find ${ROOT_DIR} -name __pycache__ | xargs rm -r 
+
+.PHONY: docs
