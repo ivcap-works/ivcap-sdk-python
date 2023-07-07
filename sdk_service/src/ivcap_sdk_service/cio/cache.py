@@ -34,7 +34,7 @@ class Cache():
     exists(name='filename.txt')
         Check if filename exists
     """
-    def __init__(self, cache_dir: str, url_mapper) -> None:
+    def __init__(self, cache_dir: str) -> None:
         self.url2path = {}
         Path(cache_dir).mkdir(parents=True, exist_ok=True)
         from .local_io_adapter import LocalIOAdapter # avoid circular dependencies
@@ -42,7 +42,6 @@ class Cache():
             in_dir=cache_dir,
             out_dir=cache_dir
         )
-        self.url_mapper = url_mapper
         self._cache_dir = cache_dir
 
     def get_and_cache_file(self, url: Url) -> IOReadable:

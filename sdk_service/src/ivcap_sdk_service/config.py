@@ -105,7 +105,7 @@ class Config:
         cachable_url = self.cachable_url,
        )
     else:
-      self.IO_ADAPTER = LocalIOAdapter(in_dir=in_dir, out_dir=self.OUT_DIR, cache=self.CACHE)
+      self.IO_ADAPTER = LocalIOAdapter(in_dir=in_dir, out_dir=self.OUT_DIR, cache_dir=cacheDir)
 
     self.SCHEMA_PREFIX = args.pop('ivcap:schema_prefix', None)
 

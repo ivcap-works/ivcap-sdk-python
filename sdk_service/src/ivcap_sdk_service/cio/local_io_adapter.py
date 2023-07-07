@@ -8,6 +8,7 @@ FileAdapter a thin wrapper around io.IOBase that sets a storage path with
 standard filesystem backend
 """
 import os
+from pathlib import Path
 from typing import Optional
 from os import access, R_OK
 from os.path import isfile, join
