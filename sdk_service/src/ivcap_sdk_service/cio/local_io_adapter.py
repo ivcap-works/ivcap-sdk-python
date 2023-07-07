@@ -22,7 +22,7 @@ from ..utils import json_dump
 from ..itypes import MetaDict, Url, SupportedMimeTypes
 
 from ..logger import sys_logger as logger
-from .io_adapter import IOAdapter, IOReadable, IOWritable, OnCloseF
+from .io_adapter import Collection, IOAdapter, IOReadable, IOWritable, OnCloseF
 
 class LocalIOAdapter(IOAdapter):
     """
@@ -204,8 +204,54 @@ class LocalIOAdapter(IOAdapter):
                 return os.path.join(prefix, collection_name, name)
             else:
                 return os.path.join(prefix, name)
+            
+    def get_collection(self, collection_urn: str) -> Collection:
+        u = urlparse(collection_urn)
+        if u.scheme == '' or u.scheme == 'file':
+            if os.path.isfile(u.path) or os.path.isdir(u.path):
+                return LocalCollection(u.path, self)
+            else:
+                raise ValueError(f"Cannot find local file or directory '{u.path}")
+        else:
+            raise ValueError(f"Remote collection is not supported, yet")
 
     def __repr__(self):
         return f"<LocalIOAdapter in_dir={self.in_dir} out_dir={self.out_dir}>"
 
+class LocalCollection(Collection):
+    def __init__(self, path: str, adapter: IOAdapter) -> None:
+        super().__init__()
+        self._path = path
+        self._adapter = adapter
+        
+    def name(self) -> str:
+        return self._collection_urn
+    
+    def __iter__(self):
+        if os.path.isfile(self._path):
+            return SingleFileIter(self._path, self._adapter)
+        else:
+            return DirectoryIter(self._path, self._adapter)
 
+class SingleFileIter:
+    def __init__(self, path: str, adapter: IOAdapter) -> None:
+        self._path = path
+        self._adapter = adapter
+        self._already_served = False
+        
+    def __next__(self):
+        if self._already_served:
+            raise StopIteration
+        else:
+            self._already_served = True
+            return self._adapter.read_local(self._path)
+
+class DirectoryIter:
+    def __init__(self, path: str, adapter: IOAdapter) -> None:
+        self._iter = Path(path).glob('*')
+        self._adapter = adapter
+        self._already_served = False
+        
+    def __next__(self):
+        f = str(next(self._iter))
+        return self._adapter.read_local(f)

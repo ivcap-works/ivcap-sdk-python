@@ -110,6 +110,14 @@ class IO_ReadWritable(IOReadable, IOWritable):
 #         """Returns name of underlying object"""
 #         pass
 
+class Collection(ABC):
+    """A collection of artifacts
+    """
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        pass
+
 OnCloseF = Callable[[Url], None]
 
 class IOAdapter(ABC):
@@ -185,6 +193,19 @@ class IOAdapter(ABC):
 
         Returns:
             IOWritable: A file-like object to write deliver artifact content - needs to be closed
+        """
+        pass
+
+    @abstractmethod
+    def get_collection(self, collection_urn: str) -> Collection:
+        """Return a collection representing a set of artifacts
+
+        Args:
+            collection_urn (URN): Collection identifies
+
+        Returns:
+            Collection: An instance of a collection object appropriate for
+            the current context
         """
         pass
 

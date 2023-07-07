@@ -12,10 +12,11 @@ from os import access, R_OK
 from os.path import isfile
 from urllib.parse import urlparse
 
+from .readable_file import ReadableFile
 from .readable_proxy import ReadableProxy
 from ..itypes import MetaDict, Url
 
-from .io_adapter import IOAdapter, IOReadable, IOWritable, OnCloseF
+from .io_adapter import Collection, IOAdapter, IOReadable, IOWritable, OnCloseF
 from .writable_proxy import WritableProxy
 
 class IvcapIOAdapter(IOAdapter):
@@ -171,7 +172,7 @@ class IvcapIOAdapter(IOAdapter):
             IOReadable: The content of the local file as a file-like object
         """
         path = self._to_path(self.in_dir, name, collection_name)
-        return ReadableProxyFile(name, path, None, is_binary=binary_content, use_temp_file=False)
+        return ReadableFile(name, path, None, is_binary=binary_content, use_temp_file=False)
 
     def _to_path(self, prefix: str, name: str, collection_name: str = None) -> str:
         if name.startswith('/'):
@@ -184,5 +185,13 @@ class IvcapIOAdapter(IOAdapter):
             else:
                 return os.path.join(prefix, name)
 
+    def get_collection(self, collection_urn: str) -> Collection:
+        return IvcapCollection(collection_urn)
+
     def __repr__(self):
-        return f"<LocalIOAdapter in_dir={self.in_dir} out_dir={self.out_dir}>"
+        return f"<IvcapIOAdapter in_dir={self.in_dir} out_dir={self.out_dir}>"
+
+class IvcapCollection(Collection):
+    def __init__(self, collection_urn: str) -> None:
+        super().__init__()
+        self._collection_urn = collection_urn
