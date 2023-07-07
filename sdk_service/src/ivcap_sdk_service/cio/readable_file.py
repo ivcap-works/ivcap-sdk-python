@@ -4,38 +4,28 @@
 # found in the LICENSE file. See the AUTHORS file for names of contributors.
 #
 from builtins import BaseException
-import pathlib
-from typing import IO, AnyStr, Callable, List, Tuple, Union, BinaryIO, Dict
+from typing import IO, AnyStr, Callable, List, Optional
 import tempfile
 import io
-import shutil
+
+from ivcap_sdk_service.cio.utils import download
 from ..logger import sys_logger as logger
 
 from .io_adapter import IOReadable
 
-class ReadableProxyFile(IOReadable):
+class ReadableFile(IOReadable):
 
     def __init__(self, 
         name: str,
-        path: str,
+        path: Optional[str],
         on_close: Callable[[IO[bytes]], None]=None, 
-        is_binary=True, 
-        use_temp_file=True, 
+        is_binary=True,
         encoding=None,
-        writable_also=False
     ):
-        if writable_also:
-            # needed for temporary files which are first written
-            self._mode = "w+b" if is_binary else "w+"
-        else:
-            self._mode = "rb" if is_binary else "r"
-        if use_temp_file:
-            self._file_obj = tempfile.NamedTemporaryFile(self._mode, encoding=encoding) # delete after uploaded
-            self._path = self._file_obj.name
-        else:
-            self._path = path
-            self._file_obj = io.open(path, mode=self._mode, encoding=encoding)
         self._name = name
+        self._path = path
+        mode = "rb" if is_binary else "r"
+        self._file_obj = io.open(path, mode=mode, encoding=encoding)
         self._on_close = on_close
         self._closed = False
 
@@ -51,8 +41,7 @@ class ReadableProxyFile(IOReadable):
     def name(self) -> str:
         return self._name
 
-    @property
-    def path(self) -> str:
+    def as_local_file(self) -> str:
         return self._path
 
     def writable(self) -> bool:
@@ -65,7 +54,7 @@ class ReadableProxyFile(IOReadable):
         """
         Change stream position by offset
         """
-        return self._file_obj.seek(offset, whence)
+        self._file_obj.seek(offset, whence)
 
     def seekable(self) -> bool:
         return True
@@ -87,17 +76,17 @@ class ReadableProxyFile(IOReadable):
 
     def close(self):
         self._closed = True
-        
+        f = self._file_obj
         try:
             if self._on_close:
-                self._on_close(self._file_obj)
+                self._on_close(f)
         except BaseException as err:
             logger.warn("ReadableProxyFile#close: on_close '%s' failed with '%s'", self._on_close, err)
         finally:
-            self._file_obj.close()
+            f.close()
 
     def __repr__(self):
-        return f"<ReadableProxyFile name={self._name} closed={self._closed} mode={self._mode}>"
+        return f"<ReadableFile name={self._name} closed={self._closed} path={self._path}>"
 
     def to_json(self):
         return self._name

@@ -5,8 +5,6 @@
 #
 
 # read version from installed package
-from __future__ import annotations
-from typing import Optional
 
 
 try:  # Python < 3.10 (backport) 

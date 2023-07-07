@@ -68,7 +68,7 @@ class IOReadable(_IOBase):
 
     @property
     @abstractmethod
-    def path(self) -> str:
+    def as_local_file(self) -> str:
         pass
 
 class IOWritable(_IOBase):
@@ -97,6 +97,14 @@ class Collection(ABC):
 
     Args:
         ABC (_type_): _description_
+    """
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        pass
+
+class Collection(ABC):
+    """A collection of artifacts
     """
     @property
     @abstractmethod
