@@ -3,17 +3,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file. See the AUTHORS file for names of contributors.
 #
-
+from __future__ import annotations
 #
 # Helper funtions to interface with CSE services
 #
-import json
 from argparse import ArgumentParser
 from typing import Callable, Dict, Any, Optional, Sequence, Union, cast
 from urllib.parse import urlparse
-import validators
 
-from .utils import json_dump
+#from .utils import json_dump
 
 from .cio.io_adapter import IOAdapter, IOReadable, IOWritable, OnCloseF
 
@@ -53,7 +51,7 @@ def deliver_data(
     metadata: Optional[Union[MetaDict, Sequence[MetaDict]]] = None, 
     seekable=False,
     on_close: Optional[OnCloseF] = None
-) -> str:
+):
     """Deliver a result of this service
 
     Args:
@@ -75,16 +73,13 @@ def deliver_data(
 
     global DELIVERED
 
-    _artifactID = None
-    def _on_close(artifactID):
-        nonlocal _artifactID
-        _artifactID = artifactID
+    def _on_close(url):
         mt = mime_type.value if isinstance(mime_type, SupportedMimeTypes) else mime_type
-        m = dict(name=name, artID=artifactID, mime_type=mt, meta=metadata)
+        m = dict(name=name, url=url, mime_type=mt, meta=metadata)
         DELIVERED.append(m)
         notify(m, _CONFIG.SCHEMA_PREFIX + 'deliver')
         if on_close:
-            on_close(artifactID)
+            on_close(url)
 
     if callable(data_or_lambda):
         l = cast(Callable[[IOWritable], None],  data_or_lambda)
@@ -107,7 +102,6 @@ def deliver_data(
             collection_name=collection_name, metadata=metadata, seekable=seekable, on_close=_on_close)
         else:
             raise UnsupportedMimeType(mime_type)
-    return _artifactID
 
 def register_saver(mime_type: str, obj_type: Any, saverF: SaverF):
     """Register a 'saver' function used in 'deliver' for a specific data type.
@@ -134,12 +128,21 @@ def create_metadata(schema: str, mdict:Optional[MetaDict] = {}, **args) -> Dict:
     return d
 
 def fetch_data(url: Url, binary_content=True, no_caching=False, seekable=False) -> IOReadable:
-    up = urlparse(url)
-    if up.scheme == 'http' or up.scheme == 'https':
-        return get_config().IO_ADAPTER.read_external(url, binary_content, no_caching, seekable)
-    else:
-        return get_config().IO_ADAPTER.read_artifact(url, binary_content, no_caching, seekable)
+    """Return an 'IOReadable' on the content referenced by 'url'.
+    
+    This simply calls 'cio.IOAdapter.read_artifact' through the 
+    configured 'IOAdapter'.
 
+    Args:
+        url (Url): Url to content
+        binary_content (bool, optional): Indicates if content is binary [True].
+        no_caching (bool, optional): Indicates if content should NOT be cached [False].
+        seekable (bool, optional): Indicates if Readable should be seekable [False].
+
+    Returns:
+        IOReadable: A readable on the referenced content
+    """
+    return get_config().IO_ADAPTER.read_artifact(url, binary_content, no_caching, seekable)
 
 def get_order_id():
     """Returns the ID of the currently processed order"""
@@ -157,6 +160,7 @@ class ExitException(Exception):
 
 def notify(msg, schema=None):
     """Publish 'msg' to indicate progress."""
+    from .utils import json_dump
     p = False # _get_kafka_producer()
     if p:
         h = [
@@ -181,19 +185,6 @@ def notify(msg, schema=None):
 def get_config() -> Config:
     return _CONFIG
 
-def is_valid_resource_urn(urn: str, resource: Resource) -> bool:
-    if not urn.startswith("urn"):
-        return False
-    
-    artPrefix = f"{get_config().SCHEMA_PREFIX}{resource.value}:"
-    if urn.startswith(artPrefix):
-        return True
-    
-    ## Still OK if 'urn:http...'
-    try:
-        return validators.url(urn[4:])
-    except:
-        return False
 
 #### Initialize
 

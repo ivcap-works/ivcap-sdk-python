@@ -5,7 +5,6 @@
 #
 
 # read version from installed package
-from typing import Optional
 
 
 try:  # Python < 3.10 (backport) 
